@@ -3,6 +3,54 @@
 // ====================================================================
 
 const INITIAL_STATE = {
+  isAuthenticated: false,
+  isOnboardingCompleted: false,
+  profile: {
+    fullName: 'Carlos',
+    title: 'Aspirante',
+    email: 'carlos@mision.app',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
+    totalImpulso: 0,
+    chispas: 10,
+    currentStreak: 0,
+    bestStreak: 0,
+    disciplineRate: 100,
+    freezes: 0,
+    notificationsEnabled: true
+  },
+  goals: [],
+  dailyMissions: [],
+  completions: [],
+  unlockedAchievements: [],
+  rewards: [
+    {
+      id: 'r-1',
+      title: 'Protector de Racha (1 Congelador)',
+      description: 'Protege tu racha durante 24h ante emergencias.',
+      cost: 60,
+      icon: 'ac_unit'
+    },
+    {
+      id: 'r-2',
+      title: 'Tarde Libre de Desconexión',
+      description: 'Premio personal: 3 horas de lectura y café sereno.',
+      cost: 120,
+      icon: 'spa'
+    },
+    {
+      id: 'r-3',
+      title: 'Insignia de Aura Dorada',
+      description: 'Destaca tu avatar en el perfil.',
+      cost: 180,
+      icon: 'stars'
+    }
+  ],
+  userRewards: []
+};
+
+const DEMO_FULL_STATE = {
+  isAuthenticated: true,
+  isOnboardingCompleted: true,
   profile: {
     fullName: 'Carlos Forjador',
     title: 'Constructor',
@@ -19,7 +67,7 @@ const INITIAL_STATE = {
   goals: [
     {
       id: 'g-1',
-      title: 'Fluidez y Maestría en Inglés',
+      title: 'Maestría y Fluidez en Inglés',
       description: 'Alcanzar nivel C1 conversacional para reuniones internacionales.',
       category: 'Crecimiento',
       status: 'active',
@@ -176,7 +224,7 @@ const INITIAL_STATE = {
 
 class Store {
   constructor() {
-    this.storageKey = 'mision_app_state_v1';
+    this.storageKey = 'mision_app_state_v4';
     this.listeners = [];
     this.state = this._load();
   }
@@ -220,6 +268,107 @@ class Store {
   resetData() {
     this.state = JSON.parse(JSON.stringify(INITIAL_STATE));
     this._save();
+  }
+
+  loadDemoData() {
+    this.state = JSON.parse(JSON.stringify(DEMO_FULL_STATE));
+    this.state.isAuthenticated = true;
+    this.state.isOnboardingCompleted = true;
+    this._save();
+  }
+
+  loginUser({ email, fullName, avatarUrl } = {}) {
+    this.state.isAuthenticated = true;
+    if (email) this.state.profile.email = email;
+    if (fullName) this.state.profile.fullName = fullName;
+    if (avatarUrl) this.state.profile.avatarUrl = avatarUrl;
+    this._save();
+    return this.state.profile;
+  }
+
+  registerUser({ email, fullName, avatarUrl } = {}) {
+    this.state.isAuthenticated = true;
+    this.state.isOnboardingCompleted = false;
+    this.state.profile.email = email || 'usuario@mision.app';
+    this.state.profile.fullName = fullName || 'Carlos';
+    if (avatarUrl) this.state.profile.avatarUrl = avatarUrl;
+    this.state.profile.totalImpulso = 0;
+    this.state.profile.chispas = 10;
+    this.state.profile.currentStreak = 0;
+    this.state.goals = [];
+    this.state.dailyMissions = [];
+    this.state.completions = [];
+    this.state.unlockedAchievements = [];
+    this._save();
+    return this.state.profile;
+  }
+
+  logoutUser() {
+    this.state.isAuthenticated = false;
+    this._save();
+  }
+
+  updateUserProfile({ fullName, avatarUrl, email } = {}) {
+    if (fullName) this.state.profile.fullName = fullName;
+    if (avatarUrl) this.state.profile.avatarUrl = avatarUrl;
+    if (email) this.state.profile.email = email;
+    this._save();
+    return this.state.profile;
+  }
+
+  resetToOnboarding() {
+    this.state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    this.state.isAuthenticated = true;
+    this.state.isOnboardingCompleted = false;
+    this._save();
+  }
+
+  completeOnboarding({ name, dream, meaning, dailyMinutes, missionTitle, category, icon, color }) {
+    const goalId = 'g-' + Date.now();
+    const newGoal = {
+      id: goalId,
+      title: dream,
+      description: meaning || `Dedicación: ${dailyMinutes} min al día.`,
+      category: category || 'Crecimiento',
+      status: 'active',
+      icon: icon || 'flag',
+      color: color || '#3A7D63',
+      targetDate: '2026-12-31',
+      totalMissionsTarget: 20,
+      completedMissionsCount: 0,
+      progress: 0
+    };
+
+    const newMission = {
+      id: 'm-' + Date.now(),
+      goalId: goalId,
+      title: missionTitle || `Dar el primer paso en: ${dream}`,
+      description: `Sesión inicial de ${dailyMinutes} minutos para comenzar a construir tu sueño.`,
+      category: category || 'Crecimiento',
+      difficulty: 'Fácil',
+      durationMinutes: parseInt(dailyMinutes) || 5,
+      impulso: 10,
+      chispas: 5,
+      isCompleted: false,
+      completedAt: null
+    };
+
+    this.state.profile.fullName = name || 'Carlos';
+    this.state.profile.title = 'Aspirante';
+    this.state.profile.totalImpulso = 0;
+    this.state.profile.chispas = 10;
+    this.state.profile.currentStreak = 0;
+    this.state.profile.bestStreak = 0;
+    this.state.profile.disciplineRate = 100;
+
+    this.state.goals = [newGoal];
+    this.state.dailyMissions = [newMission];
+    this.state.completions = [];
+    this.state.unlockedAchievements = [];
+    this.state.isOnboardingCompleted = true;
+
+    this._save();
+    return { newGoal, newMission };
   }
 
   toggleMission(missionId) {

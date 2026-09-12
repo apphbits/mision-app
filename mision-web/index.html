@@ -11,6 +11,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
@@ -119,7 +122,7 @@
         </div>
 
         <!-- Header Floating Bar -->
-        <header class="sticky top-0 w-full z-40 bg-canvas/90 backdrop-blur-md border-b border-[#EAECE6]">
+        <header id="app-main-header" class="sticky top-0 w-full z-40 bg-canvas/90 backdrop-blur-md border-b border-[#EAECE6]">
           <div class="h-16 px-4 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <div class="w-9 h-9 rounded-2xl bg-white flex items-center justify-center soft-shadow border border-[#EAECE6] text-primary-600">
@@ -130,16 +133,16 @@
                 <span class="text-[10px] font-bold text-primary-600 uppercase tracking-wider">Santuario Personal</span>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div id="header-user-widgets" class="flex items-center gap-2">
               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white soft-shadow border border-[#EAECE6]">
                 <span class="w-2 h-2 rounded-full bg-primary-600 animate-pulse"></span>
-                <span class="text-[11px] font-bold text-charcoal header-level-badge">Nv. 4 · Constructor</span>
+                <span class="text-[11px] font-bold text-charcoal header-level-badge">Nv. 1 · Aspirante</span>
               </div>
               <button aria-label="Notificaciones" class="w-9 h-9 flex items-center justify-center rounded-full bg-white text-charcoal-muted hover:text-charcoal soft-shadow border border-[#EAECE6] active:scale-95 transition-all">
                 <span class="material-symbols-outlined text-[18px]">notifications</span>
               </button>
               <div class="relative flex items-center">
-                <img alt="Perfil" class="w-9 h-9 rounded-full object-cover ring-2 ring-white soft-shadow" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"/>
+                <img id="header-avatar" alt="Perfil" class="w-9 h-9 rounded-full object-cover ring-2 ring-white soft-shadow" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"/>
                 <span class="absolute right-0 bottom-0 w-2.5 h-2.5 bg-leaf-500 rounded-full ring-2 ring-white"></span>
               </div>
             </div>
@@ -150,9 +153,491 @@
         <main class="flex-1 flex flex-col relative w-full pt-3 pb-24 px-4">
           
           <!-- ========================================== -->
+          <!-- VIEW AUTH: LOGIN Y REGISTRO (Pantalla Inicial) -->
+          <!-- ========================================== -->
+          <div id="view-auth" class="view-panel flex flex-col space-y-4">
+            
+            <!-- Hero Sanctuary Brand Card -->
+            <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6] text-center flex flex-col items-center">
+              <div class="absolute -right-8 -top-8 w-32 h-32 bg-primary-100/50 rounded-full blur-2xl pointer-events-none"></div>
+              <div class="absolute -left-8 -bottom-8 w-28 h-28 bg-peach-100/40 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div class="w-14 h-14 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-600 mb-2.5 float-shadow">
+                <span class="material-symbols-outlined text-[32px] filled">spa</span>
+              </div>
+              <h1 class="font-display font-extrabold text-2xl text-charcoal tracking-tight">MISIÓN</h1>
+              <p class="text-[11px] font-bold text-primary-700 uppercase tracking-widest mt-0.5">Santuario Personal</p>
+              <p class="text-xs text-charcoal-muted mt-2 leading-relaxed max-w-xs">
+                Convierte lo que sueñas en pequeñas acciones diarias de progreso real.
+              </p>
+
+              <!-- Auth Mode Switcher (Pill Toggle) -->
+              <div class="w-full grid grid-cols-2 p-1 bg-[#F2F3EE] rounded-2xl mt-4 border border-[#EAECE6]">
+                <button type="button" id="tab-btn-login" class="auth-tab-btn py-2 text-xs font-bold rounded-xl transition-all bg-white text-charcoal shadow-sm cursor-pointer">
+                  Iniciar Sesión
+                </button>
+                <button type="button" id="tab-btn-register" class="auth-tab-btn py-2 text-xs font-bold rounded-xl transition-all text-charcoal-muted hover:text-charcoal cursor-pointer">
+                  Crear Cuenta
+                </button>
+              </div>
+            </div>
+
+            <!-- Social OAuth Card (Google Sign-In) & Form Body -->
+            <div class="bg-white rounded-3xl p-4 soft-shadow border border-[#EAECE6] flex flex-col space-y-3.5">
+              <button id="btn-google-auth" type="button" class="w-full py-3 px-4 rounded-2xl border border-[#D7DDD4] bg-white hover:bg-[#F8F9F7] text-charcoal font-bold text-xs flex items-center justify-center gap-3 active:scale-[0.98] transition-all cursor-pointer shadow-sm">
+                <!-- Official Google SVG Multi-color Logo -->
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span id="google-btn-text">Continuar con Google</span>
+              </button>
+
+              <div class="relative flex py-0.5 items-center">
+                <div class="flex-grow border-t border-[#EAECE6]"></div>
+                <span class="flex-shrink mx-3 text-[10.5px] font-bold text-charcoal-muted uppercase tracking-wider">o con tu correo</span>
+                <div class="flex-grow border-t border-[#EAECE6]"></div>
+              </div>
+
+              <!-- FORM 1: LOGIN -->
+              <form id="form-auth-login" class="flex flex-col space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-charcoal mb-1">Correo Electrónico</label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-charcoal-muted">mail</span>
+                    <input id="login-email" type="email" required placeholder="tu@correo.com" value="carlos@mision.app" class="w-full pl-9 pr-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block text-[11px] font-bold text-charcoal">Contraseña</label>
+                    <a href="#" id="link-forgot-pwd" class="text-[10.5px] font-semibold text-primary-600 hover:underline">¿Olvidaste tu clave?</a>
+                  </div>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-charcoal-muted">lock</span>
+                    <input id="login-password" type="password" required placeholder="••••••••" value="123456" class="w-full pl-9 pr-9 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+                    <button type="button" class="btn-toggle-pwd absolute right-2.5 top-2 text-charcoal-muted hover:text-charcoal text-xs">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="pt-1">
+                  <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-xs float-shadow active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px]">login</span>
+                    <span>Iniciar Sesión</span>
+                  </button>
+                </div>
+              </form>
+
+              <!-- FORM 2: REGISTRO (CON VALIDACIÓN DE FOTO < 500KB) -->
+              <form id="form-auth-register" class="flex flex-col space-y-3 hidden">
+                
+                <!-- Profile Picture Uploader (< 500KB) -->
+                <div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#FAFAF8] border border-dashed border-[#D7DDD4] text-center">
+                  <div class="relative group cursor-pointer" id="register-avatar-preview-wrap" title="Haz clic para seleccionar imagen">
+                    <img id="register-avatar-preview" class="w-16 h-16 rounded-full object-cover ring-2 ring-primary-200 bg-white" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Vista previa avatar"/>
+                    <div class="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span class="material-symbols-outlined text-white text-[20px]">photo_camera</span>
+                    </div>
+                    <span class="absolute right-0 bottom-0 w-5 h-5 bg-primary-600 rounded-full text-white flex items-center justify-center shadow-sm">
+                      <span class="material-symbols-outlined text-[13px]">edit</span>
+                    </span>
+                  </div>
+                  
+                  <input type="file" id="register-avatar-file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden"/>
+                  
+                  <button type="button" id="btn-trigger-avatar-select" class="mt-2 text-[11px] font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">add_a_photo</span>
+                    <span>Subir Foto de Perfil</span>
+                  </button>
+                  <span id="register-avatar-status" class="text-[10px] text-charcoal-muted mt-0.5">Solo imágenes (PNG, JPG, WEBP) · Máximo 500 KB</span>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-bold text-charcoal mb-1">Nombre Completo</label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-charcoal-muted">person</span>
+                    <input id="register-name" type="text" required placeholder="Tu nombre o apodo" class="w-full pl-9 pr-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-bold text-charcoal mb-1">Correo Electrónico</label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-charcoal-muted">mail</span>
+                    <input id="register-email" type="email" required placeholder="tu@correo.com" class="w-full pl-9 pr-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-bold text-charcoal mb-1">Contraseña</label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-charcoal-muted">lock</span>
+                    <input id="register-password" type="password" minlength="6" required placeholder="Mínimo 6 caracteres" class="w-full pl-9 pr-9 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+                    <button type="button" class="btn-toggle-pwd absolute right-2.5 top-2 text-charcoal-muted hover:text-charcoal text-xs">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="pt-1">
+                  <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-[#27303A] hover:bg-[#1E262E] text-white font-display font-bold text-xs float-shadow active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px]">how_to_reg</span>
+                    <span>Crear Cuenta y Comenzar</span>
+                  </button>
+                </div>
+              </form>
+
+            </div>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 0: ONBOARDING / BIENVENIDA (Paso 1, 2 y 3) -->
+          <!-- ========================================== -->
+          <div id="view-onboarding" class="view-panel flex flex-col space-y-4">
+
+            <!-- Step 1: Bienvenida & Elegir Sueño -->
+            <div id="onboarding-step-1" class="onboarding-step active flex flex-col space-y-4">
+              
+              <!-- Hero Header -->
+              <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+                <div class="absolute -right-10 -top-10 w-36 h-36 bg-primary-100/40 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
+                      Paso 1 de 3
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-primary-600"></span>
+                      <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
+                      <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h1 class="font-display font-extrabold text-2xl text-charcoal tracking-tight">¡Bienvenido a MISIÓN, <span id="onboarding-name-display">Carlos</span>!</h1>
+                    <p class="text-xs text-charcoal-muted mt-1.5 leading-relaxed">
+                      Aquí vas a convertir lo que sueñas en pequeñas misiones que puedes completar cada día.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Question Card -->
+              <div class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3.5">
+                <div>
+                  <h2 class="font-display font-bold text-[17px] text-charcoal flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary-600 text-[20px] filled">flag</span>
+                    <span>¿Qué quieres conseguir?</span>
+                  </h2>
+                  <p class="text-xs text-charcoal-muted mt-0.5">
+                    Elige algo que realmente te importe. Puede ser grande o pequeño. Lo importante es comenzar.
+                  </p>
+                </div>
+
+                <!-- Preset Dream Options Grid -->
+                <div class="grid grid-cols-1 gap-2" id="dream-presets-list">
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Cuerpo" data-dream="Mejorar mi salud física y vitalidad" data-icon="fitness_center" data-meaning="Tener más energía y sentirme fuerte cada día" data-mission="Caminata consciente de 10 minutos al aire libre">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">💪</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mi salud</h4>
+                        <span class="text-[11px] text-charcoal-muted">Vitalidad, ejercicio y bienestar físico</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Crecimiento" data-dream="Aprender inglés con fluidez" data-icon="language" data-meaning="Poder mantener una conversación y viajar con confianza" data-mission="Aprender 5 palabras nuevas en inglés">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">📚</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Aprender algo nuevo</h4>
+                        <span class="text-[11px] text-charcoal-muted">Idiomas, habilidades o lectura profunda</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Finanzas" data-dream="Mejorar mis finanzas y ahorrar" data-icon="savings" data-meaning="Construir tranquilidad y libertad financiera" data-mission="Anotar y categorizar mis 3 gastos principales de hoy">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">💰</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mis finanzas</h4>
+                        <span class="text-[11px] text-charcoal-muted">Ahorro consciente e inversiones</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Finanzas" data-dream="Crear mi propio proyecto o negocio" data-icon="rocket_launch" data-meaning="Validar mi idea y tener mi propio emprendimiento" data-mission="Definir la propuesta de valor del proyecto en 3 frases">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">🚀</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Crear un proyecto</h4>
+                        <span class="text-[11px] text-charcoal-muted">Emprender o lanzar una idea personal</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Experiencias" data-dream="Viajar y cumplir un sueño personal" data-icon="flight_takeoff" data-meaning="Vivir experiencias memorables y conocer el mundo" data-mission="Investigar 1 destino soñado y anotar 3 actividades clave">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">✈️</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Viajar y explorar</h4>
+                        <span class="text-[11px] text-charcoal-muted">Cumplir un sueño de vida o aventura</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Mente" data-dream="Claridad mental y presencia consciente" data-icon="spa" data-meaning="Vivir con menor estrés y mayor serenidad interior" data-mission="5 minutos de respiración consciente en silencio">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">🧠</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar personalmente</h4>
+                        <span class="text-[11px] text-charcoal-muted">Paz mental, meditación y enfoque</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+
+                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Relaciones" data-dream="Cultivar relaciones significativas" data-icon="favorite" data-meaning="Fortalecer vínculos sinceros con personas valiosas" data-mission="Enviar un mensaje de gratitud o aprecio a un ser querido">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">❤️</span>
+                      <div>
+                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mis relaciones</h4>
+                        <span class="text-[11px] text-charcoal-muted">Conexión con familia, amigos y pareja</span>
+                      </div>
+                    </div>
+                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                      <span class="material-symbols-outlined text-[15px]">check</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Custom Dream Input Field -->
+                <div class="pt-2 border-t border-[#EAECE6]/80 flex flex-col space-y-2">
+                  <div class="flex items-center justify-between">
+                    <label class="text-[11.5px] font-bold text-charcoal flex items-center gap-1.5">
+                      <span>✍️</span>
+                      <span>O escribe tu propio sueño:</span>
+                    </label>
+                    <span class="text-[10px] text-charcoal-muted font-medium">Libre</span>
+                  </div>
+                  <div class="relative">
+                    <input id="input-custom-dream" type="text" placeholder="Ej: Quiero bajar de peso / Quiero aprender inglés..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs font-medium outline-none transition-all pr-8"/>
+                    <button id="btn-clear-custom-dream" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-charcoal hidden">
+                      <span class="material-symbols-outlined text-[16px]">close</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Primary Action CTA Button -->
+                <button id="btn-onboarding-to-step2" class="w-full py-3.5 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all">
+                  <span>Convertir en misión</span>
+                  <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Step 2: Definir la Meta & Tiempo -->
+            <div id="onboarding-step-2" class="onboarding-step flex flex-col space-y-4">
+              
+              <!-- Hero Header -->
+              <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+                <div class="relative z-10 flex flex-col space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <button id="btn-back-to-step1" class="text-xs font-bold text-charcoal-muted hover:text-charcoal flex items-center gap-1 cursor-pointer">
+                      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                      <span>Volver</span>
+                    </button>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
+                      Paso 2 de 3
+                    </span>
+                  </div>
+
+                  <div class="pt-1">
+                    <span class="text-[11px] font-bold text-primary-600 uppercase tracking-wider block">Tu aspiración</span>
+                    <h2 id="step2-dream-preview" class="font-display font-extrabold text-xl text-charcoal leading-tight">Fluidez y Maestría en Inglés</h2>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Meaning & Time Options -->
+              <div class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-4">
+                
+                <!-- Question: ¿Qué significa lograrlo para ti? -->
+                <div class="flex flex-col space-y-2">
+                  <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary-600 text-[19px]">psychology</span>
+                    <span>¿Qué significa lograrlo para ti?</span>
+                  </h3>
+                  <p class="text-xs text-charcoal-muted">Conectar con el sentido profundo de tu meta te mantendrá constante.</p>
+                  
+                  <div class="grid grid-cols-1 gap-1.5" id="meaning-options-container">
+                    <!-- Dynamic suggestions inserted by JS -->
+                  </div>
+
+                  <input id="input-custom-meaning" type="text" placeholder="O escribe tu propio significado..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all mt-1"/>
+                </div>
+
+                <!-- Question: ¿Cuánto tiempo quieres dedicarle? -->
+                <div class="flex flex-col space-y-2 pt-2 border-t border-[#EAECE6]/80">
+                  <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary-600 text-[19px]">schedule</span>
+                    <span>¿Cuánto tiempo quieres dedicarle?</span>
+                  </h3>
+                  <p class="text-xs text-charcoal-muted">Comenzar con poco tiempo asegura que nunca lo abandones.</p>
+
+                  <div class="grid grid-cols-2 gap-2" id="time-options-container">
+                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1 selected" data-minutes="5">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-charcoal">5 min / día</span>
+                        <span class="text-xs">🌱</span>
+                      </div>
+                      <span class="time-desc text-[10.5px] text-charcoal-muted">Ideal para empezar sin fricción</span>
+                    </div>
+
+                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="15">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-charcoal">15 min / día</span>
+                        <span class="text-xs">⚡</span>
+                      </div>
+                      <span class="time-desc text-[10.5px] text-charcoal-muted">Ritmo constante y ágil</span>
+                    </div>
+
+                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="30">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-charcoal">30 min / día</span>
+                        <span class="text-xs">🔥</span>
+                      </div>
+                      <span class="time-desc text-[10.5px] text-charcoal-muted">Progreso acelerado</span>
+                    </div>
+
+                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="60">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-charcoal">1 hora / día</span>
+                        <span class="text-xs">🚀</span>
+                      </div>
+                      <span class="time-desc text-[10.5px] text-charcoal-muted">Inmersión profunda</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="btn-onboarding-to-step3" class="w-full py-3.5 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all">
+                  <span>Crear mi primera misión</span>
+                  <span class="material-symbols-outlined text-[19px]">auto_awesome</span>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Step 3: Tu Primera Misión Lista -->
+            <div id="onboarding-step-3" class="onboarding-step flex flex-col space-y-4">
+              
+              <!-- Hero Header -->
+              <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+                <div class="relative z-10 flex flex-col space-y-2">
+                  <div class="flex items-center justify-between">
+                    <button id="btn-back-to-step2" class="text-xs font-bold text-charcoal-muted hover:text-charcoal flex items-center gap-1 cursor-pointer">
+                      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                      <span>Volver</span>
+                    </button>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
+                      Paso 3 de 3
+                    </span>
+                  </div>
+
+                  <h2 class="font-display font-extrabold text-2xl text-charcoal tracking-tight pt-1">Tu primera misión está lista</h2>
+                  <p class="text-xs text-charcoal-muted">Una acción concreta, pequeña y altamente gratificante para arrancar hoy.</p>
+                </div>
+              </div>
+
+              <!-- Hero First Mission Card -->
+              <div class="first-mission-hero rounded-3xl p-5 soft-shadow flex flex-col space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-600 text-white text-[11px] font-bold shadow-sm">
+                    <span class="material-symbols-outlined text-[16px] filled">flag</span>
+                    <span>Tu primera misión</span>
+                  </span>
+                  <span id="step3-category-badge" class="px-2.5 py-0.5 rounded-lg bg-white border border-[#DBEFE6] text-primary-700 font-bold text-[10.5px]">
+                    Crecimiento
+                  </span>
+                </div>
+
+                <div class="flex flex-col space-y-1">
+                  <h3 id="step3-mission-title" class="font-display font-bold text-[18px] text-charcoal leading-snug">
+                    Aprender 5 palabras nuevas en inglés.
+                  </h3>
+                  <p id="step3-mission-desc" class="text-xs text-charcoal-muted">
+                    Paso inicial de 5 minutos para construir tu fluidez.
+                  </p>
+                </div>
+
+                <!-- Metadata & Rewards Grid -->
+                <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-white/80 border border-[#DBEFE6]">
+                  <div class="flex flex-col items-center text-center">
+                    <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Dificultad</span>
+                    <span class="text-xs font-bold text-leaf-600">Fácil</span>
+                  </div>
+                  <div class="flex flex-col items-center text-center border-x border-[#EAECE6]">
+                    <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Tiempo</span>
+                    <span id="step3-time-label" class="text-xs font-bold text-charcoal">5 min</span>
+                  </div>
+                  <div class="flex flex-col items-center text-center">
+                    <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Recompensa</span>
+                    <div class="flex items-center gap-1 text-xs font-bold text-primary-600">
+                      <span>+10⚡</span>
+                      <span>+5✨</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Inspirational Mantra -->
+                <div class="p-3.5 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] flex items-start gap-2.5">
+                  <span class="material-symbols-outlined text-primary-600 text-[20px] shrink-0 filled">lightbulb</span>
+                  <p class="text-xs text-primary-800 font-medium italic leading-relaxed">
+                    “No necesitas cambiar tu vida hoy. Solo necesitas dar el primer paso.”
+                  </p>
+                </div>
+
+                <!-- Action Button -->
+                <button id="btn-complete-onboarding" class="w-full py-4 px-4 rounded-2xl bg-[#27303A] hover:bg-[#1E262E] text-white font-display font-extrabold text-sm flex items-center justify-center gap-2.5 float-shadow active:scale-[0.98] transition-all">
+                  <span>Comenzar mi primera misión</span>
+                  <span class="material-symbols-outlined text-[20px] text-leaf-500">rocket_launch</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ========================================== -->
           <!-- VIEW 1: HOY (Misiones Diarias) -->
           <!-- ========================================== -->
-          <div id="view-hoy" class="view-panel active flex flex-col space-y-4">
+          <div id="view-hoy" class="view-panel flex flex-col space-y-4">
             
             <!-- Hero Streak & Level Bento Card -->
             <section class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
@@ -349,75 +834,56 @@
                     <div class="w-12 h-12 rounded-2xl bg-white soft-shadow border border-[#EAECE6] flex items-center justify-center text-primary-600">
                       <span class="material-symbols-outlined text-[26px] filled">military_tech</span>
                     </div>
-                    <div class="flex flex-col">
-                      <span class="text-[11px] font-bold text-primary-600 uppercase tracking-wider">Evolución de Estatus</span>
-                      <h2 id="evo-level-title" class="font-display font-bold text-[22px] leading-tight text-charcoal">Constructor</h2>
-                      <span id="evo-level-sub" class="text-[13px] font-medium text-charcoal-muted">Nivel 4 · Camino a Nv. 5</span>
+                    <div>
+                      <span class="text-[10px] font-bold text-primary-600 uppercase tracking-wider block">Tu Rango Actual</span>
+                      <h2 id="evo-level-title" class="font-display text-xl font-extrabold text-charcoal leading-tight">Constructor</h2>
+                      <p id="evo-level-sub" class="text-xs text-charcoal-muted">Nivel 4 · Camino a Nv. 5</p>
                     </div>
                   </div>
+                  <span id="evo-impulso-total" class="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded-full border border-primary-200">
+                    730 Impulso Total
+                  </span>
+                </div>
 
-                  <!-- Chispas Counter Chip -->
-                  <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white soft-shadow border border-[#EAECE6]">
-                    <div class="w-6 h-6 rounded-full bg-peach-50 flex items-center justify-center text-peach-500">
-                      <span class="material-symbols-outlined text-[15px] filled">bolt</span>
-                    </div>
-                    <div class="flex flex-col items-start leading-none">
-                      <span class="font-display font-bold text-[15px] text-charcoal header-spark-count">85</span>
-                      <span class="text-[9px] font-bold text-charcoal-muted uppercase">Chispas</span>
-                    </div>
+                <!-- Progress Bar -->
+                <div class="flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between text-xs font-semibold text-charcoal-muted">
+                    <span>Progreso de Nivel</span>
+                    <span id="evo-impulso-prog">130 / 400 (33%)</span>
+                  </div>
+                  <div class="h-3 w-full bg-white rounded-full p-0.5 border border-[#EAECE6] shadow-inner">
+                    <div id="evo-progress-bar" class="h-full bg-primary-600 rounded-full transition-all duration-700" style="width: 33%;"></div>
                   </div>
                 </div>
 
-                <!-- XP Meter Card -->
-                <div class="flex flex-col gap-2 bg-white/90 p-3.5 rounded-2xl border border-[#EAECE6]">
-                  <div class="flex justify-between items-baseline text-xs">
-                    <div class="flex items-center gap-1.5 font-bold text-charcoal">
-                      <span class="material-symbols-outlined text-primary-600 text-[16px]">trending_up</span>
-                      <span id="evo-impulso-total">730 Impulso Total</span>
-                    </div>
-                    <span id="evo-impulso-prog" class="text-[12px] font-bold text-primary-600">130 / 400 (33%)</span>
-                  </div>
-                  <div class="relative h-2.5 w-full bg-[#F0F2EF] rounded-full overflow-hidden">
-                    <div id="evo-progress-bar" class="h-full rounded-full bg-primary-600 transition-all duration-700" style="width: 33%;"></div>
-                  </div>
-                  <div class="flex justify-between text-[11px] font-medium text-charcoal-muted pt-0.5">
-                    <span>Nivel 4</span>
-                    <span id="evo-next-rank">Próximo: Forjador Constante</span>
-                  </div>
-                </div>
-
-                <!-- Streak Analytics Bento Strip -->
-                <div class="grid grid-cols-2 gap-2.5">
-                  <div class="flex items-center gap-3 p-3 rounded-2xl bg-white border border-[#EAECE6] soft-shadow">
-                    <div class="w-10 h-10 rounded-xl bg-peach-50 flex items-center justify-center text-peach-500 shrink-0">
-                      <span class="material-symbols-outlined text-[22px] filled">local_fire_department</span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span id="evo-streak-days" class="font-display font-bold text-[17px] text-charcoal leading-tight">7 Días</span>
-                      <span class="text-[11px] font-medium text-charcoal-muted">Racha Actual</span>
+                <!-- Stats 2x2 Bento Mini -->
+                <div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#EAECE6]/80">
+                  <div class="p-2.5 rounded-2xl bg-white border border-[#EAECE6] flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-peach-500 text-[20px] filled">local_fire_department</span>
+                    <div>
+                      <span class="text-[10px] font-bold text-charcoal-muted uppercase block">Racha Actual</span>
+                      <span id="evo-streak-days" class="text-xs font-bold text-charcoal">7 Días</span>
                     </div>
                   </div>
-                  <div class="flex items-center gap-3 p-3 rounded-2xl bg-white border border-[#EAECE6] soft-shadow">
-                    <div class="w-10 h-10 rounded-xl bg-leaf-50 flex items-center justify-center text-leaf-600 shrink-0">
-                      <span class="material-symbols-outlined text-[22px] filled">verified</span>
-                    </div>
-                    <div class="flex flex-col">
-                      <span id="evo-discipline-rate" class="font-display font-bold text-[17px] text-charcoal leading-tight">94%</span>
-                      <span class="text-[11px] font-medium text-charcoal-muted">Tasa de Disciplina</span>
+                  <div class="p-2.5 rounded-2xl bg-white border border-[#EAECE6] flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-leaf-500 text-[20px] filled">verified</span>
+                    <div>
+                      <span class="text-[10px] font-bold text-charcoal-muted uppercase block">Disciplina</span>
+                      <span id="evo-discipline-rate" class="text-xs font-bold text-charcoal">94%</span>
                     </div>
                   </div>
                 </div>
               </div>
             </section>
 
-            <!-- Deterministic Achievements Section -->
+            <!-- Achievements & Badges Catalog -->
             <section class="flex flex-col space-y-3 pt-1">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-primary-600 text-[20px] filled">emoji_events</span>
-                  <h2 class="font-display font-bold text-[17px] text-charcoal">Galería de Logros</h2>
+                  <h3 class="font-display font-bold text-[17px] text-charcoal">Insignias y Logros</h3>
                 </div>
-                <span class="text-xs font-bold text-primary-600">Deterministas</span>
+                <span class="text-xs font-bold text-primary-600">Recompensas ✨</span>
               </div>
 
               <div class="grid grid-cols-1 gap-2.5" id="achievements-grid">
@@ -425,14 +891,14 @@
               </div>
             </section>
 
-            <!-- Chispas Bazaar Section -->
+            <!-- Rewards Bazaar -->
             <section class="flex flex-col space-y-3 pt-2">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-peach-500 text-[20px] filled">bolt</span>
-                  <h2 class="font-display font-bold text-[17px] text-charcoal">Bazar de Chispas</h2>
+                  <span class="material-symbols-outlined text-peach-500 text-[20px] filled">storefront</span>
+                  <h3 class="font-display font-bold text-[17px] text-charcoal">Bazar de Recompensas</h3>
                 </div>
-                <span class="text-xs font-bold text-peach-600">Canjear Recompensas</span>
+                <span class="text-xs font-bold text-peach-600">Canjea tus Chispas</span>
               </div>
 
               <div class="flex flex-col space-y-2.5" id="rewards-bazaar">
@@ -443,20 +909,34 @@
           </div>
 
           <!-- ========================================== -->
-          <!-- VIEW 4: PERFIL (Estadísticas y Ajustes) -->
+          <!-- VIEW 4: PERFIL & AJUSTES -->
           <!-- ========================================== -->
           <div id="view-perfil" class="view-panel flex flex-col space-y-4">
             
-            <!-- User Identity Card -->
-            <section class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex items-center gap-4">
-              <img class="w-16 h-16 rounded-full object-cover ring-4 ring-primary-100 soft-shadow" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Perfil"/>
-              <div class="flex flex-col">
-                <h2 id="perfil-name" class="font-display font-bold text-lg text-charcoal leading-tight">Carlos Forjador</h2>
-                <span id="perfil-email" class="text-xs text-charcoal-muted">carlos@mision.app</span>
-                <span id="perfil-rank" class="mt-1 px-2.5 py-0.5 rounded-full bg-primary-50 text-primary-600 text-[11px] font-bold w-fit border border-primary-100">
-                  Nivel 4 · Constructor
+            <!-- User Profile Bento -->
+            <section class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col items-center text-center space-y-3 relative overflow-hidden">
+              <div class="relative group cursor-pointer" id="perfil-avatar-wrap" title="Cambiar foto de perfil (máx 500 KB)">
+                <img id="perfil-avatar" alt="Avatar" class="w-20 h-20 rounded-full object-cover ring-4 ring-primary-50 soft-shadow" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"/>
+                <div class="absolute inset-0 rounded-full bg-black/35 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span class="material-symbols-outlined text-white text-[22px]">photo_camera</span>
+                </div>
+                <span class="absolute right-0 bottom-0 w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center ring-2 ring-white shadow-sm">
+                  <span class="material-symbols-outlined text-[14px]">edit</span>
                 </span>
               </div>
+              <input type="file" id="perfil-avatar-file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden"/>
+              <div>
+                <h2 id="perfil-name" class="font-display font-extrabold text-xl text-charcoal">Carlos Forjador</h2>
+                <p id="perfil-email" class="text-xs text-charcoal-muted">carlos@mision.app</p>
+                <div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-xs">
+                  <span class="material-symbols-outlined text-[15px] filled">workspace_premium</span>
+                  <span id="perfil-rank">Nivel 4 · Constructor</span>
+                </div>
+              </div>
+              <button id="btn-perfil-change-photo" class="text-[11px] font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[15px]">add_a_photo</span>
+                <span>Cambiar Foto (Máx 500 KB)</span>
+              </button>
             </section>
 
             <!-- Global Stats Grid -->
@@ -475,29 +955,39 @@
               </div>
             </section>
 
-            <!-- App Architecture & Supabase Status -->
+            <!-- Simulator Testing Actions -->
             <section class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3">
               <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary-600 text-[20px]">database</span>
-                <span>Arquitectura y Estado de Conexión</span>
+                <span class="material-symbols-outlined text-primary-600 text-[20px]">tune</span>
+                <span>Controles del Simulador</span>
               </h3>
               <p class="text-xs text-charcoal-muted leading-relaxed">
-                Aplicación funcionando con persistencia local y preparada para sincronización con backend <strong>Supabase (PostgreSQL + RLS)</strong>.
+                Prueba los diferentes estados de la aplicación desde aquí:
               </p>
-              <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] text-xs font-semibold text-primary-700">
-                <span class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-leaf-500 animate-pulse"></span>
-                  <span>Motor de Datos y Gamificación Activo</span>
-                </span>
-                <span>v1.0.0 MVP</span>
+              
+              <div class="grid grid-cols-1 gap-2 pt-1">
+                <button id="btn-replay-onboarding" class="w-full py-3 px-4 rounded-2xl bg-primary-50 hover:bg-primary-100 border border-primary-200 text-primary-700 font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                  <span class="material-symbols-outlined text-[18px]">play_circle</span>
+                  <span>Probar Flujo de Bienvenida (Onboarding)</span>
+                </button>
+
+                <button id="btn-load-demo" class="w-full py-3 px-4 rounded-2xl bg-[#F2F3EE] hover:bg-[#EAECE6] text-charcoal font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                  <span class="material-symbols-outlined text-[18px]">dataset</span>
+                  <span>Cargar Datos de Demostración Completa</span>
+                </button>
               </div>
             </section>
 
-            <!-- Danger Zone / Data Management -->
-            <section class="pt-2">
-              <button id="btn-reset-data" class="w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-red-50 border border-red-200 text-red-600 font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+            <!-- Danger Zone / Data Management & Logout -->
+            <section class="pt-1 flex flex-col space-y-2">
+              <button id="btn-logout" class="w-full py-3 px-4 rounded-2xl bg-[#FAFAF8] hover:bg-amber-50 border border-[#D7DDD4] text-charcoal-muted hover:text-amber-700 font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+                <span>Cerrar Sesión</span>
+              </button>
+
+              <button id="btn-reset-data" class="w-full py-2.5 px-4 rounded-2xl bg-white hover:bg-red-50 border border-red-200 text-red-600 font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-[18px]">restart_alt</span>
-                <span>Reiniciar Datos de Prueba</span>
+                <span>Reiniciar Estado Inicial</span>
               </button>
             </section>
 
@@ -506,7 +996,7 @@
         </main>
 
         <!-- Clean Floating Bottom Navigation Inside Screen Container -->
-        <nav class="sticky bottom-3 inset-x-0 z-40 px-4 max-w-sm mx-auto w-full">
+        <nav id="bottom-nav-bar" class="sticky bottom-3 inset-x-0 z-40 px-4 max-w-sm mx-auto w-full">
           <div class="h-14 px-3 rounded-full bg-white/95 backdrop-blur-xl float-shadow border border-[#EAECE6] flex items-center justify-between">
             
             <!-- Tab 1: Hoy -->
@@ -539,6 +1029,95 @@
         <!-- Home Indicator Swipe Bar -->
         <div class="simulator-home-indicator">
           <div class="simulator-home-pill"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL: DETALLE DE META VITAL Y ROADMAP -->
+        <!-- ========================================== -->
+        <div id="modal-goal-detail" class="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+          <div class="w-full max-w-sm max-h-[88vh] bg-white rounded-t-3xl sm:rounded-3xl p-5 soft-shadow border border-[#EAECE6] animate-modal flex flex-col space-y-4 overflow-y-auto no-scrollbar">
+            
+            <!-- Modal Header -->
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div id="goal-detail-icon-wrap" class="w-11 h-11 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0 border border-primary-100">
+                  <span id="goal-detail-icon" class="material-symbols-outlined text-[24px]">flag</span>
+                </div>
+                <div>
+                  <span id="goal-detail-category" class="text-[10px] font-bold text-primary-600 uppercase tracking-wider block">Cuerpo</span>
+                  <h3 id="goal-detail-title" class="font-display font-extrabold text-base text-charcoal leading-tight">Mejorar mi salud física</h3>
+                </div>
+              </div>
+              <button id="btn-close-goal-detail-modal" class="w-7 h-7 rounded-full bg-canvas text-charcoal-muted flex items-center justify-center hover:text-charcoal cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </button>
+            </div>
+
+            <!-- Description -->
+            <p id="goal-detail-desc" class="text-xs text-charcoal-muted leading-relaxed">
+              Sentirme con vitalidad y energía cada mañana.
+            </p>
+
+            <!-- Progress Bento -->
+            <div class="p-3.5 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] flex flex-col space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-primary-700 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-primary-600">trending_up</span>
+                  <span>Progreso hacia la Meta</span>
+                </span>
+                <span id="goal-detail-pct" class="font-display font-bold text-xs text-primary-800 bg-white px-2 py-0.5 rounded-md border border-primary-200">5%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-white overflow-hidden shadow-inner">
+                <div id="goal-detail-bar" class="h-full rounded-full bg-primary-600 transition-all duration-700" style="width: 5%;"></div>
+              </div>
+              <div class="flex items-center justify-between text-[11px] font-semibold text-primary-800 pt-0.5">
+                <span id="goal-detail-count">1 de 20 acciones realizadas</span>
+                <span id="goal-detail-date">Objetivo: 2026-12-31</span>
+              </div>
+            </div>
+
+            <!-- Section 1: Ruta en Etapas (Roadmap) -->
+            <div class="flex flex-col space-y-2 pt-1">
+              <div class="flex items-center justify-between">
+                <h4 class="font-display font-bold text-xs text-charcoal uppercase tracking-wider flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-primary-600">alt_route</span>
+                  <span>Ruta de Trabajo (Etapas)</span>
+                </h4>
+                <span class="text-[10px] font-bold text-primary-600">Plan Estructurado</span>
+              </div>
+              <div id="goal-detail-roadmap-list" class="flex flex-col space-y-2">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Section 2: Misiones de esta Meta -->
+            <div class="flex flex-col space-y-2 pt-1">
+              <div class="flex items-center justify-between">
+                <h4 class="font-display font-bold text-xs text-charcoal uppercase tracking-wider flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-leaf-600">checklist</span>
+                  <span>Misiones Vinculadas</span>
+                </h4>
+                <span id="goal-detail-missions-count-badge" class="text-[10px] font-bold text-charcoal-muted">1 activa</span>
+              </div>
+              <div id="goal-detail-missions-list" class="flex flex-col space-y-2">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Actions Footer -->
+            <div class="pt-2 border-t border-[#EAECE6] flex flex-col space-y-2">
+              <button id="btn-ai-generate-next-mission" class="w-full py-3 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-xs flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-[17px]">auto_awesome</span>
+                <span>Generar Siguiente Misión con IA</span>
+              </button>
+              
+              <button id="btn-add-manual-mission-from-detail" class="w-full py-2.5 px-4 rounded-2xl bg-canvas hover:bg-[#EAECE6] text-charcoal font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">add</span>
+                <span>Crear Misión Manual</span>
+              </button>
+            </div>
+
+          </div>
         </div>
 
         <!-- ========================================== -->

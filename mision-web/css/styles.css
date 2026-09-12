@@ -316,3 +316,125 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
   border-radius: 9999px;
 }
 
+/* ====================================================================
+   ONBOARDING FLOW STYLES
+   ==================================================================== */
+
+.onboarding-step {
+  display: none;
+}
+
+.onboarding-step.active {
+  display: flex;
+  flex-direction: column;
+  animation: stepSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stepSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dream-card {
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.dream-card:hover {
+  transform: translateY(-1px);
+  border-color: #3A7D63;
+}
+
+.dream-card.selected {
+  background-color: #F0F7F4 !important;
+  border-color: #3A7D63 !important;
+  box-shadow: 0 4px 12px -2px rgba(58, 125, 99, 0.15);
+}
+
+.dream-card.selected .check-indicator {
+  background-color: #3A7D63;
+  color: #FFFFFF;
+  border-color: #3A7D63;
+}
+
+.time-pill {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.time-pill:hover {
+  border-color: #3A7D63;
+}
+
+.time-pill.selected {
+  background-color: #27303A !important;
+  color: #FFFFFF !important;
+  border-color: #27303A !important;
+  box-shadow: 0 4px 14px -2px rgba(39, 48, 58, 0.25);
+}
+
+.time-pill.selected .time-desc {
+  color: #A3B8CC !important;
+}
+
+.first-mission-hero {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F4FAF7 100%);
+  border: 1.5px solid #DBEFE6;
+  box-shadow: 0 12px 32px -4px rgba(58, 125, 99, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.first-mission-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(58, 125, 99, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ====================================================================
+   GOAL DETAIL & ROADMAP STYLES
+   ==================================================================== */
+
+.goal-card-clickable {
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.goal-card-clickable:hover {
+  transform: translateY(-2px);
+  border-color: #3A7D63 !important;
+  box-shadow: 0 8px 24px -4px rgba(58, 125, 99, 0.12);
+}
+
+.roadmap-step-line {
+  position: relative;
+}
+
+.roadmap-step-line::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 28px;
+  bottom: -10px;
+  width: 2px;
+  background-color: #EAECE6;
+}
+
+.roadmap-step-line:last-child::before {
+  display: none;
+}
+
+

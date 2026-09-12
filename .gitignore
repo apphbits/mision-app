@@ -19,7 +19,13 @@ Thumbs.db
 *.tmp
 *.log
 
-# IDE files
-.idea/
-.vscode/
-*.swp
+# Environment & Secrets
+.env
+*.env
+.env.*
+datos.txt
+.agents/mcp_config.json
+database/test_*.py
+database/verify_db.py
+APK/
+
