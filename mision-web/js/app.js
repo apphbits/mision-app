@@ -271,13 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function goToOnboardingStep(stepNum) {
     onboardingState.step = stepNum;
-    document.querySelectorAll('.onboarding-step').forEach(stepEl => {
-      stepEl.classList.remove('active');
-    });
-
-    const targetStep = document.getElementById(`onboarding-step-${stepNum}`);
-    if (targetStep) {
-      targetStep.classList.add('active');
+    
+    const track = document.getElementById('onboarding-carousel-track');
+    if (track) {
+      track.style.transform = `translateX(-${(stepNum - 1) * 100}%)`;
     }
 
     if (stepNum === 2) {
@@ -286,7 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
       populateStep3();
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const screenEl = document.querySelector('.simulator-screen') || window;
+    if (screenEl.scrollTo) {
+      screenEl.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   function populateStep2() {
@@ -1246,30 +1246,72 @@ Responde en formato JSON:
       });
     });
 
-    // Google Sign-In Handler
-    btnGoogle?.addEventListener('click', () => {
+    // Google Sign-In / Register Handler
+    btnGoogle?.addEventListener('click', async () => {
       window.soundEngine.playSpark();
       const googleBtnText = document.getElementById('google-btn-text');
       if (googleBtnText) googleBtnText.textContent = 'Conectando con Google...';
 
-      setTimeout(() => {
-        const googleUser = {
-          email: 'apphbits@gmail.com',
-          fullName: 'Alberto Herrera (Google)',
-          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250&q=80'
-        };
+      // Check whether user is currently on "Crear Cuenta" (Register) or "Iniciar Sesión" (Login)
+      const isRegisterMode = !formRegister.classList.contains('hidden');
 
-        window.appStore.loginUser(googleUser);
-        launchConfetti();
-        showToast('¡Sesión iniciada con Google! 🚀', 'check_circle', true);
-        if (googleBtnText) googleBtnText.textContent = 'Continuar con Google';
-        
-        const state = window.appStore.getState();
-        if (state.isOnboardingCompleted) {
-          switchTab('hoy');
+      try {
+        if (sbClient && window.location.protocol.startsWith('http')) {
+          // Live Supabase OAuth
+          const { data, error } = await sbClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: window.location.origin + window.location.pathname
+            }
+          });
+          if (error) {
+            console.warn('Supabase OAuth note:', error);
+          }
         }
-        renderAll();
-      }, 600);
+      } catch (e) {
+        console.warn('OAuth redirect notice:', e);
+      }
+
+      // App Account Setup with Google profile
+      setTimeout(() => {
+        const googleEmail = 'apphbits@gmail.com';
+        const googleName = 'Alberto Herrera';
+        const googleAvatar = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250&q=80';
+
+        if (isRegisterMode) {
+          // REGISTER WITH GOOGLE -> Launches Onboarding Carousel Step 1
+          window.appStore.registerUser({
+            fullName: googleName,
+            email: googleEmail,
+            avatarUrl: googleAvatar
+          });
+          launchConfetti();
+          showToast(`¡Cuenta conectada, ${googleName}! Vamos al Paso 1`, 'check_circle', true);
+          onboardingState.step = 1;
+          renderAll();
+          goToOnboardingStep(1);
+        } else {
+          // LOGIN WITH GOOGLE -> Check if onboarding done
+          const state = window.appStore.getState();
+          window.appStore.loginUser({
+            email: googleEmail,
+            fullName: googleName,
+            avatarUrl: googleAvatar
+          });
+          launchConfetti();
+          if (state.isOnboardingCompleted) {
+            showToast(`¡Bienvenido de vuelta, ${googleName}! 🌿`, 'login', true);
+            switchTab('hoy');
+          } else {
+            showToast(`¡Bienvenido, ${googleName}! Vamos al Paso 1`, 'flag', true);
+            onboardingState.step = 1;
+            goToOnboardingStep(1);
+          }
+          renderAll();
+        }
+
+        if (googleBtnText) googleBtnText.textContent = 'Continuar con Google';
+      }, 500);
     });
 
     // Register Avatar Selection with < 500 KB Validation
@@ -1583,6 +1625,17 @@ Responde en formato JSON:
       switchTab(el.dataset.tab);
     });
   });
+
+  // Auto-detect native mobile / APK / standalone mode
+  const isMobileEnvironment = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                              window.innerWidth <= 768 || 
+                              window.matchMedia('(display-mode: standalone)').matches ||
+                              window.Capacitor !== undefined;
+  if (isMobileEnvironment) {
+    document.body.classList.add('native-mobile');
+    const stage = document.getElementById('simulator-stage');
+    if (stage) stage.classList.add('mode-fullscreen');
+  }
 
   // Init Auth and Onboarding UI Bindings
   initAuthUI();

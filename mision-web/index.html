@@ -81,7 +81,7 @@
   <div id="simulator-stage" class="simulator-stage">
     
     <!-- Top Simulator Controls Bar -->
-    <div class="w-full max-w-md mb-3.5 flex items-center justify-between px-2 text-xs text-gray-300">
+    <div id="simulator-top-toolbar" class="w-full max-w-md mb-3.5 flex items-center justify-between px-2 text-xs text-gray-300">
       <div class="flex items-center gap-2">
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-800/90 border border-gray-700/80 text-gray-200 font-semibold shadow-sm">
           <span class="material-symbols-outlined text-[17px] text-emerald-400">smartphone</span>
@@ -297,339 +297,350 @@
           </div>
 
           <!-- ========================================== -->
-          <!-- VIEW 0: ONBOARDING / BIENVENIDA (Paso 1, 2 y 3) -->
+          <!-- VIEW 0: ONBOARDING / BIENVENIDA (Carrusel de 3 Pasos) -->
           <!-- ========================================== -->
-          <div id="view-onboarding" class="view-panel flex flex-col space-y-4">
+          <div id="view-onboarding" class="view-panel flex flex-col space-y-4 overflow-hidden">
 
-            <!-- Step 1: Bienvenida & Elegir Sueño -->
-            <div id="onboarding-step-1" class="onboarding-step active flex flex-col space-y-4">
-              
-              <!-- Hero Header -->
-              <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
-                <div class="absolute -right-10 -top-10 w-36 h-36 bg-primary-100/40 rounded-full blur-2xl pointer-events-none"></div>
-                
-                <div class="relative z-10 flex flex-col space-y-3">
-                  <div class="flex items-center justify-between">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
-                      Paso 1 de 3
-                    </span>
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-2.5 h-2.5 rounded-full bg-primary-600"></span>
-                      <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
-                      <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
-                    </div>
-                  </div>
+            <!-- Carousel Wrapper -->
+            <div id="onboarding-carousel-container" class="relative w-full overflow-hidden">
+              <div id="onboarding-carousel-track" class="flex w-full transition-transform duration-400 ease-out">
 
-                  <div>
-                    <h1 class="font-display font-extrabold text-2xl text-charcoal tracking-tight">¡Bienvenido a MISIÓN, <span id="onboarding-name-display">Carlos</span>!</h1>
-                    <p class="text-xs text-charcoal-muted mt-1.5 leading-relaxed">
-                      Aquí vas a convertir lo que sueñas en pequeñas misiones que puedes completar cada día.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Question Card -->
-              <div class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3.5">
-                <div>
-                  <h2 class="font-display font-bold text-[17px] text-charcoal flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary-600 text-[20px] filled">flag</span>
-                    <span>¿Qué quieres conseguir?</span>
-                  </h2>
-                  <p class="text-xs text-charcoal-muted mt-0.5">
-                    Elige algo que realmente te importe. Puede ser grande o pequeño. Lo importante es comenzar.
-                  </p>
-                </div>
-
-                <!-- Preset Dream Options Grid -->
-                <div class="grid grid-cols-1 gap-2" id="dream-presets-list">
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Cuerpo" data-dream="Mejorar mi salud física y vitalidad" data-icon="fitness_center" data-meaning="Tener más energía y sentirme fuerte cada día" data-mission="Caminata consciente de 10 minutos al aire libre">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">💪</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mi salud</h4>
-                        <span class="text-[11px] text-charcoal-muted">Vitalidad, ejercicio y bienestar físico</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Crecimiento" data-dream="Aprender inglés con fluidez" data-icon="language" data-meaning="Poder mantener una conversación y viajar con confianza" data-mission="Aprender 5 palabras nuevas en inglés">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">📚</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Aprender algo nuevo</h4>
-                        <span class="text-[11px] text-charcoal-muted">Idiomas, habilidades o lectura profunda</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Finanzas" data-dream="Mejorar mis finanzas y ahorrar" data-icon="savings" data-meaning="Construir tranquilidad y libertad financiera" data-mission="Anotar y categorizar mis 3 gastos principales de hoy">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">💰</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mis finanzas</h4>
-                        <span class="text-[11px] text-charcoal-muted">Ahorro consciente e inversiones</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Finanzas" data-dream="Crear mi propio proyecto o negocio" data-icon="rocket_launch" data-meaning="Validar mi idea y tener mi propio emprendimiento" data-mission="Definir la propuesta de valor del proyecto en 3 frases">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">🚀</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Crear un proyecto</h4>
-                        <span class="text-[11px] text-charcoal-muted">Emprender o lanzar una idea personal</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Experiencias" data-dream="Viajar y cumplir un sueño personal" data-icon="flight_takeoff" data-meaning="Vivir experiencias memorables y conocer el mundo" data-mission="Investigar 1 destino soñado y anotar 3 actividades clave">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">✈️</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Viajar y explorar</h4>
-                        <span class="text-[11px] text-charcoal-muted">Cumplir un sueño de vida o aventura</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Mente" data-dream="Claridad mental y presencia consciente" data-icon="spa" data-meaning="Vivir con menor estrés y mayor serenidad interior" data-mission="5 minutos de respiración consciente en silencio">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">🧠</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar personalmente</h4>
-                        <span class="text-[11px] text-charcoal-muted">Paz mental, meditación y enfoque</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-
-                  <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Relaciones" data-dream="Cultivar relaciones significativas" data-icon="favorite" data-meaning="Fortalecer vínculos sinceros con personas valiosas" data-mission="Enviar un mensaje de gratitud o aprecio a un ser querido">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">❤️</span>
-                      <div>
-                        <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mis relaciones</h4>
-                        <span class="text-[11px] text-charcoal-muted">Conexión con familia, amigos y pareja</span>
-                      </div>
-                    </div>
-                    <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
-                      <span class="material-symbols-outlined text-[15px]">check</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Custom Dream Input Field -->
-                <div class="pt-2 border-t border-[#EAECE6]/80 flex flex-col space-y-2">
-                  <div class="flex items-center justify-between">
-                    <label class="text-[11.5px] font-bold text-charcoal flex items-center gap-1.5">
-                      <span>✍️</span>
-                      <span>O escribe tu propio sueño:</span>
-                    </label>
-                    <span class="text-[10px] text-charcoal-muted font-medium">Libre</span>
-                  </div>
-                  <div class="relative">
-                    <input id="input-custom-dream" type="text" placeholder="Ej: Quiero bajar de peso / Quiero aprender inglés..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs font-medium outline-none transition-all pr-8"/>
-                    <button id="btn-clear-custom-dream" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-charcoal hidden">
-                      <span class="material-symbols-outlined text-[16px]">close</span>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Primary Action CTA Button -->
-                <button id="btn-onboarding-to-step2" class="w-full py-3.5 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all">
-                  <span>Convertir en misión</span>
-                  <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
-                </button>
-              </div>
-
-            </div>
-
-            <!-- Step 2: Definir la Meta & Tiempo -->
-            <div id="onboarding-step-2" class="onboarding-step flex flex-col space-y-4">
-              
-              <!-- Hero Header -->
-              <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
-                <div class="relative z-10 flex flex-col space-y-2.5">
-                  <div class="flex items-center justify-between">
-                    <button id="btn-back-to-step1" class="text-xs font-bold text-charcoal-muted hover:text-charcoal flex items-center gap-1 cursor-pointer">
-                      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-                      <span>Volver</span>
-                    </button>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
-                      Paso 2 de 3
-                    </span>
-                  </div>
-
-                  <div class="pt-1">
-                    <span class="text-[11px] font-bold text-primary-600 uppercase tracking-wider block">Tu aspiración</span>
-                    <h2 id="step2-dream-preview" class="font-display font-extrabold text-xl text-charcoal leading-tight">Fluidez y Maestría en Inglés</h2>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Meaning & Time Options -->
-              <div class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-4">
-                
-                <!-- Question: ¿Qué significa lograrlo para ti? -->
-                <div class="flex flex-col space-y-2">
-                  <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary-600 text-[19px]">psychology</span>
-                    <span>¿Qué significa lograrlo para ti?</span>
-                  </h3>
-                  <p class="text-xs text-charcoal-muted">Conectar con el sentido profundo de tu meta te mantendrá constante.</p>
+                <!-- Step 1: Bienvenida & Elegir Sueño (Slide 1) -->
+                <div id="onboarding-step-1" class="onboarding-step onboarding-slide flex flex-col space-y-4">
                   
-                  <div class="grid grid-cols-1 gap-1.5" id="meaning-options-container">
-                    <!-- Dynamic suggestions inserted by JS -->
-                  </div>
-
-                  <input id="input-custom-meaning" type="text" placeholder="O escribe tu propio significado..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all mt-1"/>
-                </div>
-
-                <!-- Question: ¿Cuánto tiempo quieres dedicarle? -->
-                <div class="flex flex-col space-y-2 pt-2 border-t border-[#EAECE6]/80">
-                  <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary-600 text-[19px]">schedule</span>
-                    <span>¿Cuánto tiempo quieres dedicarle?</span>
-                  </h3>
-                  <p class="text-xs text-charcoal-muted">Comenzar con poco tiempo asegura que nunca lo abandones.</p>
-
-                  <div class="grid grid-cols-2 gap-2" id="time-options-container">
-                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1 selected" data-minutes="5">
+                  <!-- Hero Header -->
+                  <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+                    <div class="absolute -right-10 -top-10 w-36 h-36 bg-primary-100/40 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="relative z-10 flex flex-col space-y-3">
                       <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-charcoal">5 min / día</span>
-                        <span class="text-xs">🌱</span>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
+                          Paso 1 de 3
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2.5 h-2.5 rounded-full bg-primary-600 animate-pulse"></span>
+                          <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
+                          <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
+                        </div>
                       </div>
-                      <span class="time-desc text-[10.5px] text-charcoal-muted">Ideal para empezar sin fricción</span>
-                    </div>
 
-                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="15">
-                      <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-charcoal">15 min / día</span>
-                        <span class="text-xs">⚡</span>
+                      <div>
+                        <h1 class="font-display font-extrabold text-2xl text-charcoal tracking-tight">¡Bienvenido a MISIÓN, <span id="onboarding-name-display">Carlos</span>!</h1>
+                        <p class="text-xs text-charcoal-muted mt-1.5 leading-relaxed">
+                          Aquí vas a convertir lo que sueñas en pequeñas misiones que puedes completar cada día.
+                        </p>
                       </div>
-                      <span class="time-desc text-[10.5px] text-charcoal-muted">Ritmo constante y ágil</span>
-                    </div>
-
-                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="30">
-                      <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-charcoal">30 min / día</span>
-                        <span class="text-xs">🔥</span>
-                      </div>
-                      <span class="time-desc text-[10.5px] text-charcoal-muted">Progreso acelerado</span>
-                    </div>
-
-                    <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="60">
-                      <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-charcoal">1 hora / día</span>
-                        <span class="text-xs">🚀</span>
-                      </div>
-                      <span class="time-desc text-[10.5px] text-charcoal-muted">Inmersión profunda</span>
                     </div>
                   </div>
-                </div>
 
-                <!-- Action Button -->
-                <button id="btn-onboarding-to-step3" class="w-full py-3.5 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all">
-                  <span>Crear mi primera misión</span>
-                  <span class="material-symbols-outlined text-[19px]">auto_awesome</span>
-                </button>
-              </div>
+                  <!-- Question Card -->
+                  <div class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3.5">
+                    <div>
+                      <h2 class="font-display font-bold text-[17px] text-charcoal flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary-600 text-[20px] filled">flag</span>
+                        <span>¿Qué quieres conseguir?</span>
+                      </h2>
+                      <p class="text-xs text-charcoal-muted mt-0.5">
+                        Elige algo que realmente te importe. Puede ser grande o pequeño. Lo importante es comenzar.
+                      </p>
+                    </div>
 
-            </div>
+                    <!-- Preset Dream Options Grid -->
+                    <div class="grid grid-cols-1 gap-2" id="dream-presets-list">
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Cuerpo" data-dream="Mejorar mi salud física y vitalidad" data-icon="fitness_center" data-meaning="Tener más energía y sentirme fuerte cada día" data-mission="Caminata consciente de 10 minutos al aire libre">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">💪</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mi salud</h4>
+                            <span class="text-[11px] text-charcoal-muted">Vitalidad, ejercicio y bienestar físico</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
 
-            <!-- Step 3: Tu Primera Misión Lista -->
-            <div id="onboarding-step-3" class="onboarding-step flex flex-col space-y-4">
-              
-              <!-- Hero Header -->
-              <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
-                <div class="relative z-10 flex flex-col space-y-2">
-                  <div class="flex items-center justify-between">
-                    <button id="btn-back-to-step2" class="text-xs font-bold text-charcoal-muted hover:text-charcoal flex items-center gap-1 cursor-pointer">
-                      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-                      <span>Volver</span>
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Crecimiento" data-dream="Aprender inglés con fluidez" data-icon="language" data-meaning="Poder mantener una conversación y viajar con confianza" data-mission="Aprender 5 palabras nuevas en inglés">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">📚</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Aprender algo nuevo</h4>
+                            <span class="text-[11px] text-charcoal-muted">Idiomas, habilidades o lectura profunda</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
+
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Finanzas" data-dream="Mejorar mis finanzas y ahorrar" data-icon="savings" data-meaning="Construir tranquilidad y libertad financiera" data-mission="Anotar y categorizar mis 3 gastos principales de hoy">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">💰</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mis finanzas</h4>
+                            <span class="text-[11px] text-charcoal-muted">Ahorro consciente e inversiones</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
+
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Finanzas" data-dream="Crear mi propio proyecto o negocio" data-icon="rocket_launch" data-meaning="Validar mi idea y tener mi propio emprendimiento" data-mission="Definir la propuesta de valor del proyecto en 3 frases">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">🚀</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Crear un proyecto</h4>
+                            <span class="text-[11px] text-charcoal-muted">Emprender o lanzar una idea personal</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
+
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Experiencias" data-dream="Viajar y cumplir un sueño personal" data-icon="flight_takeoff" data-meaning="Vivir experiencias memorables y conocer el mundo" data-mission="Investigar 1 destino soñado y anotar 3 actividades clave">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">✈️</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Viajar y explorar</h4>
+                            <span class="text-[11px] text-charcoal-muted">Cumplir un sueño de vida o aventura</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
+
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Mente" data-dream="Claridad mental y presencia consciente" data-icon="spa" data-meaning="Vivir con menor estrés y mayor serenidad interior" data-mission="5 minutos de respiración consciente en silencio">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">🧠</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar personalmente</h4>
+                            <span class="text-[11px] text-charcoal-muted">Paz mental, meditación y enfoque</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
+
+                      <div class="dream-card p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex items-center justify-between" data-category="Relaciones" data-dream="Cultivar relaciones significativas" data-icon="favorite" data-meaning="Fortalecer vínculos sinceros con personas valiosas" data-mission="Enviar un mensaje de gratitud o aprecio a un ser querido">
+                        <div class="flex items-center gap-3">
+                          <span class="text-xl">❤️</span>
+                          <div>
+                            <h4 class="font-bold text-[13.5px] text-charcoal leading-tight">Mejorar mis relaciones</h4>
+                            <span class="text-[11px] text-charcoal-muted">Conexión con familia, amigos y pareja</span>
+                          </div>
+                        </div>
+                        <div class="check-indicator w-6 h-6 rounded-full border border-[#D7DDD4] bg-white flex items-center justify-center text-transparent">
+                          <span class="material-symbols-outlined text-[15px]">check</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Custom Dream Input Field -->
+                    <div class="pt-2 border-t border-[#EAECE6]/80 flex flex-col space-y-2">
+                      <div class="flex items-center justify-between">
+                        <label class="text-[11.5px] font-bold text-charcoal flex items-center gap-1.5">
+                          <span>✍️</span>
+                          <span>O escribe tu propio sueño:</span>
+                        </label>
+                        <span class="text-[10px] text-charcoal-muted font-medium">Libre</span>
+                      </div>
+                      <div class="relative">
+                        <input id="input-custom-dream" type="text" placeholder="Ej: Quiero bajar de peso / Quiero aprender inglés..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs font-medium outline-none transition-all pr-8"/>
+                        <button id="btn-clear-custom-dream" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-charcoal hidden">
+                          <span class="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Primary Action CTA Button -->
+                    <button id="btn-onboarding-to-step2" class="w-full py-3.5 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all">
+                      <span>Continuar al Paso 2</span>
+                      <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
                     </button>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-[10px] tracking-wider uppercase">
-                      Paso 3 de 3
-                    </span>
                   </div>
 
-                  <h2 class="font-display font-extrabold text-2xl text-charcoal tracking-tight pt-1">Tu primera misión está lista</h2>
-                  <p class="text-xs text-charcoal-muted">Una acción concreta, pequeña y altamente gratificante para arrancar hoy.</p>
-                </div>
-              </div>
-
-              <!-- Hero First Mission Card -->
-              <div class="first-mission-hero rounded-3xl p-5 soft-shadow flex flex-col space-y-4">
-                <div class="flex items-center justify-between">
-                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-600 text-white text-[11px] font-bold shadow-sm">
-                    <span class="material-symbols-outlined text-[16px] filled">flag</span>
-                    <span>Tu primera misión</span>
-                  </span>
-                  <span id="step3-category-badge" class="px-2.5 py-0.5 rounded-lg bg-white border border-[#DBEFE6] text-primary-700 font-bold text-[10.5px]">
-                    Crecimiento
-                  </span>
                 </div>
 
-                <div class="flex flex-col space-y-1">
-                  <h3 id="step3-mission-title" class="font-display font-bold text-[18px] text-charcoal leading-snug">
-                    Aprender 5 palabras nuevas en inglés.
-                  </h3>
-                  <p id="step3-mission-desc" class="text-xs text-charcoal-muted">
-                    Paso inicial de 5 minutos para construir tu fluidez.
-                  </p>
-                </div>
+                <!-- Step 2: Definir la Meta & Tiempo (Slide 2) -->
+                <div id="onboarding-step-2" class="onboarding-step onboarding-slide flex flex-col space-y-4">
+                  
+                  <!-- Hero Header -->
+                  <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+                    <div class="relative z-10 flex flex-col space-y-2.5">
+                      <div class="flex items-center justify-between">
+                        <button id="btn-back-to-step1" class="text-xs font-bold text-charcoal-muted hover:text-charcoal flex items-center gap-1 cursor-pointer">
+                          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                          <span>Volver al Paso 1</span>
+                        </button>
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                          <span class="w-2.5 h-2.5 rounded-full bg-primary-600 animate-pulse"></span>
+                          <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
+                        </div>
+                      </div>
 
-                <!-- Metadata & Rewards Grid -->
-                <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-white/80 border border-[#DBEFE6]">
-                  <div class="flex flex-col items-center text-center">
-                    <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Dificultad</span>
-                    <span class="text-xs font-bold text-leaf-600">Fácil</span>
-                  </div>
-                  <div class="flex flex-col items-center text-center border-x border-[#EAECE6]">
-                    <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Tiempo</span>
-                    <span id="step3-time-label" class="text-xs font-bold text-charcoal">5 min</span>
-                  </div>
-                  <div class="flex flex-col items-center text-center">
-                    <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Recompensa</span>
-                    <div class="flex items-center gap-1 text-xs font-bold text-primary-600">
-                      <span>+10⚡</span>
-                      <span>+5✨</span>
+                      <div class="pt-1">
+                        <span class="text-[11px] font-bold text-primary-600 uppercase tracking-wider block">Paso 2 de 3 · Tu aspiración</span>
+                        <h2 id="step2-dream-preview" class="font-display font-extrabold text-xl text-charcoal leading-tight">Fluidez y Maestría en Inglés</h2>
+                      </div>
                     </div>
                   </div>
+
+                  <!-- Meaning & Time Options -->
+                  <div class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-4">
+                    
+                    <!-- Question: ¿Qué significa lograrlo para ti? -->
+                    <div class="flex flex-col space-y-2">
+                      <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary-600 text-[19px]">psychology</span>
+                        <span>¿Qué significa lograrlo para ti?</span>
+                      </h3>
+                      <p class="text-xs text-charcoal-muted">Conectar con el sentido profundo de tu meta te mantendrá constante.</p>
+                      
+                      <div class="grid grid-cols-1 gap-1.5" id="meaning-options-container">
+                        <!-- Dynamic suggestions inserted by JS -->
+                      </div>
+
+                      <input id="input-custom-meaning" type="text" placeholder="O escribe tu propio significado..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all mt-1"/>
+                    </div>
+
+                    <!-- Question: ¿Cuánto tiempo quieres dedicarle? -->
+                    <div class="flex flex-col space-y-2 pt-2 border-t border-[#EAECE6]/80">
+                      <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary-600 text-[19px]">schedule</span>
+                        <span>¿Cuánto tiempo quieres dedicarle?</span>
+                      </h3>
+                      <p class="text-xs text-charcoal-muted">Comenzar con poco tiempo asegura que nunca lo abandones.</p>
+
+                      <div class="grid grid-cols-2 gap-2" id="time-options-container">
+                        <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1 selected" data-minutes="5">
+                          <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-charcoal">5 min / día</span>
+                            <span class="text-xs">🌱</span>
+                          </div>
+                          <span class="time-desc text-[10.5px] text-charcoal-muted">Ideal para empezar sin fricción</span>
+                        </div>
+
+                        <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="15">
+                          <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-charcoal">15 min / día</span>
+                            <span class="text-xs">⚡</span>
+                          </div>
+                          <span class="time-desc text-[10.5px] text-charcoal-muted">Ritmo constante y ágil</span>
+                        </div>
+
+                        <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="30">
+                          <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-charcoal">30 min / día</span>
+                            <span class="text-xs">🔥</span>
+                          </div>
+                          <span class="time-desc text-[10.5px] text-charcoal-muted">Progreso acelerado</span>
+                        </div>
+
+                        <div class="time-pill p-3 rounded-2xl border border-[#EAECE6] bg-[#FAFAF8] flex flex-col space-y-1" data-minutes="60">
+                          <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-charcoal">1 hora / día</span>
+                            <span class="text-xs">🚀</span>
+                          </div>
+                          <span class="time-desc text-[10.5px] text-charcoal-muted">Inmersión profunda</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button id="btn-onboarding-to-step3" class="w-full py-3.5 px-4 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 float-shadow active:scale-[0.98] transition-all">
+                      <span>Crear mi primera misión</span>
+                      <span class="material-symbols-outlined text-[19px]">auto_awesome</span>
+                    </button>
+                  </div>
+
                 </div>
 
-                <!-- Inspirational Mantra -->
-                <div class="p-3.5 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] flex items-start gap-2.5">
-                  <span class="material-symbols-outlined text-primary-600 text-[20px] shrink-0 filled">lightbulb</span>
-                  <p class="text-xs text-primary-800 font-medium italic leading-relaxed">
-                    “No necesitas cambiar tu vida hoy. Solo necesitas dar el primer paso.”
-                  </p>
+                <!-- Step 3: Tu Primera Misión Lista (Slide 3) -->
+                <div id="onboarding-step-3" class="onboarding-step onboarding-slide flex flex-col space-y-4">
+                  
+                  <!-- Hero Header -->
+                  <div class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+                    <div class="relative z-10 flex flex-col space-y-2">
+                      <div class="flex items-center justify-between">
+                        <button id="btn-back-to-step2" class="text-xs font-bold text-charcoal-muted hover:text-charcoal flex items-center gap-1 cursor-pointer">
+                          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                          <span>Volver al Paso 2</span>
+                        </button>
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                          <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                          <span class="w-2.5 h-2.5 rounded-full bg-primary-600 animate-pulse"></span>
+                        </div>
+                      </div>
+
+                      <h2 class="font-display font-extrabold text-2xl text-charcoal tracking-tight pt-1">Paso 3 de 3 · Tu misión está lista</h2>
+                      <p class="text-xs text-charcoal-muted">Una acción concreta, pequeña y altamente gratificante para arrancar hoy.</p>
+                    </div>
+                  </div>
+
+                  <!-- Hero First Mission Card -->
+                  <div class="first-mission-hero rounded-3xl p-5 soft-shadow flex flex-col space-y-4">
+                    <div class="flex items-center justify-between">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-600 text-white text-[11px] font-bold shadow-sm">
+                        <span class="material-symbols-outlined text-[16px] filled">flag</span>
+                        <span>Tu primera misión</span>
+                      </span>
+                      <span id="step3-category-badge" class="px-2.5 py-0.5 rounded-lg bg-white border border-[#DBEFE6] text-primary-700 font-bold text-[10.5px]">
+                        Crecimiento
+                      </span>
+                    </div>
+
+                    <div class="flex flex-col space-y-1">
+                      <h3 id="step3-mission-title" class="font-display font-bold text-[18px] text-charcoal leading-snug">
+                        Aprender 5 palabras nuevas en inglés.
+                      </h3>
+                      <p id="step3-mission-desc" class="text-xs text-charcoal-muted">
+                        Paso inicial de 5 minutos para construir tu fluidez.
+                      </p>
+                    </div>
+
+                    <!-- Metadata & Rewards Grid -->
+                    <div class="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-white/80 border border-[#DBEFE6]">
+                      <div class="flex flex-col items-center text-center">
+                        <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Dificultad</span>
+                        <span class="text-xs font-bold text-leaf-600">Fácil</span>
+                      </div>
+                      <div class="flex flex-col items-center text-center border-x border-[#EAECE6]">
+                        <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Tiempo</span>
+                        <span id="step3-time-label" class="text-xs font-bold text-charcoal">5 min</span>
+                      </div>
+                      <div class="flex flex-col items-center text-center">
+                        <span class="text-[10px] font-semibold text-charcoal-muted uppercase">Recompensa</span>
+                        <div class="flex items-center gap-1 text-xs font-bold text-primary-600">
+                          <span>+10⚡</span>
+                          <span>+5✨</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Inspirational Mantra -->
+                    <div class="p-3.5 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] flex items-start gap-2.5">
+                      <span class="material-symbols-outlined text-primary-600 text-[20px] shrink-0 filled">lightbulb</span>
+                      <p class="text-xs text-primary-800 font-medium italic leading-relaxed">
+                        “No necesitas cambiar tu vida hoy. Solo necesitas dar el primer paso.”
+                      </p>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button id="btn-complete-onboarding" class="w-full py-4 px-4 rounded-2xl bg-[#27303A] hover:bg-[#1E262E] text-white font-display font-extrabold text-sm flex items-center justify-center gap-2.5 float-shadow active:scale-[0.98] transition-all">
+                      <span>Comenzar mi primera misión</span>
+                      <span class="material-symbols-outlined text-[20px] text-leaf-500">rocket_launch</span>
+                    </button>
+                  </div>
+
                 </div>
 
-                <!-- Action Button -->
-                <button id="btn-complete-onboarding" class="w-full py-4 px-4 rounded-2xl bg-[#27303A] hover:bg-[#1E262E] text-white font-display font-extrabold text-sm flex items-center justify-center gap-2.5 float-shadow active:scale-[0.98] transition-all">
-                  <span>Comenzar mi primera misión</span>
-                  <span class="material-symbols-outlined text-[20px] text-leaf-500">rocket_launch</span>
-                </button>
               </div>
-
             </div>
 
           </div>

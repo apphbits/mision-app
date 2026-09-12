@@ -162,6 +162,34 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
    MOBILE PHONE SIMULATOR SHELL & HARDWARE FRAME
    ==================================================================== */
 
+/* Onboarding Carousel & Slide System */
+#onboarding-carousel-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#onboarding-carousel-track {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  align-items: flex-start;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.onboarding-slide {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  box-sizing: border-box;
+}
+
+/* ====================================================================
+   MOBILE PHONE SIMULATOR SHELL & HARDWARE FRAME
+   ==================================================================== */
+
 .simulator-stage {
   min-height: 100vh;
   display: flex;
@@ -180,6 +208,10 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
   background: var(--bg-canvas);
   background-image: none;
   padding: 0;
+}
+
+.simulator-stage.mode-fullscreen #simulator-top-toolbar {
+  display: none !important;
 }
 
 .simulator-stage.mode-fullscreen .simulator-device-frame {
@@ -203,6 +235,77 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
 .simulator-stage.mode-fullscreen .simulator-dynamic-island,
 .simulator-stage.mode-fullscreen .simulator-status-bar,
 .simulator-stage.mode-fullscreen .simulator-home-indicator {
+  display: none !important;
+}
+
+/* Automatic Native Mobile & Standalone / APK Fullscreen Rules */
+@media (max-width: 768px), (display-mode: standalone) {
+  #simulator-top-toolbar {
+    display: none !important;
+  }
+  .simulator-stage {
+    background: var(--bg-canvas) !important;
+    background-image: none !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+  }
+  .simulator-device-frame {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    min-height: 100vh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  .simulator-screen {
+    border-radius: 0 !important;
+    height: 100% !important;
+    min-height: 100vh !important;
+    box-shadow: none !important;
+  }
+  .simulator-dynamic-island,
+  .simulator-status-bar,
+  .simulator-hardware-bezel,
+  .simulator-home-indicator {
+    display: none !important;
+  }
+}
+
+body.native-mobile #simulator-top-toolbar {
+  display: none !important;
+}
+body.native-mobile .simulator-stage {
+  background: var(--bg-canvas) !important;
+  background-image: none !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+}
+body.native-mobile .simulator-device-frame {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+body.native-mobile .simulator-screen {
+  border-radius: 0 !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+  box-shadow: none !important;
+}
+body.native-mobile .simulator-dynamic-island,
+body.native-mobile .simulator-status-bar,
+body.native-mobile .simulator-hardware-bezel,
+body.native-mobile .simulator-home-indicator {
   display: none !important;
 }
 
