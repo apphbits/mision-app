@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "warm-bg": "#FAFAF8",
+            "warm-card": "#FFFFFF",
+            "warm-subtle": "#F4F4F0",
+            "warm-border": "#E7E7E0",
+            "warm-muted": "#8A918E",
+            "charcoal": "#1A2220",
+            "charcoal-light": "#3F4944",
+            "primary": "#3A7D63",
+            "primary-soft": "#EAF2EE",
+            "primary-deep": "#1E644B",
+            "sky-soft": "#EDF5FA",
+            "sky-accent": "#4B8FB2",
+            "peach-soft": "#FAF2EB",
+            "peach-accent": "#B87547",
+            "sage-soft": "#EFF5ED",
+            "sage-accent": "#4A7C59"
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+            '4xl': '2rem'
+          },
+          fontFamily: {
+            sans: ['"Manrope"', 'sans-serif'],
+            display: ['"Outfit"', '"Manrope"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        background-color: #FAFAF8;
+        color: #1A2220;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 16px);
+      }
+      .pt-safe {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .soft-shadow {
+      box-shadow: 0 4px 20px -2px rgba(26, 34, 32, 0.04), 0 2px 6px -1px rgba(26, 34, 32, 0.02);
+    }
+    .pill-shadow {
+      box-shadow: 0 8px 24px -4px rgba(58, 125, 99, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-warm-bg text-charcoal flex flex-col min-h-screen font-sans antialiased selection:bg-primary-soft">
+<!-- Header Flotante Luminoso -->
+<header class="fixed top-0 w-full z-40 pt-safe bg-warm-bg/90 backdrop-blur-md border-b border-warm-border/70">
+<div class="h-16 px-5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-2xl bg-white soft-shadow flex items-center justify-center border border-warm-border text-primary">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<div class="flex flex-col">
+<span class="font-display font-bold text-[17px] tracking-tight text-charcoal leading-none">MISIÓN</span>
+<span class="text-[11px] font-bold text-primary tracking-wider uppercase mt-0.5">Metas Vitales</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="hidden xs:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white soft-shadow border border-warm-border">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[12px] font-semibold text-charcoal">Nv. 4 · Forjador</span>
+</div>
+<button aria-label="Notificaciones" class="w-10 h-10 flex items-center justify-center rounded-full bg-white soft-shadow border border-warm-border text-charcoal-light hover:text-charcoal transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="relative flex items-center ml-1">
+<img alt="Profile" class="w-9 h-9 rounded-full object-cover ring-2 ring-white soft-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsk_sSOVcSTmuZG74eWCNKJAfa7DdPSMw9YNVuYg700zUAVZHMa3CBD5sALYOhqZHPLtI58xgFl2xHas9cBg5iRy82Pcex4cya17BZERYxXRnQxyj93dfYBhiw4RjArFTY7Sj2d-xGYXiiCuo51XsuF8ADouedyODpGzApQt_ZdkJ8RXLc4p24YyHmhYwto9drauSfvbbOirQjqPfRZr4Z47JWwLPBMXf7dcIBU5-9xn8Mki7fmtqS"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full ring-2 ring-white"></span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Feed -->
+<main class="flex-1 flex flex-col relative w-full pt-20 pb-28 bg-warm-bg">
+<div class="flex flex-col w-full">
+<!-- Hero Header & Creed Inspiration -->
+<div class="px-5 pt-3 pb-3 flex flex-col">
+<!-- Streak / Status Hero Banner -->
+<div class="w-full bg-white rounded-3xl p-5 soft-shadow border border-warm-border relative overflow-hidden mb-4">
+<div class="absolute -right-6 -bottom-6 w-36 h-36 bg-primary-soft rounded-full blur-2xl pointer-events-none opacity-60"></div>
+<div class="flex items-start justify-between relative z-10">
+<div>
+<span class="text-[11px] font-bold text-primary uppercase tracking-widest block mb-0.5">Árbol de Progreso Vital</span>
+<h1 class="font-display text-2xl font-bold text-charcoal tracking-tight">
+                Mis Sueños y Metas
+              </h1>
+<p class="text-[13px] text-warm-muted mt-0.5">
+                De la visión abstracta a la acción cotidiana.
+              </p>
+</div>
+<!-- Mini Momentum Dots Grid -->
+<div class="flex flex-col items-end gap-1">
+<div class="grid grid-cols-4 gap-1 p-2 rounded-2xl bg-warm-bg border border-warm-border">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-sage-accent"></span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-warm-border"></span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-sage-accent"></span>
+</div>
+<span class="text-[10px] font-semibold text-warm-muted tracking-tight">Ritmo Semanal</span>
+</div>
+</div>
+<!-- Motivational Quote Pill -->
+<div class="mt-4 pt-3 border-t border-warm-border/60 flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<p class="text-[12.5px] text-charcoal-light font-medium italic leading-tight">
+              “No estás completando hábitos. Estás construyendo la vida que quieres.”
+            </p>
+</div>
+</div>
+<!-- Quick Catalyst: Plantear Nuevo Sueño -->
+<button class="w-full py-3.5 px-4 rounded-2xl bg-white soft-shadow hover:bg-warm-subtle/50 active:scale-[0.99] border border-warm-border transition-all flex items-center justify-between group" id="btn-open-creator">
+<div class="flex items-center gap-3 text-left">
+<div class="w-10 h-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">add_task</span>
+</div>
+<div class="flex flex-col">
+<span class="font-display text-[14px] font-semibold text-charcoal group-hover:text-primary transition-colors">Plantear Nuevo Sueño / Meta</span>
+<span class="text-[11px] text-warm-muted font-medium">Arquitectura: Sueño → Meta → Misión</span>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-warm-subtle flex items-center justify-center text-charcoal-light group-hover:translate-x-0.5 transition-all">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</div>
+</button>
+</div>
+<!-- Area Filters -->
+<div class="w-full overflow-x-auto no-scrollbar px-5 py-2 flex gap-2 scroll-smooth">
+<button class="category-pill active shrink-0 px-4 py-2 rounded-full bg-primary text-white font-medium text-[13px] transition-all soft-shadow" data-category="all">
+          Todas (3)
+        </button>
+<button class="category-pill shrink-0 px-4 py-2 rounded-full bg-white text-warm-muted hover:text-charcoal font-medium text-[13px] border border-warm-border transition-all" data-category="salud">
+          Salud &amp; Bienestar
+        </button>
+<button class="category-pill shrink-0 px-4 py-2 rounded-full bg-white text-warm-muted hover:text-charcoal font-medium text-[13px] border border-warm-border transition-all" data-category="habilidades">
+          Habilidades
+        </button>
+<button class="category-pill shrink-0 px-4 py-2 rounded-full bg-white text-warm-muted hover:text-charcoal font-medium text-[13px] border border-warm-border transition-all" data-category="carrera">
+          Carrera &amp; Negocios
+        </button>
+<button class="category-pill shrink-0 px-4 py-2 rounded-full bg-white text-warm-muted hover:text-charcoal font-medium text-[13px] border border-warm-border transition-all" data-category="proyectos">
+          Proyectos Personales
+        </button>
+</div>
+<!-- Main Goals & Missions Feed -->
+<div class="px-5 flex flex-col gap-4 mt-2">
+<!-- Card 1: Salud & Bienestar (Tono Verde Salvia Suave) -->
+<article class="goal-card flex flex-col w-full rounded-3xl bg-white soft-shadow border border-warm-border overflow-hidden transition-all duration-300" data-card-cat="salud">
+<div class="p-5 flex flex-col gap-4">
+<!-- Hierarchy Level 1: Sueño Grande -->
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-11 h-11 rounded-2xl bg-primary-soft text-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">vital_signs</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-[11px] font-bold uppercase tracking-wider text-primary">Sueño de Vida</span>
+<span class="text-warm-muted text-[10px]">•</span>
+<span class="text-[11px] font-semibold text-warm-muted">Salud &amp; Vigor</span>
+</div>
+<h2 class="font-display text-[17px] font-bold text-charcoal leading-snug mt-0.5">
+                    Tener una salud y condición física extraordinaria
+                  </h2>
+</div>
+</div>
+<!-- XP Badge -->
+<div class="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-soft text-primary border border-primary/20">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-[11px] font-bold">+180 XP</span>
+</div>
+</div>
+<!-- Hierarchy Level 2: Meta Activa Box -->
+<div class="p-3.5 rounded-2xl bg-warm-bg border border-warm-border flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-warm-muted">
+<span class="material-symbols-outlined text-[16px] text-primary">flag</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">Meta Activa</span>
+</div>
+<span class="text-[12px] font-bold text-primary">45% Logrado</span>
+</div>
+<p class="text-[14px] text-charcoal font-semibold">
+                Mejorar mi condición física y resistencia aeróbica
+              </p>
+<!-- Rounded Progress Bar -->
+<div class="w-full flex flex-col gap-1.5 pt-1">
+<div class="w-full h-2.5 rounded-full bg-warm-border/60 overflow-hidden flex">
+<div class="h-full bg-primary rounded-full transition-all duration-700" style="width: 45%;"></div>
+</div>
+<div class="flex justify-between items-center text-warm-muted text-[11.5px] font-medium">
+<span>18 de 40 misiones ejecutadas</span>
+<span class="font-semibold text-primary">22 restantes</span>
+</div>
+</div>
+</div>
+<!-- Hierarchy Level 3: Misiones Diarias -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] uppercase tracking-wider font-bold text-warm-muted">Misiones Diarias en Curso</span>
+<span class="text-[11px] font-semibold text-warm-muted">2 activas</span>
+</div>
+<!-- Mission Item 1 -->
+<div class="p-3 rounded-2xl bg-warm-subtle/70 hover:bg-warm-subtle transition-colors flex items-center justify-between gap-3 border border-warm-border/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Validar misión" class="mission-toggle w-7 h-7 rounded-lg bg-white border-2 border-warm-border flex items-center justify-center shrink-0 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[18px] text-transparent">check</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="text-[13.5px] font-semibold text-charcoal truncate">Caminar 20 min al sol</span>
+<span class="text-[11.5px] text-warm-muted">Constancia aeróbica suave</span>
+</div>
+</div>
+<span class="shrink-0 px-2.5 py-1 rounded-full bg-primary-soft text-primary text-[11px] font-semibold uppercase tracking-wider">
+                  Fácil
+                </span>
+</div>
+<!-- Mission Item 2 -->
+<div class="p-3 rounded-2xl bg-warm-subtle/70 hover:bg-warm-subtle transition-colors flex items-center justify-between gap-3 border border-warm-border/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Validar misión" class="mission-toggle w-7 h-7 rounded-lg bg-white border-2 border-warm-border flex items-center justify-center shrink-0 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[18px] text-transparent">check</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="text-[13.5px] font-semibold text-charcoal truncate">Entrenamiento de fuerza</span>
+<span class="text-[11.5px] text-warm-muted">Rutina torso • 3x por semana</span>
+</div>
+</div>
+<span class="shrink-0 px-2.5 py-1 rounded-full bg-sky-soft text-sky-accent text-[11px] font-semibold uppercase tracking-wider">
+                  Normal
+                </span>
+</div>
+</div>
+<!-- Card Action Footer -->
+<div class="pt-2 border-t border-warm-border/60 flex items-center justify-between text-warm-muted">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-peach-accent" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-[12px] font-semibold text-charcoal">Racha: 7 días vivos</span>
+</div>
+<button class="flex items-center gap-1 text-[12px] font-semibold text-primary hover:text-primary-deep transition-colors">
+<span>Gestionar ruta</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2: Habilidades (Tono Azul Cielo Suave) -->
+<article class="goal-card flex flex-col w-full rounded-3xl bg-white soft-shadow border border-warm-border overflow-hidden transition-all duration-300" data-card-cat="habilidades">
+<div class="p-5 flex flex-col gap-4">
+<!-- Hierarchy Level 1: Sueño Grande -->
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-11 h-11 rounded-2xl bg-sky-soft text-sky-accent flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">language</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-[11px] font-bold uppercase tracking-wider text-sky-accent">Sueño de Vida</span>
+<span class="text-warm-muted text-[10px]">•</span>
+<span class="text-[11px] font-semibold text-warm-muted">Habilidades Globales</span>
+</div>
+<h2 class="font-display text-[17px] font-bold text-charcoal leading-snug mt-0.5">
+                    Dominar un nuevo idioma para viajar y trabajar
+                  </h2>
+</div>
+</div>
+<!-- XP Badge -->
+<div class="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-soft text-sky-accent border border-sky-accent/20">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-[11px] font-bold">+270 XP</span>
+</div>
+</div>
+<!-- Hierarchy Level 2: Meta Activa Box -->
+<div class="p-3.5 rounded-2xl bg-warm-bg border border-warm-border flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-warm-muted">
+<span class="material-symbols-outlined text-[16px] text-sky-accent">flag</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">Meta Activa</span>
+</div>
+<span class="text-[12px] font-bold text-sky-accent">68% Logrado</span>
+</div>
+<p class="text-[14px] text-charcoal font-semibold">
+                Fluidez conversacional en Inglés B2
+              </p>
+<!-- Rounded Progress Bar -->
+<div class="w-full flex flex-col gap-1.5 pt-1">
+<div class="w-full h-2.5 rounded-full bg-warm-border/60 overflow-hidden flex">
+<div class="h-full bg-sky-accent rounded-full transition-all duration-700" style="width: 68%;"></div>
+</div>
+<div class="flex justify-between items-center text-warm-muted text-[11.5px] font-medium">
+<span>27 de 40 misiones superadas</span>
+<span class="font-semibold text-sky-accent">13 para meta B2</span>
+</div>
+</div>
+</div>
+<!-- Hierarchy Level 3: Misiones Diarias -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] uppercase tracking-wider font-bold text-warm-muted">Misiones Diarias en Curso</span>
+<span class="text-[11px] font-semibold text-warm-muted">2 activas</span>
+</div>
+<!-- Mission Item 1 -->
+<div class="p-3 rounded-2xl bg-warm-subtle/70 hover:bg-warm-subtle transition-colors flex items-center justify-between gap-3 border border-warm-border/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Validar misión" class="mission-toggle w-7 h-7 rounded-lg bg-white border-2 border-warm-border flex items-center justify-center shrink-0 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[18px] text-transparent">check</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="text-[13.5px] font-semibold text-charcoal truncate">15 min de listening diario</span>
+<span class="text-[11.5px] text-warm-muted">Podcasts de negocios en inglés</span>
+</div>
+</div>
+<span class="shrink-0 px-2.5 py-1 rounded-full bg-primary-soft text-primary text-[11px] font-semibold uppercase tracking-wider">
+                  Fácil
+                </span>
+</div>
+<!-- Mission Item 2 -->
+<div class="p-3 rounded-2xl bg-warm-subtle/70 hover:bg-warm-subtle transition-colors flex items-center justify-between gap-3 border border-warm-border/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Validar misión" class="mission-toggle w-7 h-7 rounded-lg bg-white border-2 border-warm-border flex items-center justify-center shrink-0 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[18px] text-transparent">check</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="text-[13.5px] font-semibold text-charcoal truncate">Aprender 5 palabras de vocabulario</span>
+<span class="text-[11.5px] text-warm-muted">Sintaxis técnica y modismos</span>
+</div>
+</div>
+<span class="shrink-0 px-2.5 py-1 rounded-full bg-primary-soft text-primary text-[11px] font-semibold uppercase tracking-wider">
+                  Fácil
+                </span>
+</div>
+</div>
+<!-- Card Action Footer -->
+<div class="pt-2 border-t border-warm-border/60 flex items-center justify-between text-warm-muted">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-peach-accent" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-[12px] font-semibold text-charcoal">Racha: 14 días vivos</span>
+</div>
+<button class="flex items-center gap-1 text-[12px] font-semibold text-sky-accent hover:text-charcoal transition-colors">
+<span>Gestionar ruta</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 3: Carrera & Negocios (Tono Durazno Suave) -->
+<article class="goal-card flex flex-col w-full rounded-3xl bg-white soft-shadow border border-warm-border overflow-hidden transition-all duration-300" data-card-cat="carrera">
+<div class="p-5 flex flex-col gap-4">
+<!-- Hierarchy Level 1: Sueño Grande -->
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-11 h-11 rounded-2xl bg-peach-soft text-peach-accent flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-[11px] font-bold uppercase tracking-wider text-peach-accent">Sueño de Vida</span>
+<span class="text-warm-muted text-[10px]">•</span>
+<span class="text-[11px] font-semibold text-warm-muted">Libertad &amp; Propósito</span>
+</div>
+<h2 class="font-display text-[17px] font-bold text-charcoal leading-snug mt-0.5">
+                    Independencia laboral y vocacional
+                  </h2>
+</div>
+</div>
+<!-- XP Badge -->
+<div class="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-peach-soft text-peach-accent border border-peach-accent/20">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-[11px] font-bold">+120 XP</span>
+</div>
+</div>
+<!-- Hierarchy Level 2: Meta Activa Box -->
+<div class="p-3.5 rounded-2xl bg-warm-bg border border-warm-border flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-warm-muted">
+<span class="material-symbols-outlined text-[16px] text-peach-accent">flag</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">Meta Activa</span>
+</div>
+<span class="text-[12px] font-bold text-peach-accent">30% Logrado</span>
+</div>
+<p class="text-[14px] text-charcoal font-semibold">
+                Lanzar mi primer negocio de consultoría digital
+              </p>
+<!-- Rounded Progress Bar -->
+<div class="w-full flex flex-col gap-1.5 pt-1">
+<div class="w-full h-2.5 rounded-full bg-warm-border/60 overflow-hidden flex">
+<div class="h-full bg-peach-accent rounded-full transition-all duration-700" style="width: 30%;"></div>
+</div>
+<div class="flex justify-between items-center text-warm-muted text-[11.5px] font-medium">
+<span>12 de 40 misiones ejecutadas</span>
+<span class="font-semibold text-peach-accent">28 restantes</span>
+</div>
+</div>
+</div>
+<!-- Hierarchy Level 3: Misiones Diarias -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] uppercase tracking-wider font-bold text-warm-muted">Misiones Diarias en Curso</span>
+<span class="text-[11px] font-semibold text-warm-muted">2 activas</span>
+</div>
+<!-- Mission Item 1 -->
+<div class="p-3 rounded-2xl bg-warm-subtle/70 hover:bg-warm-subtle transition-colors flex items-center justify-between gap-3 border border-warm-border/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Validar misión" class="mission-toggle w-7 h-7 rounded-lg bg-white border-2 border-warm-border flex items-center justify-center shrink-0 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[18px] text-transparent">check</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="text-[13.5px] font-semibold text-charcoal truncate">Diseñar la propuesta de valor</span>
+<span class="text-[11.5px] text-warm-muted">Definir nicho y oferta núcleo</span>
+</div>
+</div>
+<span class="shrink-0 px-2.5 py-1 rounded-full bg-peach-soft text-peach-accent text-[11px] font-semibold uppercase tracking-wider">
+                  Difícil
+                </span>
+</div>
+<!-- Mission Item 2 -->
+<div class="p-3 rounded-2xl bg-warm-subtle/70 hover:bg-warm-subtle transition-colors flex items-center justify-between gap-3 border border-warm-border/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Validar misión" class="mission-toggle w-7 h-7 rounded-lg bg-white border-2 border-warm-border flex items-center justify-center shrink-0 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[18px] text-transparent">check</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="text-[13.5px] font-semibold text-charcoal truncate">Contactar a 3 prospectos</span>
+<span class="text-[11.5px] text-warm-muted">Outreach profesional en LinkedIn</span>
+</div>
+</div>
+<span class="shrink-0 px-2.5 py-1 rounded-full bg-sky-soft text-sky-accent text-[11px] font-semibold uppercase tracking-wider">
+                  Normal
+                </span>
+</div>
+</div>
+<!-- Card Action Footer -->
+<div class="pt-2 border-t border-warm-border/60 flex items-center justify-between text-warm-muted">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-peach-accent" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-[12px] font-semibold text-charcoal">Racha: 4 días vivos</span>
+</div>
+<button class="flex items-center gap-1 text-[12px] font-semibold text-peach-accent hover:text-charcoal transition-colors">
+<span>Gestionar ruta</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Empty State Fallback -->
+<div class="hidden flex-col items-center justify-center p-8 text-center rounded-3xl bg-white soft-shadow border border-warm-border my-4" id="empty-filter-state">
+<div class="w-14 h-14 rounded-2xl bg-primary-soft flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[28px] text-primary">auto_awesome</span>
+</div>
+<p class="font-display text-[16px] text-charcoal font-bold">Sin metas aún en este ámbito</p>
+<p class="text-[13px] text-warm-muted mt-1 max-w-xs">
+            Tus grandes sueños merecen un espacio estructurado. Crea el primero hoy mismo.
+          </p>
+<button class="mt-4 px-5 py-2.5 rounded-full bg-primary text-white font-semibold text-[13px] hover:bg-primary-deep transition-all">
+            + Crear primer sueño
+          </button>
+</div>
+</div>
+<!-- Primary Floating Action Button: Plantear Nuevo Sueño -->
+<div class="fixed bottom-24 right-5 z-40">
+<button class="flex items-center gap-2.5 pl-4 pr-5 py-3.5 rounded-full bg-primary text-white font-semibold text-[14px] pill-shadow active:scale-95 transition-all hover:bg-primary-deep" id="fab-create">
+<div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[18px] font-bold">add</span>
+</div>
+<span class="tracking-wide">Plantear Sueño</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Navigation Bar (Estilo Pill / Minimalista con verde salvia) -->
+<nav class="fixed bottom-0 w-full z-40 pb-safe bg-white/95 backdrop-blur-xl border-t border-warm-border">
+<div class="flex justify-around items-center h-16 px-4 max-w-md mx-auto">
+<a class="flex flex-col items-center justify-center min-w-[48px] py-1 text-warm-muted hover:text-charcoal transition-colors" data-path="hoy" href="#">
+<span class="material-symbols-outlined text-[22px]">explore</span>
+<span class="text-[11px] font-semibold mt-0.5">Hoy</span>
+</a>
+<a aria-current="page" class="flex flex-col items-center justify-center min-w-[48px] py-1 text-primary font-bold transition-colors" data-path="metas" href="#">
+<div class="px-3 py-1 rounded-full bg-primary-soft flex items-center justify-center mb-0.5">
+<span class="material-symbols-outlined text-[20px] text-primary" style="font-variation-settings: 'FILL' 1;">flag</span>
+</div>
+<span class="text-[11px] font-bold text-primary">Metas</span>
+</a>
+<a class="flex flex-col items-center justify-center min-w-[48px] py-1 text-warm-muted hover:text-charcoal transition-colors" data-path="progreso" href="#">
+<span class="material-symbols-outlined text-[22px]">military_tech</span>
+<span class="text-[11px] font-semibold mt-0.5">Progreso</span>
+</a>
+<a class="flex flex-col items-center justify-center min-w-[48px] py-1 text-warm-muted hover:text-charcoal transition-colors" data-path="perfil" href="#">
+<span class="material-symbols-outlined text-[22px]">account_circle</span>
+<span class="text-[11px] font-semibold mt-0.5">Perfil</span>
+</a>
+</div>
+</nav>
+<!-- Interactive Modal: Asistente Arquitectura Vital -->
+<div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-charcoal/30 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none p-0 sm:p-5" id="modal-creator">
+<div class="w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 flex flex-col gap-4 max-h-[85vh] overflow-y-auto border border-warm-border">
+<!-- Modal Header -->
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-2xl bg-primary-soft text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">architecture</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-display text-[18px] font-bold text-charcoal">Arquitectura de Vida</h3>
+<span class="text-[11px] font-bold text-primary uppercase tracking-wider">Nuevo Eslabón de Maestría</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-warm-subtle flex items-center justify-center text-warm-muted hover:text-charcoal" id="btn-close-modal">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Continuum Breadcrumb Indicator -->
+<div class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-warm-bg border border-warm-border text-warm-muted text-[12px]">
+<span class="text-charcoal font-bold flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span> 1. Sueño
+        </span>
+<span class="material-symbols-outlined text-[15px]">arrow_right_alt</span>
+<span class="text-warm-muted">2. Meta</span>
+<span class="material-symbols-outlined text-[15px]">arrow_right_alt</span>
+<span class="text-warm-muted">3. Misión</span>
+</div>
+<!-- Step 1 Form Content -->
+<div class="flex flex-col gap-2">
+<label class="text-[13px] font-bold text-charcoal">
+          1. ¿Cuál es tu Gran Sueño o Visión?
+        </label>
+<p class="text-[12px] text-warm-muted leading-relaxed">
+          Formula el anhelo trascendental a largo plazo. No pienses aún en plazos, piensa en tu identidad ideal.
+        </p>
+<input class="w-full px-4 py-3 rounded-2xl bg-warm-bg border border-warm-border text-charcoal text-[13.5px] focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-warm-muted/60" placeholder="Ej. Tener soberanía financiera y trabajar desde cualquier lugar" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[13px] font-bold text-charcoal">
+          Área de Vida
+        </label>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2.5 rounded-xl bg-warm-bg hover:bg-primary-soft border border-warm-border text-left text-[12px] font-semibold text-charcoal flex items-center gap-2 transition-all" type="button">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span> Salud &amp; Bienestar
+          </button>
+<button class="px-3 py-2.5 rounded-xl bg-warm-bg hover:bg-peach-soft border border-warm-border text-left text-[12px] font-semibold text-charcoal flex items-center gap-2 transition-all" type="button">
+<span class="w-2.5 h-2.5 rounded-full bg-peach-accent"></span> Carrera &amp; Negocios
+          </button>
+<button class="px-3 py-2.5 rounded-xl bg-warm-bg hover:bg-sky-soft border border-warm-border text-left text-[12px] font-semibold text-charcoal flex items-center gap-2 transition-all" type="button">
+<span class="w-2.5 h-2.5 rounded-full bg-sky-accent"></span> Habilidades
+          </button>
+<button class="px-3 py-2.5 rounded-xl bg-warm-bg hover:bg-sage-soft border border-warm-border text-left text-[12px] font-semibold text-charcoal flex items-center gap-2 transition-all" type="button">
+<span class="w-2.5 h-2.5 rounded-full bg-sage-accent"></span> Proyectos Personales
+          </button>
+</div>
+</div>
+<!-- Action Buttons in Modal -->
+<div class="mt-2 flex items-center justify-end gap-2.5">
+<button class="px-4 py-2.5 rounded-xl text-warm-muted hover:text-charcoal font-semibold text-[13px]" id="btn-cancel-modal">
+          Cancelar
+        </button>
+<button class="px-5 py-2.5 rounded-2xl bg-primary text-white font-bold text-[13px] flex items-center gap-1.5 hover:bg-primary-deep transition-all" id="btn-save-step">
+<span>Definir Meta Asociada</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Filter Chips Logic
+      const categoryButtons = document.querySelectorAll('.category-pill');
+      const goalCards = document.querySelectorAll('.goal-card');
+      const emptyState = document.getElementById('empty-filter-state');
+
+      categoryButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          categoryButtons.forEach(b => {
+            b.classList.remove('bg-primary', 'text-white', 'soft-shadow', 'active');
+            b.classList.add('bg-white', 'text-warm-muted', 'border', 'border-warm-border');
+          });
+
+          btn.classList.add('bg-primary', 'text-white', 'soft-shadow', 'active');
+          btn.classList.remove('bg-white', 'text-warm-muted', 'border', 'border-warm-border');
+
+          const selectedCat = btn.getAttribute('data-category');
+          let visibleCount = 0;
+
+          goalCards.forEach(card => {
+            const cardCat = card.getAttribute('data-card-cat');
+            if (selectedCat === 'all' || cardCat === selectedCat) {
+              card.style.display = 'flex';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+
+          if (visibleCount === 0) {
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+          } else {
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+          }
+        });
+      });
+
+      // 2. Mission Completion Toggle
+      const missionToggles = document.querySelectorAll('.mission-toggle');
+      missionToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const icon = toggle.querySelector('.material-symbols-outlined');
+          const isDone = toggle.classList.contains('bg-primary');
+
+          if (!isDone) {
+            toggle.classList.remove('bg-white', 'border-warm-border');
+            toggle.classList.add('bg-primary', 'border-primary', 'text-white');
+            icon.classList.remove('text-transparent');
+            icon.classList.add('text-white', 'font-bold');
+
+            toggle.animate([
+              { transform: 'scale(0.85)' },
+              { transform: 'scale(1.15)' },
+              { transform: 'scale(1)' }
+            ], {
+              duration: 220,
+              easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+            });
+          } else {
+            toggle.classList.add('bg-white', 'border-warm-border');
+            toggle.classList.remove('bg-primary', 'border-primary', 'text-white');
+            icon.classList.add('text-transparent');
+            icon.classList.remove('text-white', 'font-bold');
+          }
+        });
+      });
+
+      // 3. Modal Architecture Creator Handling
+      const modal = document.getElementById('modal-creator');
+      const openBtn1 = document.getElementById('btn-open-creator');
+      const openBtn2 = document.getElementById('fab-create');
+      const closeBtn = document.getElementById('btn-close-modal');
+      const cancelBtn = document.getElementById('btn-cancel-modal');
+      const saveBtn = document.getElementById('btn-save-step');
+
+      const showModal = () => {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+      };
+
+      const hideModal = () => {
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      };
+
+      if (openBtn1) openBtn1.addEventListener('click', showModal);
+      if (openBtn2) openBtn2.addEventListener('click', showModal);
+      if (closeBtn) closeBtn.addEventListener('click', hideModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
+      if (saveBtn) saveBtn.addEventListener('click', hideModal);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) hideModal();
+      });
+    });
+  </script>
+</body></html>

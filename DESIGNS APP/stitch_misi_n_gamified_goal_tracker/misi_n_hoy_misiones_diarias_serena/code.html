@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        background: "#F8F8F5",
+        surface: "#FFFFFF",
+        "surface-subtle": "#F2F3EE",
+        "surface-card": "#FFFFFF",
+        "text-main": "#27303A",
+        "text-muted": "#596573",
+        "text-soft": "#8A96A3",
+        border: "#EAECE6",
+        primary: {
+          50: "#F0F7F4",
+          100: "#DBEFE6",
+          200: "#B8DFCD",
+          500: "#438A6F",
+          600: "#3A7D63",
+          700: "#2B614D",
+        },
+        peach: {
+          50: "#FFF8F3",
+          100: "#FDEEE3",
+          200: "#FCD9C2",
+          400: "#F8B786",
+          500: "#F3A871",
+          600: "#E68947",
+        },
+        leaf: {
+          50: "#F0FDF4",
+          100: "#DCFCE7",
+          500: "#22C55E",
+          600: "#16A34A",
+        }
+      },
+      borderRadius: {
+        "xl": "1.25rem",
+        "2xl": "1.75rem",
+        "3xl": "2.25rem",
+        "full": "9999px"
+      },
+      fontFamily: {
+        sans: ['"Manrope"', 'sans-serif'],
+        display: ['"Outfit"', 'sans-serif'],
+      },
+      boxShadow: {
+        'clean': '0 4px 20px -2px rgba(39, 48, 58, 0.03), 0 2px 6px -1px rgba(39, 48, 58, 0.02)',
+        'float': '0 12px 30px -4px rgba(39, 48, 58, 0.06), 0 4px 10px -2px rgba(39, 48, 58, 0.03)',
+        'glow-leaf': '0 6px 20px -2px rgba(34, 197, 94, 0.28)',
+      }
+    }
+  }
+};</script><style>
+  @layer base {
+    html, body {
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      background-color: #F8F8F5;
+      color: #27303A;
+      font-family: 'Manrope', sans-serif;
+    }
+    body {
+      overscroll-behavior: none;
+      min-height: max(884px, 100dvh);
+    }
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    .pt-safe { padding-top: env(safe-area-inset-top, 16px); }
+  }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-background text-text-main flex flex-col min-h-screen antialiased selection:bg-primary-100">
+<!-- Header Floating Bar -->
+<header class="fixed top-0 w-full z-40 pt-safe bg-[#F8F8F5]/90 backdrop-blur-md border-b border-[#EAECE6]">
+<div class="h-16 px-5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-clean border border-[#EAECE6]">
+<img alt="MISIÓN Brand Logo" class="h-6 w-6 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UOA4z7lC0ZtYY7lzP1Xhjs1O5Ny9zTZSGhJ5RobAowDLQ1zAF2bx083uxnCNVOiqzXzOUAYLni8KQN3wuHMDuTJA9M0tl3B5R8fqDQIiMYLs5kPCenevvjNYbdscbW3VqQIf7EFw3aVCSAAj7aYaL6fPqL7Jp9VUKUhS9ggp1Bt_zfCWYb1QfEzaT1vDYUwEUIbgDx5PbPSuv-PTxsPsPk53Y4I2zhADhF7S1plmxuI5vmojmsN-5KAps"/>
+</div>
+<div class="flex flex-col">
+<span class="font-display font-bold text-[17px] text-text-main tracking-tight leading-tight">MISIÓN</span>
+<span class="text-[11px] font-semibold text-primary-600 uppercase tracking-wider">Hoy · Buenos Días</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5">
+<button aria-label="Notificaciones" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-text-muted hover:text-text-main shadow-clean border border-[#EAECE6] active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="relative flex items-center">
+<img alt="Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-clean" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsk_sSOVcSTmuZG74eWCNKJAfa7DdPSMw9YNVuYg700zUAVZHMa3CBD5sALYOhqZHPLtI58xgFl2xHas9cBg5iRy82Pcex4cya17BZERYxXRnQxyj93dfYBhiw4RjArFTY7Sj2d-xGYXiiCuo51XsuF8ADouedyODpGzApQt_ZdkJ8RXLc4p24YyHmhYwto9drauSfvbbOirQjqPfRZr4Z47JWwLPBMXf7dcIBU5-9xn8Mki7fmtqS"/>
+<span class="absolute right-0 bottom-0 w-3 h-3 bg-leaf-500 rounded-full ring-2 ring-white"></span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Canvas -->
+<main class="flex-1 flex flex-col relative w-full pt-20 pb-28 px-5">
+<div class="flex flex-col w-full space-y-4 max-w-md mx-auto">
+<!-- Hero Streak & Level Bento Card -->
+<section class="relative overflow-hidden rounded-3xl bg-white p-5 shadow-clean border border-[#EAECE6]">
+<!-- Calming organic aura -->
+<div class="absolute -right-12 -top-12 w-44 h-44 bg-primary-100/50 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -left-10 -bottom-10 w-36 h-36 bg-peach-100/60 rounded-full blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col space-y-4">
+<!-- Top Row: Streak & Sparks badge -->
+<div class="flex items-center justify-between">
+<!-- Racha 7 días -->
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-peach-50 border border-peach-200/70 flex items-center justify-center text-peach-600">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-display font-bold text-2xl text-text-main leading-tight">7</span>
+<span class="text-xs font-semibold text-text-muted uppercase tracking-wider">Días Racha</span>
+</div>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-primary-500"></span>
+<span class="w-2 h-2 rounded-full bg-primary-500"></span>
+<span class="w-2 h-2 rounded-full bg-primary-500"></span>
+<span class="w-2 h-2 rounded-full bg-primary-500"></span>
+<span class="w-2 h-2 rounded-full bg-primary-500"></span>
+<span class="w-2 h-2 rounded-full bg-primary-500"></span>
+<span class="w-2 h-2 rounded-full bg-peach-400 ring-2 ring-peach-200 animate-pulse"></span>
+</div>
+</div>
+</div>
+<!-- Chispas Currency Pill (Pastel Peach/Amber) -->
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-peach-50/90 border border-peach-200/70">
+<span class="material-symbols-outlined text-peach-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-display font-bold text-sm text-text-main">85</span>
+<span class="text-[10px] font-bold text-peach-600 uppercase tracking-wide">Chispas</span>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px bg-[#F0F2ED] w-full"></div>
+<!-- Level & XP Momentum -->
+<div class="flex flex-col space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-lg bg-surface-subtle font-display font-semibold text-xs text-text-main">
+                  NIVEL 4
+                </span>
+<span class="font-display font-semibold text-sm text-primary-600">Constructor</span>
+</div>
+<span class="text-[12px] font-medium text-text-muted">
+<strong class="text-text-main font-semibold">430</strong> / 600 Impulso
+              </span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-3 rounded-full bg-[#EAECE6] overflow-hidden p-0.5">
+<div class="h-full rounded-full bg-gradient-to-r from-primary-200 via-primary-500 to-primary-600 transition-all duration-700 shadow-sm" style="width: 71.6%;"></div>
+</div>
+<div class="flex justify-between items-center text-[11px] text-text-muted">
+<span>Constancia activa</span>
+<span class="text-primary-600 font-semibold">Faltan 170 para Nivel 5</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Philosophical Warm Companion Card -->
+<section class="relative rounded-2xl bg-white/90 p-4 border border-[#EAECE6] flex items-start gap-3 shadow-clean">
+<div class="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[13px] text-text-main font-medium leading-snug italic">
+            “No necesitas sentirte preparado. Solo necesitas dar el siguiente paso.”
+          </p>
+<span class="text-[10px] font-semibold text-text-muted uppercase tracking-wider mt-1">Recordatorio de Maestría Diaria</span>
+</div>
+</section>
+<!-- Today Missions Section -->
+<section class="flex flex-col space-y-3 pt-2">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-500"></div>
+<h3 class="font-display font-bold text-lg text-text-main">Misiones de Hoy</h3>
+</div>
+<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-white text-text-muted border border-[#EAECE6] shadow-clean">
+            1 de 4 listas
+          </span>
+</div>
+<!-- Missions List -->
+<div class="flex flex-col space-y-2.5" id="missions-container">
+<!-- Misión 1: Fácil -->
+<article class="mission-card group relative flex items-center justify-between p-4 rounded-2xl bg-white shadow-clean border border-[#EAECE6] transition-all duration-300 hover:shadow-float">
+<div class="flex items-start gap-3.5 flex-1 min-w-0 pr-2">
+<!-- Category Icon Container -->
+<div class="w-10 h-10 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600 shrink-0 mt-0.5 border border-primary-100/60">
+<span class="material-symbols-outlined text-[20px]">directions_walk</span>
+</div>
+<div class="flex flex-col space-y-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#F2F4F0] text-text-muted tracking-wide">FÁCIL</span>
+<span class="text-[11px] font-medium text-text-muted truncate">Mejorar condición física</span>
+</div>
+<h4 class="font-semibold text-[14.5px] text-text-main leading-snug">
+                  Caminar 20 minutos al aire libre
+                </h4>
+<div class="flex items-center gap-2.5 pt-0.5">
+<span class="text-[11px] font-semibold text-primary-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">arrow_upward</span> +10 Impulso
+                  </span>
+<span class="text-[11px] font-semibold text-peach-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">bolt</span> +5 Chispas
+                  </span>
+</div>
+</div>
+</div>
+<button aria-label="Marcar como completada" class="mission-btn shrink-0 w-8 h-8 rounded-xl border-2 border-[#D7DDD4] bg-[#F8F9F7] flex items-center justify-center text-transparent hover:border-leaf-500 hover:text-leaf-500 transition-all active:scale-90" data-mission-id="1">
+<span class="material-symbols-outlined text-[18px] font-bold">check</span>
+</button>
+</article>
+<!-- Misión 2: Normal -->
+<article class="mission-card group relative flex items-center justify-between p-4 rounded-2xl bg-white shadow-clean border border-[#EAECE6] transition-all duration-300 hover:shadow-float">
+<div class="flex items-start gap-3.5 flex-1 min-w-0 pr-2">
+<div class="w-10 h-10 rounded-2xl bg-[#EFF5FC] flex items-center justify-center text-[#3B6E9C] shrink-0 mt-0.5 border border-[#DEEBF8]">
+<span class="material-symbols-outlined text-[20px]">record_voice_over</span>
+</div>
+<div class="flex flex-col space-y-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#EFF5FC] text-[#3B6E9C] tracking-wide">NORMAL</span>
+<span class="text-[11px] font-medium text-text-muted truncate">Fluidez en Inglés</span>
+</div>
+<h4 class="font-semibold text-[14.5px] text-text-main leading-snug">
+                  Practicar 15 min de conversación en inglés
+                </h4>
+<div class="flex items-center gap-2.5 pt-0.5">
+<span class="text-[11px] font-semibold text-primary-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">arrow_upward</span> +25 Impulso
+                  </span>
+<span class="text-[11px] font-semibold text-peach-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">bolt</span> +10 Chispas
+                  </span>
+</div>
+</div>
+</div>
+<button aria-label="Marcar como completada" class="mission-btn shrink-0 w-8 h-8 rounded-xl border-2 border-[#D7DDD4] bg-[#F8F9F7] flex items-center justify-center text-transparent hover:border-leaf-500 hover:text-leaf-500 transition-all active:scale-90" data-mission-id="2">
+<span class="material-symbols-outlined text-[18px] font-bold">check</span>
+</button>
+</article>
+<!-- Misión 3: Difícil -->
+<article class="mission-card group relative flex items-center justify-between p-4 rounded-2xl bg-white shadow-clean border border-[#EAECE6] transition-all duration-300 hover:shadow-float">
+<div class="flex items-start gap-3.5 flex-1 min-w-0 pr-2">
+<div class="w-10 h-10 rounded-2xl bg-peach-50 flex items-center justify-center text-peach-600 shrink-0 mt-0.5 border border-peach-100">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+</div>
+<div class="flex flex-col space-y-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-peach-100/70 text-peach-600 tracking-wide">DIFÍCIL</span>
+<span class="text-[11px] font-medium text-text-muted truncate">Lanzar mi negocio digital</span>
+</div>
+<h4 class="font-semibold text-[14.5px] text-text-main leading-snug">
+                  Definir la propuesta de valor de mi proyecto
+                </h4>
+<div class="flex items-center gap-2.5 pt-0.5">
+<span class="text-[11px] font-semibold text-primary-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">arrow_upward</span> +50 Impulso
+                  </span>
+<span class="text-[11px] font-semibold text-peach-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">bolt</span> +20 Chispas
+                  </span>
+</div>
+</div>
+</div>
+<button aria-label="Marcar como completada" class="mission-btn shrink-0 w-8 h-8 rounded-xl border-2 border-[#D7DDD4] bg-[#F8F9F7] flex items-center justify-center text-transparent hover:border-leaf-500 hover:text-leaf-500 transition-all active:scale-90" data-mission-id="3">
+<span class="material-symbols-outlined text-[18px] font-bold">check</span>
+</button>
+</article>
+<!-- Misión 4: Ya Completada -->
+<article class="relative flex items-center justify-between p-4 rounded-2xl bg-[#F2F4F0]/60 border border-[#EAECE6]">
+<div class="flex items-start gap-3.5 flex-1 min-w-0 pr-2">
+<div class="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-primary-500 shrink-0 mt-0.5 opacity-80 border border-[#EAECE6]">
+<span class="material-symbols-outlined text-[20px]">local_drink</span>
+</div>
+<div class="flex flex-col space-y-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-leaf-100 text-leaf-600 tracking-wide flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[11px]">done</span> COMPLETADA
+                  </span>
+<span class="text-[11px] font-medium text-text-soft line-through truncate">Salud y Bienestar</span>
+</div>
+<h4 class="font-medium text-[14.5px] text-text-muted line-through leading-snug">
+                  Tomar 2L de agua a lo largo del día
+                </h4>
+<div class="flex items-center gap-1 pt-0.5">
+<span class="text-[11px] font-medium text-leaf-600 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> +10 Impulso reclamado
+                  </span>
+</div>
+</div>
+</div>
+<!-- Solid Fresh Leaf Check Button -->
+<div class="shrink-0 w-8 h-8 rounded-xl bg-leaf-500 text-white flex items-center justify-center shadow-clean">
+<span class="material-symbols-outlined text-[18px] font-bold">check</span>
+</div>
+</article>
+</div>
+</section>
+<!-- Active Goals Summary (Metas en Marcha) -->
+<section class="flex flex-col space-y-3 pt-2">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-text-muted text-[18px]">flag</span>
+<h3 class="font-display font-bold text-base text-text-main">Metas en Marcha</h3>
+</div>
+<a class="text-xs font-semibold text-primary-600 hover:underline uppercase tracking-wider" href="#">Ver todas</a>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Goal 1 -->
+<div class="flex flex-col p-4 rounded-2xl bg-white shadow-clean border border-[#EAECE6] space-y-3">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">fitness_center</span>
+</div>
+<span class="font-display font-bold text-sm text-primary-600">42%</span>
+</div>
+<div class="flex flex-col">
+<h5 class="font-bold text-[14px] text-text-main truncate">Condición Física</h5>
+<p class="text-[11px] text-text-muted truncate">Hábito 21/45 días</p>
+</div>
+<div class="w-full h-2 rounded-full bg-[#EAECE6] overflow-hidden">
+<div class="h-full rounded-full bg-primary-500" style="width: 42%;"></div>
+</div>
+</div>
+<!-- Goal 2 -->
+<div class="flex flex-col p-4 rounded-2xl bg-white shadow-clean border border-[#EAECE6] space-y-3">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-xl bg-peach-50 text-peach-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+</div>
+<span class="font-display font-bold text-sm text-peach-600">65%</span>
+</div>
+<div class="flex flex-col">
+<h5 class="font-bold text-[14px] text-text-main truncate">Fluidez Inglés</h5>
+<p class="text-[11px] text-text-muted truncate">Módulo B2 Avanzado</p>
+</div>
+<div class="w-full h-2 rounded-full bg-[#EAECE6] overflow-hidden">
+<div class="h-full rounded-full bg-peach-500" style="width: 65%;"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Primary Action CTA Button (Softer Charcoal with subtle sage/leaf accent) -->
+<section class="pt-2">
+<button class="w-full py-4 px-6 rounded-2xl bg-[#27303A] text-white font-display font-semibold text-[15px] flex items-center justify-center gap-2.5 shadow-float active:scale-[0.98] transition-transform hover:bg-[#1E262E]" type="button">
+<span class="material-symbols-outlined text-[20px] text-leaf-500">add_circle</span>
+<span>Registrar Nueva Acción</span>
+</button>
+</section>
+</div>
+<!-- Interaction Script -->
+<script>
+      document.querySelectorAll('.mission-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const card = this.closest('.mission-card');
+          if (!card) return;
+
+          this.classList.remove('border-[#D7DDD4]', 'bg-[#F8F9F7]', 'text-transparent');
+          this.classList.add('bg-leaf-500', 'border-leaf-500', 'text-white', 'shadow-glow-leaf');
+
+          const title = card.querySelector('h4');
+          if (title) {
+            title.classList.add('line-through', 'text-text-muted');
+          }
+
+          card.classList.add('opacity-75', 'bg-[#F2F4F0]/60');
+
+          const badge = document.createElement('span');
+          badge.className = 'absolute right-14 top-3 text-[11px] font-semibold text-leaf-600 bg-leaf-100 px-2 py-0.5 rounded-full animate-bounce pointer-events-none';
+          badge.innerText = '+Impulso!';
+          card.appendChild(badge);
+          setTimeout(() => badge.remove(), 1200);
+        });
+      });
+    </script>
+</main>
+<!-- Clean Floating Bottom Navigation -->
+<nav class="fixed bottom-3 inset-x-0 z-50 px-6 max-w-sm mx-auto pb-safe">
+<div class="h-14 px-3 rounded-full bg-white/95 backdrop-blur-xl shadow-float border border-[#EAECE6] flex items-center justify-between">
+<!-- Tab Hoy (Active Pill) -->
+<a aria-current="page" class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#27303A] text-leaf-500 transition-all font-semibold text-xs shadow-sm" data-path="hoy" href="#">
+<span class="material-symbols-outlined text-[19px]">wb_sunny</span>
+<span class="text-white font-medium">Hoy</span>
+</a>
+<!-- Tab Metas -->
+<a class="flex items-center justify-center w-10 h-10 rounded-full text-text-muted hover:text-text-main transition-colors" data-path="metas" href="#">
+<span class="material-symbols-outlined text-[21px]">flag</span>
+</a>
+<!-- Tab Progreso -->
+<a class="flex items-center justify-center w-10 h-10 rounded-full text-text-muted hover:text-text-main transition-colors" data-path="progreso" href="#">
+<span class="material-symbols-outlined text-[21px]">equalizer</span>
+</a>
+<!-- Tab Perfil -->
+<a class="flex items-center justify-center w-10 h-10 rounded-full text-text-muted hover:text-text-main transition-colors" data-path="perfil" href="#">
+<span class="material-symbols-outlined text-[21px]">person</span>
+</a>
+</div>
+</nav>
+</body></html>

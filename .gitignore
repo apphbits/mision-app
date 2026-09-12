@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build artifacts & temp
+dist/
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# System files
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp

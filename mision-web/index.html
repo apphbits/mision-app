@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <title>MISIÓN — Simulador de Aplicación Móvil</title>
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            canvas: "#F8F8F5",
+            primary: {
+              50: "#F0F7F4",
+              100: "#DBEFE6",
+              200: "#B8DFCD",
+              500: "#438A6F",
+              600: "#3A7D63",
+              700: "#1E644B"
+            },
+            peach: {
+              50: "#FFF8F3",
+              100: "#FDEEE3",
+              200: "#FCD9C2",
+              500: "#F3A871",
+              600: "#B87547"
+            },
+            leaf: {
+              50: "#F0FDF4",
+              100: "#DCFCE7",
+              500: "#22C55E",
+              600: "#16A34A"
+            },
+            charcoal: {
+              DEFAULT: "#27303A",
+              light: "#3F4944",
+              muted: "#596573",
+              soft: "#8A96A3"
+            }
+          },
+          borderRadius: {
+            "xl": "1.25rem",
+            "2xl": "1.75rem",
+            "3xl": "2.25rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ['"Manrope"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body class="selection:bg-primary-100 m-0 p-0 overflow-x-hidden">
+
+  <!-- Confetti Canvas for Celebrations -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- SIMULATOR OUTER STAGE -->
+  <div id="simulator-stage" class="simulator-stage">
+    
+    <!-- Top Simulator Controls Bar -->
+    <div class="w-full max-w-md mb-3.5 flex items-center justify-between px-2 text-xs text-gray-300">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-800/90 border border-gray-700/80 text-gray-200 font-semibold shadow-sm">
+          <span class="material-symbols-outlined text-[17px] text-emerald-400">smartphone</span>
+          <span>Simulador Móvil</span>
+        </span>
+      </div>
+      
+      <!-- Device Selector Toolbar -->
+      <div class="flex items-center gap-1 bg-gray-900/95 border border-gray-700/80 p-1 rounded-2xl shadow-sm">
+        <button id="btn-device-iphone" class="px-2.5 py-1 rounded-xl bg-primary-600 text-white font-bold text-[11px] transition-all">iPhone 16</button>
+        <button id="btn-device-max" class="px-2.5 py-1 rounded-xl text-gray-400 hover:text-white font-semibold text-[11px] transition-all">Pro Max</button>
+        <button id="btn-device-pixel" class="px-2.5 py-1 rounded-xl text-gray-400 hover:text-white font-semibold text-[11px] transition-all">Pixel</button>
+        <button id="btn-toggle-fullscreen" title="Pantalla completa" class="px-2 py-1 rounded-xl text-gray-400 hover:text-white transition-all flex items-center">
+          <span class="material-symbols-outlined text-[17px]">fullscreen</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- REALISTIC HARDWARE PHONE BEZEL -->
+    <div id="phone-frame" class="simulator-device-frame">
+      
+      <!-- Dynamic Island Cutout -->
+      <div class="simulator-dynamic-island">
+        <div class="simulator-camera-lens"></div>
+      </div>
+
+      <!-- INNER MOBILE SCREEN CANVAS -->
+      <div class="simulator-screen relative flex flex-col bg-canvas text-charcoal">
+        
+        <!-- Native Status Bar -->
+        <div class="simulator-status-bar">
+          <span id="simulator-clock">09:41</span>
+          <div class="flex items-center gap-1.5 text-xs text-charcoal">
+            <span class="material-symbols-outlined text-[15px]">signal_cellular_alt</span>
+            <span class="material-symbols-outlined text-[15px]">wifi</span>
+            <span class="material-symbols-outlined text-[18px]">battery_full</span>
+          </div>
+        </div>
+
+        <!-- Header Floating Bar -->
+        <header class="sticky top-0 w-full z-40 bg-canvas/90 backdrop-blur-md border-b border-[#EAECE6]">
+          <div class="h-16 px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-2xl bg-white flex items-center justify-center soft-shadow border border-[#EAECE6] text-primary-600">
+                <span class="material-symbols-outlined text-[22px] filled">spa</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="font-display font-extrabold text-[16px] text-charcoal tracking-tight leading-tight">MISIÓN</span>
+                <span class="text-[10px] font-bold text-primary-600 uppercase tracking-wider">Santuario Personal</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white soft-shadow border border-[#EAECE6]">
+                <span class="w-2 h-2 rounded-full bg-primary-600 animate-pulse"></span>
+                <span class="text-[11px] font-bold text-charcoal header-level-badge">Nv. 4 · Constructor</span>
+              </div>
+              <button aria-label="Notificaciones" class="w-9 h-9 flex items-center justify-center rounded-full bg-white text-charcoal-muted hover:text-charcoal soft-shadow border border-[#EAECE6] active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-[18px]">notifications</span>
+              </button>
+              <div class="relative flex items-center">
+                <img alt="Perfil" class="w-9 h-9 rounded-full object-cover ring-2 ring-white soft-shadow" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"/>
+                <span class="absolute right-0 bottom-0 w-2.5 h-2.5 bg-leaf-500 rounded-full ring-2 ring-white"></span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Scrollable Feed -->
+        <main class="flex-1 flex flex-col relative w-full pt-3 pb-24 px-4">
+          
+          <!-- ========================================== -->
+          <!-- VIEW 1: HOY (Misiones Diarias) -->
+          <!-- ========================================== -->
+          <div id="view-hoy" class="view-panel active flex flex-col space-y-4">
+            
+            <!-- Hero Streak & Level Bento Card -->
+            <section class="relative overflow-hidden rounded-3xl bg-white p-5 soft-shadow border border-[#EAECE6]">
+              <!-- Calming Aura -->
+              <div class="absolute -right-12 -top-12 w-44 h-44 bg-primary-100/50 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="absolute -left-10 -bottom-10 w-36 h-36 bg-peach-100/60 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div class="relative z-10 flex flex-col space-y-4">
+                <!-- Top Row: Streak & Sparks badge -->
+                <div class="flex items-center justify-between">
+                  <!-- Racha -->
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-peach-50 border border-peach-200 flex items-center justify-center text-peach-600">
+                      <span class="material-symbols-outlined text-[28px] filled">local_fire_department</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <div class="flex items-center gap-1.5">
+                        <span id="hoy-hero-streak" class="font-display font-extrabold text-2xl text-charcoal leading-tight">7</span>
+                        <span class="text-xs font-bold text-charcoal-muted uppercase tracking-wider">Días Racha</span>
+                      </div>
+                      <!-- 7-day tracker dots -->
+                      <div class="flex items-center gap-1 mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                        <span class="w-2 h-2 rounded-full bg-peach-500 ring-2 ring-peach-200 animate-pulse"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Chispas Currency Pill -->
+                  <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-peach-50 border border-peach-200">
+                    <span class="material-symbols-outlined text-peach-500 text-[18px] filled">bolt</span>
+                    <span id="hoy-hero-sparks" class="font-display font-extrabold text-sm text-charcoal">85</span>
+                    <span class="text-[10px] font-bold text-peach-600 uppercase tracking-wide">Chispas</span>
+                  </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="h-px bg-[#F0F2ED] w-full"></div>
+
+                <!-- Level & XP Progress -->
+                <div class="flex flex-col space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span id="hoy-hero-level" class="px-2 py-0.5 rounded-lg bg-canvas font-display font-bold text-xs text-charcoal">
+                        NIVEL 4
+                      </span>
+                      <span id="hoy-hero-title" class="font-display font-bold text-sm text-primary-600">Constructor</span>
+                    </div>
+                    <span id="hoy-hero-impulso" class="text-xs font-semibold text-charcoal-muted">130 / 400 ⚡ (33%)</span>
+                  </div>
+                  <div class="h-2.5 w-full bg-[#F0F2ED] rounded-full overflow-hidden">
+                    <div id="hoy-hero-bar" class="h-full bg-primary-600 rounded-full transition-all duration-700" style="width: 33%;"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Category Filter Chips -->
+            <section class="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar" id="category-chips">
+              <!-- Populated by JS -->
+            </section>
+
+            <!-- Section Title: Misiones de Hoy -->
+            <section class="flex flex-col space-y-3 pt-1">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-600 text-[20px] filled">task_alt</span>
+                  <h2 class="font-display font-bold text-[17px] text-charcoal">Misiones del Día</h2>
+                </div>
+                <button id="btn-open-mission-creator" class="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 active:scale-95 transition-all">
+                  <span class="material-symbols-outlined text-[17px]">add</span>
+                  <span>Nueva Misión</span>
+                </button>
+              </div>
+
+              <!-- Dynamic Missions List -->
+              <div class="flex flex-col space-y-3" id="daily-missions-list">
+                <!-- Populated by JS -->
+              </div>
+            </section>
+
+            <!-- Vital Goals Preview Section -->
+            <section class="flex flex-col space-y-3 pt-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-600 text-[20px] filled">flag</span>
+                  <h2 class="font-display font-bold text-[17px] text-charcoal">Mis Metas Vitales</h2>
+                </div>
+                <button class="text-xs font-bold text-primary-600 hover:underline cursor-pointer" data-tab="metas">
+                  Ver todas
+                </button>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5" id="hoy-goals-preview">
+                <!-- Populated by JS -->
+              </div>
+            </section>
+
+            <!-- Primary Quick Action CTA Button -->
+            <section class="pt-2">
+              <button id="btn-quick-new-action" class="w-full py-3.5 px-5 rounded-2xl bg-[#27303A] text-white font-display font-bold text-[14px] flex items-center justify-center gap-2.5 float-shadow active:scale-[0.98] transition-transform hover:bg-[#1E262E]">
+                <span class="material-symbols-outlined text-[20px] text-leaf-500">add_circle</span>
+                <span>Registrar Nueva Acción</span>
+              </button>
+            </section>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 2: METAS (Sueños y Metas Vitales) -->
+          <!-- ========================================== -->
+          <div id="view-metas" class="view-panel flex flex-col space-y-4">
+            
+            <!-- Hero Header & Creed Inspiration -->
+            <section class="w-full bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] relative overflow-hidden">
+              <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-primary-50 rounded-full blur-2xl pointer-events-none opacity-60"></div>
+              <div class="flex items-start justify-between relative z-10">
+                <div>
+                  <span class="text-[11px] font-bold text-primary-600 uppercase tracking-widest block mb-0.5">Árbol de Progreso Vital</span>
+                  <h1 class="font-display text-2xl font-extrabold text-charcoal tracking-tight">Mis Sueños y Metas</h1>
+                  <p class="text-[13px] text-charcoal-muted mt-0.5">De la visión abstracta a la acción cotidiana.</p>
+                </div>
+                <!-- Weekly Rhythm Dots -->
+                <div class="flex flex-col items-end gap-1">
+                  <div class="grid grid-cols-4 gap-1 p-2 rounded-2xl bg-canvas border border-[#EAECE6]">
+                    <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                    <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                    <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+                    <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#EAECE6]"></span>
+                    <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                    <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+                    <span class="w-2 h-2 rounded-full bg-peach-500"></span>
+                  </div>
+                  <span class="text-[10px] font-semibold text-charcoal-muted">Ritmo Semanal</span>
+                </div>
+              </div>
+
+              <!-- Motivational Quote Pill -->
+              <div class="mt-4 pt-3 border-t border-[#EAECE6]/60 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-primary-600 shrink-0 filled">format_quote</span>
+                <p class="text-[12.5px] text-charcoal-light font-medium italic leading-tight">
+                  “No estás completando hábitos. Estás construyendo la vida que quieres.”
+                </p>
+              </div>
+            </section>
+
+            <!-- Quick Catalyst: Plantear Nuevo Sueño -->
+            <button id="btn-open-goal-creator" class="w-full py-3.5 px-4 rounded-2xl bg-white soft-shadow hover:bg-[#F2F3EE]/50 active:scale-[0.99] border border-[#EAECE6] transition-all flex items-center justify-between group">
+              <div class="flex items-center gap-3 text-left">
+                <div class="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[22px]">add_task</span>
+                </div>
+                <div>
+                  <h4 class="font-display font-bold text-[14px] text-charcoal group-hover:text-primary-600 transition-colors">Plantear Nuevo Sueño</h4>
+                  <p class="text-[11.5px] text-charcoal-muted">Convierte una aspiración en un plan accionable.</p>
+                </div>
+              </div>
+              <div class="w-8 h-8 rounded-full bg-canvas border border-[#EAECE6] flex items-center justify-center text-charcoal-muted group-hover:text-primary-600 group-hover:bg-primary-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </div>
+            </button>
+
+            <!-- Vital Goals Feed -->
+            <section class="flex flex-col space-y-3 pt-1">
+              <div class="flex items-center justify-between">
+                <h2 class="font-display font-bold text-[17px] text-charcoal">Metas en Marcha</h2>
+                <span class="text-xs font-bold text-primary-600">Progreso Dinámico</span>
+              </div>
+
+              <div class="flex flex-col space-y-3.5" id="vital-goals-list">
+                <!-- Populated by JS -->
+              </div>
+            </section>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 3: EVOLUCIÓN (Progreso, Logros y Recompensas) -->
+          <!-- ========================================== -->
+          <div id="view-progreso" class="view-panel flex flex-col space-y-4">
+            
+            <!-- Status & Level Hero Card -->
+            <section class="relative rounded-3xl bg-gradient-to-br from-[#eff6f2] via-[#f7faf8] to-[#fafaf8] p-5 border border-[#EAECE6] soft-shadow overflow-hidden">
+              <div class="relative flex flex-col gap-4">
+                <!-- Top Row -->
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-white soft-shadow border border-[#EAECE6] flex items-center justify-center text-primary-600">
+                      <span class="material-symbols-outlined text-[26px] filled">military_tech</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[11px] font-bold text-primary-600 uppercase tracking-wider">Evolución de Estatus</span>
+                      <h2 id="evo-level-title" class="font-display font-bold text-[22px] leading-tight text-charcoal">Constructor</h2>
+                      <span id="evo-level-sub" class="text-[13px] font-medium text-charcoal-muted">Nivel 4 · Camino a Nv. 5</span>
+                    </div>
+                  </div>
+
+                  <!-- Chispas Counter Chip -->
+                  <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white soft-shadow border border-[#EAECE6]">
+                    <div class="w-6 h-6 rounded-full bg-peach-50 flex items-center justify-center text-peach-500">
+                      <span class="material-symbols-outlined text-[15px] filled">bolt</span>
+                    </div>
+                    <div class="flex flex-col items-start leading-none">
+                      <span class="font-display font-bold text-[15px] text-charcoal header-spark-count">85</span>
+                      <span class="text-[9px] font-bold text-charcoal-muted uppercase">Chispas</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- XP Meter Card -->
+                <div class="flex flex-col gap-2 bg-white/90 p-3.5 rounded-2xl border border-[#EAECE6]">
+                  <div class="flex justify-between items-baseline text-xs">
+                    <div class="flex items-center gap-1.5 font-bold text-charcoal">
+                      <span class="material-symbols-outlined text-primary-600 text-[16px]">trending_up</span>
+                      <span id="evo-impulso-total">730 Impulso Total</span>
+                    </div>
+                    <span id="evo-impulso-prog" class="text-[12px] font-bold text-primary-600">130 / 400 (33%)</span>
+                  </div>
+                  <div class="relative h-2.5 w-full bg-[#F0F2EF] rounded-full overflow-hidden">
+                    <div id="evo-progress-bar" class="h-full rounded-full bg-primary-600 transition-all duration-700" style="width: 33%;"></div>
+                  </div>
+                  <div class="flex justify-between text-[11px] font-medium text-charcoal-muted pt-0.5">
+                    <span>Nivel 4</span>
+                    <span id="evo-next-rank">Próximo: Forjador Constante</span>
+                  </div>
+                </div>
+
+                <!-- Streak Analytics Bento Strip -->
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div class="flex items-center gap-3 p-3 rounded-2xl bg-white border border-[#EAECE6] soft-shadow">
+                    <div class="w-10 h-10 rounded-xl bg-peach-50 flex items-center justify-center text-peach-500 shrink-0">
+                      <span class="material-symbols-outlined text-[22px] filled">local_fire_department</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span id="evo-streak-days" class="font-display font-bold text-[17px] text-charcoal leading-tight">7 Días</span>
+                      <span class="text-[11px] font-medium text-charcoal-muted">Racha Actual</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 p-3 rounded-2xl bg-white border border-[#EAECE6] soft-shadow">
+                    <div class="w-10 h-10 rounded-xl bg-leaf-50 flex items-center justify-center text-leaf-600 shrink-0">
+                      <span class="material-symbols-outlined text-[22px] filled">verified</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span id="evo-discipline-rate" class="font-display font-bold text-[17px] text-charcoal leading-tight">94%</span>
+                      <span class="text-[11px] font-medium text-charcoal-muted">Tasa de Disciplina</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Deterministic Achievements Section -->
+            <section class="flex flex-col space-y-3 pt-1">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-600 text-[20px] filled">emoji_events</span>
+                  <h2 class="font-display font-bold text-[17px] text-charcoal">Galería de Logros</h2>
+                </div>
+                <span class="text-xs font-bold text-primary-600">Deterministas</span>
+              </div>
+
+              <div class="grid grid-cols-1 gap-2.5" id="achievements-grid">
+                <!-- Populated by JS -->
+              </div>
+            </section>
+
+            <!-- Chispas Bazaar Section -->
+            <section class="flex flex-col space-y-3 pt-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-peach-500 text-[20px] filled">bolt</span>
+                  <h2 class="font-display font-bold text-[17px] text-charcoal">Bazar de Chispas</h2>
+                </div>
+                <span class="text-xs font-bold text-peach-600">Canjear Recompensas</span>
+              </div>
+
+              <div class="flex flex-col space-y-2.5" id="rewards-bazaar">
+                <!-- Populated by JS -->
+              </div>
+            </section>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 4: PERFIL (Estadísticas y Ajustes) -->
+          <!-- ========================================== -->
+          <div id="view-perfil" class="view-panel flex flex-col space-y-4">
+            
+            <!-- User Identity Card -->
+            <section class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex items-center gap-4">
+              <img class="w-16 h-16 rounded-full object-cover ring-4 ring-primary-100 soft-shadow" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Perfil"/>
+              <div class="flex flex-col">
+                <h2 id="perfil-name" class="font-display font-bold text-lg text-charcoal leading-tight">Carlos Forjador</h2>
+                <span id="perfil-email" class="text-xs text-charcoal-muted">carlos@mision.app</span>
+                <span id="perfil-rank" class="mt-1 px-2.5 py-0.5 rounded-full bg-primary-50 text-primary-600 text-[11px] font-bold w-fit border border-primary-100">
+                  Nivel 4 · Constructor
+                </span>
+              </div>
+            </section>
+
+            <!-- Global Stats Grid -->
+            <section class="grid grid-cols-3 gap-2.5">
+              <div class="bg-white p-3.5 rounded-2xl border border-[#EAECE6] soft-shadow flex flex-col items-center text-center">
+                <span id="perfil-total-completions" class="font-display font-bold text-xl text-charcoal leading-tight">27</span>
+                <span class="text-[10px] font-semibold text-charcoal-muted uppercase mt-0.5">Misiones</span>
+              </div>
+              <div class="bg-white p-3.5 rounded-2xl border border-[#EAECE6] soft-shadow flex flex-col items-center text-center">
+                <span id="perfil-total-impulso" class="font-display font-bold text-xl text-primary-600 leading-tight">730</span>
+                <span class="text-[10px] font-semibold text-charcoal-muted uppercase mt-0.5">Impulso Total</span>
+              </div>
+              <div class="bg-white p-3.5 rounded-2xl border border-[#EAECE6] soft-shadow flex flex-col items-center text-center">
+                <span id="perfil-best-streak" class="font-display font-bold text-xl text-peach-600 leading-tight">12 Días</span>
+                <span class="text-[10px] font-semibold text-charcoal-muted uppercase mt-0.5">Mejor Racha</span>
+              </div>
+            </section>
+
+            <!-- App Architecture & Supabase Status -->
+            <section class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3">
+              <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary-600 text-[20px]">database</span>
+                <span>Arquitectura y Estado de Conexión</span>
+              </h3>
+              <p class="text-xs text-charcoal-muted leading-relaxed">
+                Aplicación funcionando con persistencia local y preparada para sincronización con backend <strong>Supabase (PostgreSQL + RLS)</strong>.
+              </p>
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] text-xs font-semibold text-primary-700">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-leaf-500 animate-pulse"></span>
+                  <span>Motor de Datos y Gamificación Activo</span>
+                </span>
+                <span>v1.0.0 MVP</span>
+              </div>
+            </section>
+
+            <!-- Danger Zone / Data Management -->
+            <section class="pt-2">
+              <button id="btn-reset-data" class="w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-red-50 border border-red-200 text-red-600 font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                <span>Reiniciar Datos de Prueba</span>
+              </button>
+            </section>
+
+          </div>
+
+        </main>
+
+        <!-- Clean Floating Bottom Navigation Inside Screen Container -->
+        <nav class="sticky bottom-3 inset-x-0 z-40 px-4 max-w-sm mx-auto w-full">
+          <div class="h-14 px-3 rounded-full bg-white/95 backdrop-blur-xl float-shadow border border-[#EAECE6] flex items-center justify-between">
+            
+            <!-- Tab 1: Hoy -->
+            <a href="#" data-tab="hoy" class="bottom-nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#27303A] text-leaf-500 transition-all font-semibold text-xs shadow-sm">
+              <span class="material-symbols-outlined text-[19px]">wb_sunny</span>
+              <span class="nav-label text-white font-medium">Hoy</span>
+            </a>
+
+            <!-- Tab 2: Metas -->
+            <a href="#" data-tab="metas" class="bottom-nav-link flex items-center justify-center w-10 h-10 rounded-full text-charcoal-muted hover:text-charcoal transition-colors">
+              <span class="material-symbols-outlined text-[21px]">flag</span>
+              <span class="nav-label text-white font-medium hidden">Metas</span>
+            </a>
+
+            <!-- Tab 3: Evolución / Progreso -->
+            <a href="#" data-tab="progreso" class="bottom-nav-link flex items-center justify-center w-10 h-10 rounded-full text-charcoal-muted hover:text-charcoal transition-colors">
+              <span class="material-symbols-outlined text-[21px]">equalizer</span>
+              <span class="nav-label text-white font-medium hidden">Progreso</span>
+            </a>
+
+            <!-- Tab 4: Perfil -->
+            <a href="#" data-tab="perfil" class="bottom-nav-link flex items-center justify-center w-10 h-10 rounded-full text-charcoal-muted hover:text-charcoal transition-colors">
+              <span class="material-symbols-outlined text-[21px]">person</span>
+              <span class="nav-label text-white font-medium hidden">Perfil</span>
+            </a>
+
+          </div>
+        </nav>
+
+        <!-- Home Indicator Swipe Bar -->
+        <div class="simulator-home-indicator">
+          <div class="simulator-home-pill"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL: PLANTAR NUEVO SUEÑO / META -->
+        <!-- ========================================== -->
+        <div id="modal-create-goal" class="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+          <div class="w-full max-w-sm bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] animate-modal flex flex-col space-y-3.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[18px]">flag</span>
+                </div>
+                <h3 class="font-display font-bold text-base text-charcoal">Nueva Meta Vital</h3>
+              </div>
+              <button id="btn-close-goal-modal" class="w-7 h-7 rounded-full bg-canvas text-charcoal-muted flex items-center justify-center hover:text-charcoal">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </button>
+            </div>
+
+            <form id="form-goal" class="flex flex-col space-y-3">
+              <div>
+                <label class="block text-[11px] font-bold text-charcoal mb-1">Título de la Meta</label>
+                <input id="form-goal-title" required placeholder="Ej: Dominar el Piano Clásico" class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-charcoal mb-1">Propósito / Detalle</label>
+                <textarea id="form-goal-desc" rows="2" placeholder="Describe el propósito de este sueño..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"></textarea>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-charcoal mb-1">Categoría</label>
+                  <select id="form-goal-cat" class="w-full px-2.5 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-xs outline-none">
+                    <option value="Mente">🧠 Mente</option>
+                    <option value="Cuerpo">💪 Cuerpo</option>
+                    <option value="Crecimiento" selected>💼 Crecimiento</option>
+                    <option value="Finanzas">💰 Finanzas</option>
+                    <option value="Relaciones">❤️ Relaciones</option>
+                    <option value="Creatividad">🎨 Creatividad</option>
+                    <option value="Experiencias">🌎 Experiencias</option>
+                    <option value="Bienestar">🌱 Bienestar</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-charcoal mb-1">Misiones Objetivo</label>
+                  <input id="form-goal-count" type="number" min="5" max="200" value="20" class="w-full px-2.5 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-xs outline-none"/>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-charcoal mb-1">Fecha Límite</label>
+                <input id="form-goal-date" type="date" value="2026-12-31" class="w-full px-2.5 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-xs outline-none"/>
+              </div>
+
+              <div class="pt-1 flex gap-2">
+                <button type="submit" class="flex-1 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-xs float-shadow active:scale-98 transition-all">
+                  Crear Meta Vital
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL: REGISTRAR / AGREGAR NUEVA MISIÓN -->
+        <!-- ========================================== -->
+        <div id="modal-create-mission" class="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+          <div class="w-full max-w-sm bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] animate-modal flex flex-col space-y-3.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-leaf-50 text-leaf-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[18px]">add_task</span>
+                </div>
+                <h3 class="font-display font-bold text-base text-charcoal">Nueva Acción Diaria</h3>
+              </div>
+              <button id="btn-close-mission-modal" class="w-7 h-7 rounded-full bg-canvas text-charcoal-muted flex items-center justify-center hover:text-charcoal">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </button>
+            </div>
+
+            <form id="form-mission" class="flex flex-col space-y-3">
+              <div>
+                <label class="block text-[11px] font-bold text-charcoal mb-1">Acción / Misión</label>
+                <input id="form-mission-title" required placeholder="Ej: 20 min de lectura de arquitectura" class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-charcoal mb-1">Detalles / Nota</label>
+                <input id="form-mission-desc" placeholder="Instrucción simple o recordatorio..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-charcoal mb-1">Vincular a Meta Vital</label>
+                <select id="form-mission-goal" class="w-full px-2.5 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-xs outline-none">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-charcoal mb-1">Categoría</label>
+                  <select id="form-mission-cat" class="w-full px-2 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-[11px] outline-none">
+                    <option value="Mente">🧠 Mente</option>
+                    <option value="Cuerpo">💪 Cuerpo</option>
+                    <option value="Crecimiento" selected>💼 Crecimiento</option>
+                    <option value="Finanzas">💰 Finanzas</option>
+                    <option value="Bienestar">🌱 Bienestar</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-charcoal mb-1">Dificultad</label>
+                  <select id="form-mission-diff" class="w-full px-2 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-[11px] outline-none">
+                    <option value="Fácil">Fácil (+10⚡)</option>
+                    <option value="Normal" selected>Normal (+25⚡)</option>
+                    <option value="Difícil">Difícil (+50⚡)</option>
+                    <option value="Épica">Épica (+100⚡)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-charcoal mb-1">Minutos</label>
+                  <input id="form-mission-duration" type="number" min="5" max="180" value="20" class="w-full px-2 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-[11px] outline-none"/>
+                </div>
+              </div>
+
+              <div class="pt-1 flex gap-2">
+                <button type="submit" class="flex-1 py-3 rounded-2xl bg-[#27303A] hover:bg-[#1E262E] text-white font-display font-bold text-xs float-shadow active:scale-98 transition-all">
+                  Agregar a Mis Misiones
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Simulator Controls Script
+    document.addEventListener('DOMContentLoaded', () => {
+      const stage = document.getElementById('simulator-stage');
+      const frame = document.getElementById('phone-frame');
+      const clock = document.getElementById('simulator-clock');
+
+      // Live digital clock
+      function updateClock() {
+        if (!clock) return;
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        clock.textContent = `${hours}:${minutes}`;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // Device Switching
+      const btnIphone = document.getElementById('btn-device-iphone');
+      const btnMax = document.getElementById('btn-device-max');
+      const btnPixel = document.getElementById('btn-device-pixel');
+      const btnFullscreen = document.getElementById('btn-toggle-fullscreen');
+
+      function setActiveDeviceBtn(activeBtn) {
+        [btnIphone, btnMax, btnPixel, btnFullscreen].forEach(b => {
+          b.classList.remove('bg-primary-600', 'text-white', 'font-bold');
+          b.classList.add('text-gray-400');
+        });
+        activeBtn.classList.add('bg-primary-600', 'text-white', 'font-bold');
+        activeBtn.classList.remove('text-gray-400');
+      }
+
+      btnIphone?.addEventListener('click', () => {
+        stage.classList.remove('mode-fullscreen');
+        frame.className = 'simulator-device-frame';
+        setActiveDeviceBtn(btnIphone);
+      });
+
+      btnMax?.addEventListener('click', () => {
+        stage.classList.remove('mode-fullscreen');
+        frame.className = 'simulator-device-frame preset-iphone-max';
+        setActiveDeviceBtn(btnMax);
+      });
+
+      btnPixel?.addEventListener('click', () => {
+        stage.classList.remove('mode-fullscreen');
+        frame.className = 'simulator-device-frame preset-pixel';
+        setActiveDeviceBtn(btnPixel);
+      });
+
+      btnFullscreen?.addEventListener('click', () => {
+        stage.classList.toggle('mode-fullscreen');
+        if (stage.classList.contains('mode-fullscreen')) {
+          setActiveDeviceBtn(btnFullscreen);
+        } else {
+          setActiveDeviceBtn(btnIphone);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
