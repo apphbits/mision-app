@@ -961,22 +961,25 @@ Responde en formato JSON con la siguiente estructura:
     // Roadmap Stages
     const roadmapContainer = document.getElementById('goal-detail-roadmap-list');
     if (roadmapContainer) {
-      const defaultStages = [
-        { stage: 1, title: 'Etapa 1: Activación y ritmo base diario', status: 'En progreso', color: '#3A7D63' },
-        { stage: 2, title: 'Etapa 2: Consistencia e incremento de intensidad', status: 'Próxima', color: '#8A96A3' },
-        { stage: 3, title: 'Etapa 3: Consolidación y maestría vital', status: 'Futura', color: '#8A96A3' }
-      ];
+      const stages = (goal.roadmap && Array.isArray(goal.roadmap) && goal.roadmap.length > 0)
+        ? goal.roadmap
+        : [
+            { stage: 1, title: 'Etapa 1: Activación y ritmo base diario', status: 'En progreso', description: 'Crear el hábito diario y dar los primeros pasos sin fricción.' },
+            { stage: 2, title: 'Etapa 2: Consistencia e incremento de intensidad', status: 'Próxima', description: 'Profundizar en la práctica y superar los primeros obstáculos.' },
+            { stage: 3, title: 'Etapa 3: Consolidación y maestría vital', status: 'Futura', description: 'Integrar la habilidad como parte natural de tu identidad.' }
+          ];
 
-      roadmapContainer.innerHTML = defaultStages.map((st, i) => `
-        <div class="roadmap-step-line flex items-start gap-3 p-3 rounded-2xl ${i === 0 ? 'bg-[#F0F7F4] border border-[#DBEFE6]' : 'bg-[#FAFAF8] border border-[#EAECE6] opacity-75'}">
-          <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${i === 0 ? 'bg-[#3A7D63] text-white' : 'bg-[#EAECE6] text-[#596573]'}">
-            ${st.stage}
+      roadmapContainer.innerHTML = stages.map((st, i) => `
+        <div class="roadmap-step-line flex items-start gap-3 p-3.5 rounded-2xl ${i === 0 ? 'bg-[#F0F7F4] border border-[#DBEFE6] dark:bg-[#16261D] dark:border-[#23382C]' : 'bg-[#FAFAF8] border border-[#EAECE6] dark:bg-[#151D18] dark:border-[#202E24] opacity-85'}">
+          <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${i === 0 ? 'bg-[#3A7D63] text-white' : 'bg-[#EAECE6] text-[#596573] dark:bg-[#273D30] dark:text-slate-300'}">
+            ${st.stage || (i + 1)}
           </div>
-          <div class="flex flex-col flex-1">
-            <div class="flex items-center justify-between">
-              <h5 class="font-bold text-xs text-[#27303A]">${st.title}</h5>
-              <span class="text-[10px] font-bold ${i === 0 ? 'text-[#3A7D63]' : 'text-[#8A96A3]'}">${st.status}</span>
+          <div class="flex flex-col flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h5 class="font-bold text-xs text-[#27303A] dark:text-slate-100 truncate">${st.title}</h5>
+              <span class="text-[10px] font-bold shrink-0 ${i === 0 ? 'text-[#3A7D63] dark:text-emerald-400' : 'text-[#8A96A3]'}">${st.status || (i === 0 ? 'En progreso' : 'Próxima')}</span>
             </div>
+            ${st.description ? `<p class="text-[11px] text-[#596573] dark:text-slate-400 mt-0.5 leading-snug">${st.description}</p>` : ''}
           </div>
         </div>
       `).join('');
@@ -991,32 +994,46 @@ Responde en formato JSON con la siguiente estructura:
 
       if (linkedMissions.length === 0) {
         missionsContainer.innerHTML = `
-          <div class="p-4 rounded-2xl bg-canvas border border-[#EAECE6] text-center text-xs text-charcoal-muted">
+          <div class="p-4 rounded-2xl bg-canvas border border-[#EAECE6] dark:bg-[#151D18] dark:border-[#202E24] text-center text-xs text-charcoal-muted dark:text-slate-400">
             Aún no has generado misiones para esta meta. Pulsa el botón inferior para crear la siguiente con IA.
           </div>
         `;
       } else {
         missionsContainer.innerHTML = linkedMissions.map(m => `
-          <div class="p-3 rounded-2xl bg-white border border-[#EAECE6] soft-shadow flex items-center justify-between gap-3 ${m.isCompleted ? 'opacity-70 bg-[#F4F6F2]' : ''}">
-            <div class="flex items-center gap-3 flex-1 min-w-0">
-              <button data-id="${m.id}" class="btn-check-detail-mission w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+          <div data-mission-id="${m.id}" class="goal-linked-mission-item p-3.5 rounded-2xl bg-white dark:bg-[#18261E] border border-[#EAECE6] dark:border-[#273D30] soft-shadow flex items-start justify-between gap-3 cursor-pointer hover:border-[#3A7D63] transition-all ${m.isCompleted ? 'opacity-70 bg-[#F4F6F2] dark:bg-[#121A15]' : ''}">
+            <div class="flex items-start gap-3 flex-1 min-w-0">
+              <button data-id="${m.id}" class="btn-check-detail-mission w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
                 m.isCompleted ? 'bg-[#22C55E] border-[#22C55E] text-white' : 'border-[#D7DDD4] bg-[#F8F9F7] text-transparent hover:border-[#3A7D63]'
               }">
                 <span class="material-symbols-outlined text-[16px]">check</span>
               </button>
-              <div class="flex flex-col min-w-0">
-                <h5 class="font-bold text-xs text-[#27303A] truncate ${m.isCompleted ? 'line-through text-[#8A96A3]' : ''}">${m.title}</h5>
-                <span class="text-[10.5px] text-[#596573] truncate">${m.durationMinutes} min · Dificultad: ${m.difficulty}</span>
+              <div class="flex flex-col min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <span class="text-[10px] font-bold text-[#3A7D63] dark:text-emerald-400 uppercase tracking-wide">${m.difficulty || 'Normal'}</span>
+                  <span class="text-[10px] text-[#8A96A3]">· ⏱️ ${m.durationMinutes} min</span>
+                </div>
+                <h5 class="font-bold text-xs text-[#27303A] dark:text-slate-100 ${m.isCompleted ? 'line-through text-[#8A96A3]' : ''}">${m.title}</h5>
+                <p class="text-[11.5px] text-[#596573] dark:text-slate-300 mt-1 line-clamp-2 leading-snug whitespace-pre-line">${m.description || 'Paso guiado de acción.'}</p>
               </div>
             </div>
-            <div class="flex items-center gap-1 text-[11px] font-bold text-[#3A7D63]">
+            <div class="flex items-center gap-1 text-[11px] font-bold text-[#3A7D63] dark:text-emerald-400 shrink-0 mt-1">
               <span>+${m.impulso}⚡</span>
             </div>
           </div>
         `).join('');
 
+        // Card Click opens Mission Detail Modal (instructions)
+        missionsContainer.querySelectorAll('.goal-linked-mission-item').forEach(item => {
+          item.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-check-detail-mission')) return;
+            const mid = item.dataset.missionId;
+            if (mid) openMissionDetailModal(mid);
+          });
+        });
+
         missionsContainer.querySelectorAll('.btn-check-detail-mission').forEach(btn => {
-          btn.addEventListener('click', () => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const mid = btn.dataset.id;
             const res = window.appStore.toggleMission(mid);
             if (res.success) {
@@ -1137,6 +1154,271 @@ Responde en formato JSON con la siguiente estructura:
     openMissionModal(gid);
   });
 
+  // ====================================================================
+  // AI GOAL & MISSIONS PLANNER (Gemini AI + Contextual Heuristic Engine)
+  // ====================================================================
+  const getGeminiKey = () => window.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY') || '';
+
+  function generateContextualHeuristicPlan({ title, description, category }) {
+    const t = (title || '').toLowerCase();
+    const d = (description || '').toLowerCase();
+    const cat = category || 'Crecimiento';
+
+    let stages = [
+      { stage: 1, title: 'Etapa 1: Activación y Fundamentos', status: 'En progreso', description: 'Establecer el espacio, herramientas y las primeras sesiones sin fricción.' },
+      { stage: 2, title: 'Etapa 2: Práctica Deliberada & Ritmo', status: 'Próxima', description: 'Incrementar la intensidad y superar los puntos de bloqueo.' },
+      { stage: 3, title: 'Etapa 3: Consolidación y Maestría Vital', status: 'Futura', description: 'Integrar los resultados de forma natural y duradera.' }
+    ];
+
+    let missions = [];
+
+    if (t.includes('guitar') || t.includes('piano') || t.includes('músic') || t.includes('instrumento') || d.includes('cantar') || d.includes('acordes')) {
+      stages = [
+        { stage: 1, title: 'Etapa 1: Postura, afinación y primeros acordes', status: 'En progreso', description: 'Familiarizarse con el instrumento y memorizar las posiciones básicas.' },
+        { stage: 2, title: 'Etapa 2: Transiciones fluidas y ritmo constante', status: 'Próxima', description: 'Practicar cambios de acordes con metrónomo y rasgueos.' },
+        { stage: 3, title: 'Etapa 3: Tu primera canción completa', status: 'Futura', description: 'Interpretar melodías de inicio a fin con soltura.' }
+      ];
+      missions = [
+        {
+          title: 'Paso 1: Afinación y calentamiento de dedos (10 min)',
+          description: '1. Descarga una app de afinador (o usa tu afinador) y afina cada cuerda con calma.\n2. Siéntate con la espalda recta y coloca el instrumento en posición cómoda.\n3. Realiza ejercicios de digitación (1-2-3-4) en el mástil durante 5 minutos para calentar articulaciones.',
+          durationMinutes: 10,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 2: Práctica del primer acorde básico (15 min)',
+          description: '1. Coloca los dedos con precisión sobre los trastes correspondientes (ej: Mi Menor o La Menor).\n2. Toca cuerda por cuerda asegurando que ninguna trastee o suene apagada.\n3. Haz 10 repeticiones: coloca el acorde, rasguea, suelta la mano y vuelve a colocarlo.',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso 3: Transición rítmica entre 2 acordes (15 min)',
+          description: '1. Elige dos acordes sencillos y practica el cambio lento sin perder la postura del pulgar.\n2. Pon un ritmo suave (o metrónomo a 60 bpm) y cambia de acorde cada 4 pulsos.\n3. Mantén el rasgueo constante hacia abajo durante 10 minutos.',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
+    } else if (t.includes('inglés') || t.includes('idioma') || t.includes('francés') || t.includes('alemán') || t.includes('vocabulario') || d.includes('hablar') || d.includes('viajar')) {
+      stages = [
+        { stage: 1, title: 'Etapa 1: Vocabulario esencial y oído activo', status: 'En progreso', description: 'Aprender las 100 palabras más frecuentes y entrenar la comprensión.' },
+        { stage: 2, title: 'Etapa 2: Frases cotidianas y pronunciación', status: 'Próxima', description: 'Construir preguntas y respuestas de la vida diaria.' },
+        { stage: 3, title: 'Etapa 3: Fluidez conversacional', status: 'Futura', description: 'Mantener intercambios orales de más de 10 minutos con seguridad.' }
+      ];
+      missions = [
+        {
+          title: 'Paso 1: Inmersión y 5 frases esenciales (15 min)',
+          description: '1. Elige 5 frases cotidianas útiles para tu objetivo (ej: presentaciones o preguntas de viaje).\n2. Escríbelas en una libreta anotando su significado y contexto de uso.\n3. Pronúncialas en voz alta 3 veces grabándote con tu teléfono para escuchar tu entonación.',
+          durationMinutes: 15,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 2: Escucha activa con subtítulos (15 min)',
+          description: '1. Busca un podcast o video de 3 a 5 minutos en el idioma objetivo con subtítulos.\n2. Escúchalo una primera vez prestando atención a la idea general.\n3. Escúchalo una segunda vez pausando para anotar 3 palabras nuevas que no conocías.',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso 3: Monólogo de 2 minutos frente al espejo (10 min)',
+          description: '1. Selecciona un tema sencillo: cómo fue tu día o por qué quieres alcanzar esta meta.\n2. Habla durante 2 minutos continuos sin detenerte por errores gramaticales.\n3. Felicítate por el esfuerzo y anota una palabra que te haya hecho falta.',
+          durationMinutes: 10,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
+    } else if (t.includes('leer') || t.includes('libro') || t.includes('lectura') || t.includes('estudi') || d.includes('aprender') || d.includes('conocimiento')) {
+      stages = [
+        { stage: 1, title: 'Etapa 1: Hábito de lectura diaria sin fricción', status: 'En progreso', description: 'Bloquear 15 minutos al día en un horario sagrado.' },
+        { stage: 2, title: 'Etapa 2: Lectura comprensiva y notas clave', status: 'Próxima', description: 'Extraer las ideas principales y reflexionar sobre su aplicación.' },
+        { stage: 3, title: 'Etapa 3: Síntesis y aplicación práctica', status: 'Futura', description: 'Convertir las lecturas en proyectos y cambios reales.' }
+      ];
+      missions = [
+        {
+          title: 'Paso 1: Preparar tu espacio y leer 10 páginas (15 min)',
+          description: '1. Deja el teléfono en otra habitación o en modo silencio.\n2. Siéntate con buena iluminación y tu libro o material seleccionado.\n3. Lee 10 páginas completas a ritmo relajado y subraya 1 idea que resuene contigo.',
+          durationMinutes: 15,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 2: Registro de 1 idea transformadora (10 min)',
+          description: '1. Abre tu cuaderno de notas o app de notas.\n2. Escribe con tus propias palabras la lección más valiosa de lo que leíste hoy.\n3. Formula una acción concreta de cómo puedes aplicarla en tu vida esta semana.',
+          durationMinutes: 10,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 3: Sesión de lectura continua y mapa mental (20 min)',
+          description: '1. Realiza una lectura de 15 minutos profundizando en el capítulo actual.\n2. Dedica los últimos 5 minutos a trazar un pequeño esquema o resumen visual de los conceptos clave.',
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
+    } else if (t.includes('fuerza') || t.includes('gym') || t.includes('ejercicio') || t.includes('correr') || t.includes('cuerpo') || t.includes('peso') || t.includes('salud') || cat === 'Cuerpo') {
+      stages = [
+        { stage: 1, title: 'Etapa 1: Acondicionamiento y constancia', status: 'En progreso', description: 'Despertar la musculatura y activar el sistema cardiovascular.' },
+        { stage: 2, title: 'Etapa 2: Sobrecarga progresiva y técnica', status: 'Próxima', description: 'Aumentar repeticiones, intensidad y cuidar la recuperación.' },
+        { stage: 3, title: 'Etapa 3: Rendimiento óptimo y vitalidad', status: 'Futura', description: 'Consolidar fuerza, flexibilidad y resistencia duraderas.' }
+      ];
+      missions = [
+        {
+          title: 'Paso 1: Activación física y movilidad articular (15 min)',
+          description: '1. Viste ropa cómoda y ten a mano una botella de agua fresca.\n2. Realiza 5 minutos de movilidad: rotación de hombros, cadera, tobillos y cuello.\n3. Completa 3 series de 10 sentadillas suaves y 10 elevaciones de talones para activar las piernas.',
+          durationMinutes: 15,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 2: Circuito de fuerza funcional básica (20 min)',
+          description: '1. Realiza 3 rondas del siguiente circuito: 10 flexiones (en suelo o pared), 15 sentadillas y 20 segundos de plancha isométrica.\n2. Descansa 45 segundos entre cada ronda manteniendo respiración profunda.\n3. Finaliza con 3 minutos de estiramientos suaves.',
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso 3: Caminata a paso ligero o trote suave (20 min)',
+          description: '1. Sal al exterior o usa la caminadora.\n2. Mantén un paso rápido y constante durante 20 minutos con la vista al frente.\n3. Conéctate con la sensación de energía y oxigenación en todo tu cuerpo.',
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
+    } else {
+      // General adaptable blueprint
+      stages = [
+        { stage: 1, title: `Etapa 1: Fundamentos y arranque de "${title}"`, status: 'En progreso', description: 'Establecer los primeros pasos prácticos y vencer la inercia inicial.' },
+        { stage: 2, title: 'Etapa 2: Consistencia deliberada y profundización', status: 'Próxima', description: 'Construir ritmo regular y medir avances concretos.' },
+        { stage: 3, title: 'Etapa 3: Integración y maestría del objetivo', status: 'Futura', description: 'Alcanzar el propósito trazado y celebrarlo con orgullo.' }
+      ];
+      missions = [
+        {
+          title: `Paso 1: Definir tu espacio y primer bloque de acción (15 min)`,
+          description: `1. Prepara todos los materiales y el espacio necesario para avanzar en "${title}".\n2. Elimina cualquier distracción (notificaciones, pantallas innecesarias).\n3. Ejecuta los primeros 10 minutos de trabajo concentrado en este objetivo específico.`,
+          durationMinutes: 15,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: `Paso 2: Sesión de práctica enfocada en "${title}" (20 min)`,
+          description: `1. Pon un temporizador de 20 minutos y concéntrate exclusivamente en una tarea concreta de tu meta.\n2. Si surgen dudas, anótalas brevemente y continúa ejecutando sin perder el flujo.\n3. Registra tu avance al terminar para ver tu progreso tangible.`,
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: `Paso 3: Revisión de avance y siguiente victoria rápida (15 min)`,
+          description: `1. Revisa lo logrado hasta ahora en "${title}" y anota qué funcionó mejor.\n2. Realiza un ejercicio complementario o ajuste de 10 minutos para reforzar el aprendizaje.\n3. Define con claridad el siguiente paso que darás mañana.`,
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
+    }
+
+    return { roadmap: stages, missions };
+  }
+
+  async function generateAIGoalPlan({ title, description, category, targetDate, totalMissionsTarget }) {
+    const goalTitle = title.trim();
+    const goalDesc = description ? description.trim() : `Objetivo en ${category} para transformar mi vida.`;
+    const cat = category || 'Crecimiento';
+
+    const geminiKey = getGeminiKey();
+    
+    // 1. Try Gemini AI Live Call
+    if (geminiKey) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`;
+        const prompt = `Eres el Arquitecto de Metas de MISIÓN, una aplicación de desarrollo personal gamificada.
+Convierte la siguiente Meta Vital en:
+1. Una Ruta clara en 3 o 4 etapas secuenciales.
+2. Las primeras 3 o 4 micromisiones diarias concretas, físicas y realizables (10-20 min cada una).
+Cada misión DEBE incluir en "description" instrucciones claras numeradas paso a paso ("1. ...\\n2. ...\\n3. ...") que guíen al usuario sobre qué hacer exactamente.
+
+DATOS DE LA META:
+- Título: "${goalTitle}"
+- Propósito / Descripción: "${goalDesc}"
+- Categoría: "${cat}"
+
+Responde ÚNICAMENTE en formato JSON con esta estructura exacta:
+{
+  "roadmap": [
+    { "stage": 1, "title": "Etapa 1: ...", "description": "Resumen de esta etapa" },
+    { "stage": 2, "title": "Etapa 2: ...", "description": "Resumen de esta etapa" },
+    { "stage": 3, "title": "Etapa 3: ...", "description": "Resumen de esta etapa" }
+  ],
+  "missions": [
+    {
+      "title": "Paso 1: [Acción clara y concreta]",
+      "description": "1. [Primer paso]\\n2. [Segundo paso]\\n3. [Verificación o conclusión]",
+      "duration_minutes": 15,
+      "difficulty": "Fácil"
+    },
+    {
+      "title": "Paso 2: [Segunda acción específica]",
+      "description": "1. [Primer paso]\\n2. [Segundo paso]\\n3. [Conclusión]",
+      "duration_minutes": 15,
+      "difficulty": "Normal"
+    },
+    {
+      "title": "Paso 3: [Tercera acción específica]",
+      "description": "1. [Primer paso]\\n2. [Segundo paso]\\n3. [Conclusión]",
+      "duration_minutes": 20,
+      "difficulty": "Normal"
+    }
+  ]
+}`;
+
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.3,
+              responseMimeType: 'application/json'
+            }
+          })
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            const parsed = JSON.parse(rawText);
+            if (parsed.missions && parsed.missions.length > 0) {
+              return {
+                roadmap: (parsed.roadmap && parsed.roadmap.length > 0) ? parsed.roadmap : [
+                  { stage: 1, title: 'Etapa 1: Activación y ritmo base diario', status: 'En progreso', description: 'Crear el hábito diario.' },
+                  { stage: 2, title: 'Etapa 2: Consistencia y profundización', status: 'Próxima', description: 'Profundizar en la práctica.' },
+                  { stage: 3, title: 'Etapa 3: Consolidación y maestría', status: 'Futura', description: 'Integrar la habilidad.' }
+                ],
+                missions: parsed.missions.map((m, idx) => ({
+                  title: m.title || `Paso #${idx + 1}: Avanzar en ${goalTitle}`,
+                  description: m.description || `1. Dedica ${m.duration_minutes || 15} min a practicar.\n2. Concéntrate sin distracciones.\n3. Marca la misión como completada.`,
+                  durationMinutes: m.duration_minutes || 15,
+                  difficulty: m.difficulty || (idx === 0 ? 'Fácil' : 'Normal'),
+                  category: cat
+                }))
+              };
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Gemini Goal Planner API call notice, activating contextual heuristic planner:', err);
+      }
+    }
+
+    // 2. Intelligent Contextual Heuristic Planner fallback
+    return generateContextualHeuristicPlan({ title: goalTitle, description: goalDesc, category: cat });
+  }
+
+  // Button: Generate next AI mission from inside Goal Detail Modal
   document.getElementById('btn-ai-generate-next-mission')?.addEventListener('click', async () => {
     if (!activeDetailGoalId) return;
     const state = window.appStore.getState();
@@ -1152,21 +1434,23 @@ Responde en formato JSON con la siguiente estructura:
     const existingCount = state.dailyMissions.filter(m => m.goalId === goal.id).length;
     const stepNumber = existingCount + 1;
     
-    let generatedTitle = `Acción #${stepNumber}: Sesión de enfoque en ${goal.title}`;
-    let generatedDesc = `Paso ${stepNumber} de 20 para consolidar tu objetivo.`;
+    let generatedTitle = `Paso #${stepNumber}: Sesión de enfoque en ${goal.title}`;
+    let generatedDesc = `1. Dedica 15 minutos continuos a avanzar en tu meta "${goal.title}".\n2. Realiza una acción concreta sin postergar.\n3. Marca la misión como completada para ganar tu Impulso del día.`;
     let duration = 15;
+    let difficulty = 'Normal';
 
-    const geminiKey = window.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY') || '';
+    const geminiKey = getGeminiKey();
     if (geminiKey) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`;
         const prompt = `Eres el Arquitecto de Metas de MISIÓN. El usuario ya ha completado ${existingCount} misiones de su meta "${goal.title}" (Categoría: ${goal.category}, Propósito: ${goal.description}).
 Genera la siguiente micromisión accionable #${stepNumber} de 15 minutos en el mundo real.
+La misión DEBE incluir en "description" una guía paso a paso numerada ("1. ...\\n2. ...\\n3. ...") explicando claramente qué tiene que hacer.
 
 Responde en formato JSON:
 {
-  "mission_title": "Título claro de la micromisión concreta",
-  "mission_description": "Instrucción de paso simple paso a paso",
+  "mission_title": "Paso #${stepNumber}: [Título de la micromisión concreta]",
+  "mission_description": "1. [Paso uno concreto]\\n2. [Paso dos concreto]\\n3. [Paso tres de cierre]",
   "duration_minutes": 15,
   "difficulty": "Normal"
 }`;
@@ -1187,6 +1471,7 @@ Responde en formato JSON:
             generatedTitle = parsed.mission_title;
             if (parsed.mission_description) generatedDesc = parsed.mission_description;
             if (parsed.duration_minutes) duration = parsed.duration_minutes;
+            if (parsed.difficulty) difficulty = parsed.difficulty;
           }
         }
       } catch (err) {
@@ -1199,7 +1484,7 @@ Responde en formato JSON:
       title: generatedTitle,
       description: generatedDesc,
       category: goal.category,
-      difficulty: 'Normal',
+      difficulty: difficulty,
       durationMinutes: duration,
       goalId: goal.id
     });
@@ -1245,10 +1530,10 @@ Responde en formato JSON:
     if (modalMission) modalMission.classList.add('hidden');
   }
 
-  // Form Submissions
+  // Form Submissions: CREATE GOAL WITH AI
   const formGoal = document.getElementById('form-goal');
   if (formGoal) {
-    formGoal.addEventListener('submit', (e) => {
+    formGoal.addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('form-goal-title').value;
       const desc = document.getElementById('form-goal-desc').value;
@@ -1258,20 +1543,81 @@ Responde en formato JSON:
 
       if (!title) return;
 
-      window.appStore.addGoal({
-        title,
-        description: desc,
-        category: cat,
-        targetDate,
-        totalMissionsTarget: targetCount
-      });
+      const btnSubmit = document.getElementById('btn-submit-goal');
+      const btnSubmitText = document.getElementById('btn-submit-goal-text');
+      const originalBtnHtml = btnSubmit ? btnSubmit.innerHTML : '';
 
-      window.soundEngine.playSpark();
-      launchConfetti();
-      showToast('¡Meta creada con éxito!');
-      closeGoalModal();
-      formGoal.reset();
-      renderAll();
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="material-symbols-outlined text-[17px] animate-spin">sync</span><span>Diseñando ruta y misiones con IA...</span>';
+      }
+
+      try {
+        // Generate AI Roadmap and Missions
+        const aiPlan = await generateAIGoalPlan({
+          title,
+          description: desc,
+          category: cat,
+          targetDate,
+          totalMissionsTarget: targetCount
+        });
+
+        // Add Goal & Missions to Reactive Store
+        const { newGoal, createdMissions } = window.appStore.addGoalWithMissions({
+          title,
+          description: desc,
+          category: cat,
+          targetDate,
+          totalMissionsTarget: targetCount,
+          roadmap: aiPlan.roadmap,
+          missions: aiPlan.missions
+        });
+
+        // Background sync to Supabase if authenticated
+        if (sbClient) {
+          try {
+            const { data: { user } } = await sbClient.auth.getUser();
+            if (user) {
+              sbClient.from('goals').insert({
+                user_id: user.id,
+                title: newGoal.title,
+                description: newGoal.description,
+                category: newGoal.category,
+                target_date: newGoal.targetDate,
+                total_missions_target: newGoal.totalMissionsTarget,
+                completed_missions_count: 0,
+                progress_percentage: 0
+              }).then(() => console.log('Goal synced to Supabase')).catch(err => console.warn('Supabase goal sync notice:', err));
+            }
+          } catch (syncErr) {
+            console.warn('Background sync error:', syncErr);
+          }
+        }
+
+        window.soundEngine.playSpark();
+        launchConfetti();
+        showToast('¡Meta creada! La IA ha generado tu ruta y misiones guiadas ✨', 'auto_awesome', true);
+        
+        closeGoalModal();
+        formGoal.reset();
+        renderAll();
+
+        // Immediately open Goal Detail Modal so the user can inspect the generated roadmap and missions!
+        setTimeout(() => {
+          if (newGoal && newGoal.id) {
+            openGoalDetailModal(newGoal.id);
+          }
+        }, 300);
+
+      } catch (err) {
+        console.error('Error creating goal with AI:', err);
+        showToast('Se creó la meta con ruta inicial.', 'info');
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalBtnHtml || '<span class="material-symbols-outlined text-[17px]">auto_awesome</span><span>Crear Meta Vital con IA</span>';
+        }
+      }
     });
   }
 

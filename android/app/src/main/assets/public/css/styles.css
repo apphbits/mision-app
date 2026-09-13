@@ -384,6 +384,67 @@ body.dark-theme .animate-modal label {
   color: #CBD5E1 !important;
 }
 
+/* Modal Sticky Top Header & Always Visible Close Button */
+.modal-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid rgba(234, 236, 230, 0.7);
+  margin-top: -1.25rem;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding: 1.15rem 1.25rem 0.85rem 1.25rem;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+body.dark-theme .modal-sticky-header {
+  background-color: #131D17 !important;
+  border-bottom-color: rgba(35, 53, 43, 0.8) !important;
+}
+
+.modal-close-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: #F2F3EE;
+  color: #596573;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(215, 221, 212, 0.6);
+}
+
+.modal-close-btn:hover {
+  background-color: #E2E6DD;
+  color: #27303A;
+  transform: scale(1.05);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95);
+}
+
+body.dark-theme .modal-close-btn {
+  background-color: #1D2B22 !important;
+  color: #CBD5E1 !important;
+  border-color: #2D4235 !important;
+}
+
+body.dark-theme .modal-close-btn:hover {
+  background-color: #273D30 !important;
+  color: #FFFFFF !important;
+}
+
 html {
   scroll-behavior: smooth;
 }

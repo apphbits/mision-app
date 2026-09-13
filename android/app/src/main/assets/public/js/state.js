@@ -459,6 +459,76 @@ class Store {
     return { newGoal, newlyUnlocked };
   }
 
+  addGoalWithMissions({ title, description, category, targetDate, totalMissionsTarget, icon, color, roadmap, missions }) {
+    const goalId = 'g-' + Date.now();
+    const catIcons = {
+      Mente: 'spa', Cuerpo: 'fitness_center', Relaciones: 'favorite', Crecimiento: 'language',
+      Finanzas: 'savings', Creatividad: 'palette', Experiencias: 'flight_takeoff', Bienestar: 'local_florist'
+    };
+    const catColors = {
+      Mente: '#4B8FB2', Cuerpo: '#4A7C59', Relaciones: '#E05A47', Crecimiento: '#3A7D63',
+      Finanzas: '#B87547', Creatividad: '#8E54A2', Experiencias: '#2D82B7', Bienestar: '#22C55E'
+    };
+
+    const newGoal = {
+      id: goalId,
+      title,
+      description: description || 'Sin descripción',
+      category: category || 'Crecimiento',
+      status: 'active',
+      icon: icon || catIcons[category] || 'flag',
+      color: color || catColors[category] || '#3A7D63',
+      targetDate: targetDate || '2026-12-31',
+      totalMissionsTarget: parseInt(totalMissionsTarget) || (missions && missions.length ? Math.max(20, missions.length) : 20),
+      completedMissionsCount: 0,
+      progress: 0,
+      roadmap: Array.isArray(roadmap) && roadmap.length > 0 ? roadmap : [
+        { stage: 1, title: 'Etapa 1: Activación y ritmo base diario', status: 'En progreso' },
+        { stage: 2, title: 'Etapa 2: Consistencia e incremento de intensidad', status: 'Próxima' },
+        { stage: 3, title: 'Etapa 3: Consolidación y maestría vital', status: 'Futura' }
+      ]
+    };
+    this.state.goals.unshift(newGoal);
+
+    const createdMissions = [];
+    if (Array.isArray(missions) && missions.length > 0) {
+      missions.forEach((m, idx) => {
+        const diff = m.difficulty || 'Normal';
+        let impulso = 25;
+        let chispas = 10;
+        if (diff === 'Fácil') { impulso = 10; chispas = 5; }
+        else if (diff === 'Difícil') { impulso = 50; chispas = 20; }
+        else if (diff === 'Épica') { impulso = 100; chispas = 50; }
+
+        const newMission = {
+          id: 'm-' + (Date.now() + idx + 1),
+          goalId: goalId,
+          title: m.title || `Acción #${idx + 1} para ${title}`,
+          description: m.description || `Instrucciones paso a paso para avanzar en tu meta: ${title}.`,
+          category: m.category || category || 'Crecimiento',
+          difficulty: diff,
+          durationMinutes: parseInt(m.durationMinutes || m.duration_minutes) || 15,
+          impulso,
+          chispas,
+          isCompleted: false,
+          completedAt: null
+        };
+        this.state.dailyMissions.unshift(newMission);
+        createdMissions.push(newMission);
+      });
+    }
+
+    // Check achievement for first goal
+    const newlyUnlocked = window.GamificationEngine.evaluateAchievements(this.state);
+    newlyUnlocked.forEach(ach => {
+      this.state.unlockedAchievements.push(ach.code);
+      this.state.profile.chispas += ach.reward;
+    });
+
+    this._save();
+    return { newGoal, createdMissions, newlyUnlocked };
+  }
+
   addMission({ title, description, category, difficulty, durationMinutes, goalId }) {
     const diff = difficulty || 'Normal';
     let impulso = 25;
