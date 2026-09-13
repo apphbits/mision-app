@@ -272,9 +272,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function goToOnboardingStep(stepNum) {
     onboardingState.step = stepNum;
     
-    const track = document.getElementById('onboarding-carousel-track');
-    if (track) {
-      track.style.transform = `translateX(-${(stepNum - 1) * 100}%)`;
+    // Switch slide visibility cleanly to fit content height without blank space
+    for (let s = 1; s <= 3; s++) {
+      const slide = document.getElementById(`onboarding-step-${s}`);
+      if (slide) {
+        if (s === stepNum) {
+          slide.classList.remove('hidden');
+          slide.style.display = 'flex';
+        } else {
+          slide.classList.add('hidden');
+          slide.style.display = 'none';
+        }
+      }
     }
 
     if (stepNum === 2) {
@@ -283,10 +292,11 @@ document.addEventListener('DOMContentLoaded', () => {
       populateStep3();
     }
 
-    const screenEl = document.querySelector('.simulator-screen') || window;
-    if (screenEl.scrollTo) {
-      screenEl.scrollTo({ top: 0, behavior: 'smooth' });
+    const screenEl = document.querySelector('.simulator-screen');
+    if (screenEl) {
+      screenEl.scrollTop = 0;
     }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   function populateStep2() {
@@ -326,31 +336,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const meaning = onboardingState.meaning;
     const category = onboardingState.category;
 
-    // Set immediate default heuristic
+    // Set immediate default heuristic with concrete step-by-step instructions
     const dreamLower = dream.toLowerCase();
     if (dreamLower.includes('inglés') || dreamLower.includes('idioma')) {
-      onboardingState.missionTitle = `Aprender 5 palabras nuevas en inglés (${minutes} min)`;
+      onboardingState.missionTitle = `Aprender y pronunciar 5 palabras nuevas en inglés`;
+      onboardingState.aiMissionDesc = `1. Elige 5 palabras útiles en inglés sobre tu día.\n2. Escribe su significado y una frase de ejemplo.\n3. Repítelas en voz alta 3 veces para fijar tu memoria.`;
       onboardingState.icon = 'language';
-    } else if (dreamLower.includes('peso') || dreamLower.includes('salud') || dreamLower.includes('ejercicio') || dreamLower.includes('correr')) {
-      onboardingState.missionTitle = `Caminata consciente y estiramiento activo (${minutes} min)`;
+    } else if (dreamLower.includes('peso') || dreamLower.includes('salud') || dreamLower.includes('ejercicio') || dreamLower.includes('correr') || dreamLower.includes('gimnasio')) {
+      onboardingState.missionTitle = `Caminata activa y estiramiento consciente`;
+      onboardingState.aiMissionDesc = `1. Sal a caminar ${minutes} minutos a ritmo constante.\n2. Presta atención a tu respiración y postura corporal.\n3. Finaliza con 2 minutos de estiramiento suave para activar tu energía.`;
       onboardingState.icon = 'fitness_center';
     } else if (dreamLower.includes('finanza') || dreamLower.includes('ahorro') || dreamLower.includes('dinero')) {
-      onboardingState.missionTitle = `Revisar y categorizar los 3 gastos principales del día`;
+      onboardingState.missionTitle = `Registro de los 3 gastos clave de hoy`;
+      onboardingState.aiMissionDesc = `1. Revisa tus movimientos o recibos del día.\n2. Anota los 3 gastos principales y clasifícalos (Necesario / Deseo).\n3. Identifica una oportunidad de ahorro para mañana.`;
       onboardingState.icon = 'savings';
     } else if (dreamLower.includes('negocio') || dreamLower.includes('proyecto') || dreamLower.includes('emprender')) {
-      onboardingState.missionTitle = `Definir la propuesta de valor del proyecto en 3 frases`;
+      onboardingState.missionTitle = `Redactar la propuesta de valor en 3 frases`;
+      onboardingState.aiMissionDesc = `1. Define a quién ayuda tu proyecto y qué problema resuelve.\n2. Escribe en 3 líneas simples por qué un cliente te elegiría.\n3. Léelo en voz alta para comprobar que sea claro e inspirador.`;
       onboardingState.icon = 'rocket_launch';
     } else if (dreamLower.includes('viaj') || dreamLower.includes('mundo')) {
-      onboardingState.missionTitle = `Investigar 1 destino soñado y calcular presupuesto inicial`;
+      onboardingState.missionTitle = `Investigar 1 destino y calcular presupuesto inicial`;
+      onboardingState.aiMissionDesc = `1. Elige 1 lugar al que desees viajar este año.\n2. Revisa costos promedio de transporte y estadía por 3 días.\n3. Define una cifra meta mensual para hacer realidad el viaje.`;
       onboardingState.icon = 'flight_takeoff';
     } else if (dreamLower.includes('medit') || dreamLower.includes('mente') || dreamLower.includes('calma')) {
-      onboardingState.missionTitle = `${minutes} minutos de respiración consciente en silencio`;
+      onboardingState.missionTitle = `Sesión de respiración 4-6 en silencio (${minutes} min)`;
+      onboardingState.aiMissionDesc = `1. Siéntate con la espalda recta en un lugar tranquilo.\n2. Inhala por la nariz en 4 segundos y exhala en 6 segundos.\n3. Mantén este ritmo durante ${minutes} minutos cultivando calma mental.`;
       onboardingState.icon = 'spa';
     } else if (dreamLower.includes('libro') || dreamLower.includes('leer')) {
-      onboardingState.missionTitle = `Leer 5 páginas anotando una idea inspiradora (${minutes} min)`;
+      onboardingState.missionTitle = `Lectura enfocada de 5 páginas con notas`;
+      onboardingState.aiMissionDesc = `1. Abre tu libro y pon un temporizador de ${minutes} minutos.\n2. Lee 5 páginas sin mirar notificaciones ni el móvil.\n3. Anota la idea más valiosa en tus notas para aplicarla hoy.`;
       onboardingState.icon = 'menu_book';
     } else {
-      onboardingState.missionTitle = `Completar ${minutes} minutos de acción inicial hacia: ${onboardingState.dream}`;
+      onboardingState.missionTitle = `Acción de enfoque (${minutes} min) para: ${onboardingState.dream}`;
+      onboardingState.aiMissionDesc = `1. Dedica ${minutes} minutos ininterrumpidos a avanzar en este objetivo.\n2. Realiza el primer paso concreto sin postergar.\n3. Marca la misión como completada para ganar tu Impulso del día.`;
       onboardingState.icon = 'flag';
     }
 
@@ -591,7 +609,7 @@ Responde en formato JSON con la siguiente estructura:
           const isDone = mission.isCompleted;
           const goal = mission.goalId ? state.goals.find(g => g.id === mission.goalId) : null;
           return `
-            <div data-id="${mission.id}" class="mission-card relative overflow-hidden rounded-2xl bg-white p-4 soft-shadow border border-[#EAECE6] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 ${isDone ? 'is-completed' : ''}">
+            <div data-id="${mission.id}" class="mission-card relative overflow-hidden rounded-2xl bg-white p-4 soft-shadow border border-[#EAECE6] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 cursor-pointer hover:border-[#3A7D63] transition-all ${isDone ? 'is-completed' : ''}">
               <div class="flex items-start gap-3.5 flex-1 min-w-0">
                 <button data-id="${mission.id}" class="btn-check-mission w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
                   isDone 
@@ -606,7 +624,7 @@ Responde en formato JSON con la siguiente estructura:
                       ${mission.category}
                     </span>
                     <span class="px-2 py-0.5 rounded-md bg-[#F0F7F4] text-[10px] font-semibold text-[#3A7D63]">
-                      ⏱️ ${mission.duration || 5} min
+                      ⏱️ ${mission.durationMinutes || mission.duration || 5} min
                     </span>
                     ${goal ? `<span class="text-[11px] font-medium text-[#8A96A3]">· ${goal.title}</span>` : ''}
                   </div>
@@ -628,6 +646,15 @@ Responde en formato JSON con la siguiente estructura:
             </div>
           `;
         }).join('');
+
+        // Card Click -> Open Detail Modal
+        missionsList.querySelectorAll('.mission-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-check-mission')) return;
+            const id = card.dataset.id;
+            if (id) openMissionDetailModal(id);
+          });
+        });
 
         missionsList.querySelectorAll('.btn-check-mission').forEach(btn => {
           btn.addEventListener('click', (e) => {
@@ -986,6 +1013,91 @@ Responde en formato JSON con la siguiente estructura:
     if (modalGoalDetail) modalGoalDetail.classList.add('hidden');
     activeDetailGoalId = null;
   }
+
+  // ====================================================================
+  // MISSION DETAIL MODAL CONTROLLER
+  // ====================================================================
+  const modalMissionDetail = document.getElementById('modal-mission-detail');
+
+  function openMissionDetailModal(missionId) {
+    const state = window.appStore.getState();
+    const mission = state.dailyMissions.find(m => m.id === missionId);
+    if (!mission || !modalMissionDetail) return;
+
+    window.soundEngine.playClick();
+
+    const catBadge = document.getElementById('modal-detail-cat-badge');
+    const timeBadge = document.getElementById('modal-detail-time-badge');
+    const titleEl = document.getElementById('modal-detail-title');
+    const goalEl = document.getElementById('modal-detail-goal');
+    const descEl = document.getElementById('modal-detail-desc');
+    const impulsoEl = document.getElementById('modal-detail-impulso');
+    const chispasEl = document.getElementById('modal-detail-chispas');
+    const toggleBtn = document.getElementById('btn-modal-toggle-mission');
+    const toggleText = document.getElementById('btn-modal-toggle-text');
+
+    if (catBadge) catBadge.textContent = mission.category || 'Mente';
+    if (timeBadge) timeBadge.textContent = `⏱️ ${mission.durationMinutes || mission.duration || 10} min`;
+    if (titleEl) titleEl.textContent = mission.title;
+    
+    const goal = mission.goalId ? state.goals.find(g => g.id === mission.goalId) : null;
+    if (goalEl) {
+      goalEl.textContent = goal ? `Meta: ${goal.title}` : 'Acción diaria de progreso';
+    }
+
+    if (descEl) {
+      descEl.textContent = mission.description || 'Dedica este bloque de tiempo a avanzar enfocado en tu meta con presencia.';
+    }
+
+    if (impulsoEl) impulsoEl.textContent = `+${mission.impulso} ⚡`;
+    if (chispasEl) chispasEl.textContent = `+${mission.chispas} ✨`;
+
+    if (toggleBtn && toggleText) {
+      toggleBtn.dataset.missionId = mission.id;
+      if (mission.isCompleted) {
+        toggleText.textContent = 'Marcar como Pendiente';
+        toggleBtn.className = 'flex-1 py-3.5 rounded-2xl bg-[#596573] hover:bg-[#3F4944] text-white font-display font-bold text-xs float-shadow active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer';
+      } else {
+        toggleText.textContent = 'Completar Misión Ahora';
+        toggleBtn.className = 'flex-1 py-3.5 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-display font-bold text-xs float-shadow active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer';
+      }
+    }
+
+    modalMissionDetail.classList.remove('hidden');
+  }
+
+  function closeMissionDetailModal() {
+    if (modalMissionDetail) modalMissionDetail.classList.add('hidden');
+  }
+
+  // Button Listeners for Mission Detail Modal
+  document.getElementById('btn-close-mission-detail-modal')?.addEventListener('click', closeMissionDetailModal);
+
+  document.getElementById('btn-modal-toggle-mission')?.addEventListener('click', () => {
+    const toggleBtn = document.getElementById('btn-modal-toggle-mission');
+    const mid = toggleBtn?.dataset.missionId;
+    if (!mid) return;
+
+    const res = window.appStore.toggleMission(mid);
+    if (res.success) {
+      if (res.wasCompleted) {
+        window.soundEngine.playMissionComplete();
+        launchConfetti();
+        showToast(`¡Misión cumplida! +${res.mission.impulso}⚡ +${res.mission.chispas}✨`);
+        if (res.newlyUnlocked.length > 0) {
+          setTimeout(() => {
+            window.soundEngine.playLevelUp();
+            showToast(`🏆 ¡Logro desbloqueado: ${res.newlyUnlocked[0].title}! +${res.newlyUnlocked[0].reward}✨`, 'workspace_premium', true);
+          }, 600);
+        }
+      } else {
+        window.soundEngine.playClick();
+        showToast('Misión marcada como pendiente', 'undo');
+      }
+      closeMissionDetailModal();
+      renderAll();
+    }
+  });
 
   // Button Listeners for Goal Detail Modal
   document.getElementById('btn-close-goal-detail-modal')?.addEventListener('click', closeGoalDetailModal);

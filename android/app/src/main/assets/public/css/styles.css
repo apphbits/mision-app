@@ -115,10 +115,125 @@ body.dark-theme header#app-main-header {
 }
 
 body.dark-theme input,
-body.dark-theme textarea {
+body.dark-theme textarea,
+body.dark-theme select {
   background-color: var(--surface-subtle) !important;
   color: var(--text-main) !important;
   border-color: var(--border-color) !important;
+}
+
+/* Step 3 & Onboarding Dark Mode Enhancements */
+body.dark-theme .first-mission-hero {
+  background: linear-gradient(135deg, #131E18 0%, #0F1713 100%) !important;
+  border: 1.5px solid #23352B !important;
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-theme .first-mission-hero h3 {
+  color: #F8FAFC !important;
+}
+body.dark-theme .first-mission-hero p {
+  color: #CBD5E1 !important;
+}
+body.dark-theme .first-mission-hero .bg-white\/80,
+body.dark-theme .first-mission-hero .bg-white\/90,
+body.dark-theme .first-mission-hero .bg-white {
+  background-color: #19271F !important;
+  border-color: #24382C !important;
+  color: #F1F5F9 !important;
+}
+body.dark-theme .first-mission-hero .bg-\[\#F0F7F4\] {
+  background-color: #16261D !important;
+  border-color: #23382C !important;
+}
+body.dark-theme .first-mission-hero .text-primary-800 {
+  color: #86EFAC !important;
+}
+body.dark-theme .first-mission-hero .text-primary-700 {
+  color: #4ADE80 !important;
+}
+body.dark-theme .first-mission-hero #step3-category-badge {
+  background-color: #19271F !important;
+  border-color: #24382C !important;
+  color: #4ADE80 !important;
+}
+
+/* Dream Cards & Selection Elements Dark Mode */
+body.dark-theme .dream-card {
+  background-color: #131D17 !important;
+  border-color: #23352B !important;
+}
+body.dark-theme .dream-card h4 {
+  color: #F8FAFC !important;
+}
+body.dark-theme .dream-card span {
+  color: #94A3B8 !important;
+}
+body.dark-theme .dream-card.selected {
+  background-color: #182C22 !important;
+  border-color: #22C55E !important;
+}
+body.dark-theme .meaning-option {
+  background-color: #141E18 !important;
+  border-color: #23352B !important;
+  color: #E2E8F0 !important;
+}
+body.dark-theme .meaning-option.selected-meaning {
+  background-color: #182C22 !important;
+  border-color: #22C55E !important;
+  color: #F8FAFC !important;
+}
+body.dark-theme .time-pill {
+  background-color: #141E18 !important;
+  border-color: #23352B !important;
+  color: #E2E8F0 !important;
+}
+body.dark-theme .time-pill.selected {
+  background-color: #22C55E !important;
+  border-color: #22C55E !important;
+  color: #06110B !important;
+}
+body.dark-theme .time-pill.selected .time-desc {
+  color: #06110B !important;
+}
+
+/* Mission Cards & Category Chips Dark Mode */
+body.dark-theme .mission-card {
+  background-color: #131D17 !important;
+  border-color: #23352B !important;
+}
+body.dark-theme .mission-card h4 {
+  color: #F8FAFC !important;
+}
+body.dark-theme .mission-card p {
+  color: #CBD5E1 !important;
+}
+body.dark-theme .category-chip {
+  background-color: #19271F !important;
+  color: #CBD5E1 !important;
+  border-color: #23352B !important;
+}
+body.dark-theme .category-chip.bg-\[\#3A7D63\],
+body.dark-theme .category-chip.bg-primary-600 {
+  background-color: #22C55E !important;
+  color: #06110B !important;
+  font-weight: 800 !important;
+}
+
+/* Modals & Sheets in Dark Mode */
+body.dark-theme .modal-sheet,
+body.dark-theme .animate-modal {
+  background-color: #131D17 !important;
+  border-color: #23352B !important;
+  color: #F1F5F9 !important;
+}
+body.dark-theme .animate-modal h2,
+body.dark-theme .animate-modal h3,
+body.dark-theme .animate-modal h4 {
+  color: #F8FAFC !important;
+}
+body.dark-theme .animate-modal p,
+body.dark-theme .animate-modal label {
+  color: #CBD5E1 !important;
 }
 
 body {
