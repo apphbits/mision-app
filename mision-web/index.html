@@ -959,6 +959,35 @@
               </div>
             </section>
 
+            <!-- Goals Management Section in Profile -->
+            <section class="bg-white dark:bg-[#131D17] rounded-3xl p-5 soft-shadow border border-[#EAECE6] dark:border-[#23352B] flex flex-col space-y-3.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-2xl bg-primary-50 dark:bg-[#182C22] text-primary-600 dark:text-emerald-400 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">flag</span>
+                  </div>
+                  <div>
+                    <h3 class="font-display font-bold text-[15px] text-charcoal dark:text-slate-100">Mis Metas Vitales</h3>
+                    <p id="perfil-goals-summary" class="text-[11px] text-charcoal-muted dark:text-slate-400">0 metas activas</p>
+                  </div>
+                </div>
+                <button id="btn-perfil-create-goal" type="button" class="px-3 py-1.5 rounded-xl bg-primary-50 hover:bg-primary-100 dark:bg-[#182C22] dark:hover:bg-[#233F31] text-primary-700 dark:text-emerald-400 font-bold text-xs flex items-center gap-1 cursor-pointer transition-all active:scale-95 shadow-xs">
+                  <span class="material-symbols-outlined text-[15px]">add</span>
+                  <span>Nueva Meta</span>
+                </button>
+              </div>
+
+              <!-- List of current active goals -->
+              <div id="perfil-goals-list" class="flex flex-col space-y-2 pt-0.5">
+                <!-- Dynamically populated by renderPerfilView -->
+              </div>
+
+              <button id="btn-perfil-go-to-metas" type="button" class="w-full py-2.5 px-4 rounded-2xl bg-[#FAFAF8] hover:bg-[#F2F3EE] dark:bg-[#18261E] dark:hover:bg-[#22352B] text-primary-700 dark:text-emerald-400 border border-[#EAECE6] dark:border-[#273D30] font-bold text-xs flex items-center justify-center gap-1.5 active:scale-98 transition-all cursor-pointer">
+                <span>Ver y explorar todas mis metas</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </button>
+            </section>
+
             <!-- Simulator Testing Actions -->
             <section class="bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3">
               <h3 class="font-display font-bold text-[15px] text-charcoal flex items-center gap-2">

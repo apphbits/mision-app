@@ -923,6 +923,53 @@ Responde en formato JSON con la siguiente estructura:
     if (totalImpulso) totalImpulso.textContent = state.profile.totalImpulso;
     if (bestStreak) bestStreak.textContent = `${state.profile.bestStreak} Días`;
     if (perfilAvatar && state.profile.avatarUrl) perfilAvatar.src = state.profile.avatarUrl;
+
+    // Goals in Profile Section
+    const goalsSummary = document.getElementById('perfil-goals-summary');
+    const goalsList = document.getElementById('perfil-goals-list');
+    const activeGoals = state.goals || [];
+    
+    if (goalsSummary) {
+      goalsSummary.textContent = `${activeGoals.length} meta${activeGoals.length === 1 ? '' : 's'} activa${activeGoals.length === 1 ? '' : 's'}`;
+    }
+
+    if (goalsList) {
+      if (activeGoals.length === 0) {
+        goalsList.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-canvas dark:bg-[#18261E] border border-[#EAECE6] dark:border-[#273D30] text-center text-xs text-charcoal-muted dark:text-slate-400">
+            Aún no has creado metas vitales. ¡Planta tu primer sueño hoy!
+          </div>
+        `;
+      } else {
+        goalsList.innerHTML = activeGoals.map(g => `
+          <div data-goal-id="${g.id}" class="perfil-goal-card p-3 rounded-2xl bg-[#FAFAF8] dark:bg-[#16261D] border border-[#EAECE6] dark:border-[#273D30] flex items-center justify-between gap-3 cursor-pointer hover:border-primary-500 transition-all active:scale-[0.98]">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div class="w-8 h-8 rounded-xl bg-primary-50 dark:bg-[#1C3326] text-primary-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[18px]">${g.icon || 'flag'}</span>
+              </div>
+              <div class="flex flex-col min-w-0 flex-1">
+                <h4 class="font-bold text-xs text-[#27303A] dark:text-slate-100 truncate">${g.title}</h4>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <div class="flex-1 max-w-[100px] h-1.5 rounded-full bg-[#EAECE6] dark:bg-[#203327] overflow-hidden">
+                    <div class="h-full bg-primary-600 rounded-full" style="width: ${g.progress || 0}%;"></div>
+                  </div>
+                  <span class="text-[10px] font-bold text-primary-600 dark:text-emerald-400">${g.progress || 0}%</span>
+                  <span class="text-[9.5px] text-[#8A96A3]">· ${g.completedMissionsCount || 0}/${g.totalMissionsTarget || 20}</span>
+                </div>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-[#8A96A3] text-[18px]">chevron_right</span>
+          </div>
+        `).join('');
+
+        goalsList.querySelectorAll('.perfil-goal-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const gid = card.dataset.goalId;
+            if (gid) openGoalDetailModal(gid);
+          });
+        });
+      }
+    }
   }
 
   // ====================================================================
@@ -1165,14 +1212,51 @@ Responde en formato JSON con la siguiente estructura:
     const cat = category || 'Crecimiento';
 
     let stages = [
-      { stage: 1, title: 'Etapa 1: Activación y Fundamentos', status: 'En progreso', description: 'Establecer el espacio, herramientas y las primeras sesiones sin fricción.' },
-      { stage: 2, title: 'Etapa 2: Práctica Deliberada & Ritmo', status: 'Próxima', description: 'Incrementar la intensidad y superar los puntos de bloqueo.' },
-      { stage: 3, title: 'Etapa 3: Consolidación y Maestría Vital', status: 'Futura', description: 'Integrar los resultados de forma natural y duradera.' }
+      { stage: 1, title: 'Etapa 1: Activación y Fundamentos Prácticos', status: 'En progreso', description: 'Configurar herramientas, plataformas y dar los primeros pasos técnicos sin fricción.' },
+      { stage: 2, title: 'Etapa 2: Práctica Deliberada & Proyectos', status: 'Próxima', description: 'Construir ejercicios reales, resolver retos y afianzar la técnica.' },
+      { stage: 3, title: 'Etapa 3: Consolidación y Maestría Vital', status: 'Futura', description: 'Integrar los resultados en tu rutina y portfolio de forma profesional.' }
     ];
 
     let missions = [];
 
-    if (t.includes('guitar') || t.includes('piano') || t.includes('músic') || t.includes('instrumento') || d.includes('cantar') || d.includes('acordes')) {
+    // 1. Programación / GitHub / Desarrollo / Software / Código
+    if (t.includes('git') || t.includes('github') || t.includes('código') || t.includes('program') || t.includes('desarrollo') || t.includes('python') || t.includes('javascript') || t.includes('software') || t.includes('web') || d.includes('programar') || d.includes('repositorio') || d.includes('github') || d.includes('codigo')) {
+      stages = [
+        { stage: 1, title: 'Etapa 1: Configuración y Primer Repositorio', status: 'En progreso', description: 'Crear tu cuenta en GitHub, familiarizarte con la plataforma y crear tu primer repositorio.' },
+        { stage: 2, title: 'Etapa 2: Flujo de Trabajo (Commits, Ramas y Push)', status: 'Próxima', description: 'Aprender a sincronizar cambios locales con la nube y manejar versiones.' },
+        { stage: 3, title: 'Etapa 3: Colaboración, Pull Requests y Portfolio', status: 'Futura', description: 'Publicar proyectos reales y colaborar en repositorios de código abierto.' }
+      ];
+      missions = [
+        {
+          title: 'Paso 1: Crear tu cuenta en GitHub y explorar la plataforma (15 min)',
+          description: '1. Abre tu navegador y ve a https://github.com para crear tu cuenta gratuita con tu correo principal.\n2. Completa tu perfil público añadiendo tu nombre, foto y una breve descripción de tus metas de aprendizaje.\n3. Entra en https://github.com/explore y dale "Star" (estrella) a 2 repositorios de código abierto que te llamen la atención.',
+          durationMinutes: 15,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 2: Crear tu primer repositorio "Hola Mundo" (15 min)',
+          description: '1. En la esquina superior derecha de GitHub, haz clic en el botón "+" y selecciona "New repository".\n2. Nombra tu repositorio "mi-primer-proyecto", déjalo marcado como "Public" y activa la casilla "Add a README file".\n3. Haz clic en el botón verde "Create repository" y observa el archivo README.md generado.',
+          durationMinutes: 15,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 3: Editar tu README y realizar tu primer Commit (15 min)',
+          description: '1. Dentro de tu nuevo repositorio en GitHub, haz clic en el icono del lápiz (Edit this file) sobre el archivo README.md.\n2. Añade un encabezado "# Mi Camino en GitHub" y una lista con 3 tecnologías que vas a aprender.\n3. Desplázate hacia abajo, escribe el mensaje de commit "feat: primer commit con mis metas" y pulsa "Commit changes".',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso 4: Instalar GitHub Desktop o Git en tu computadora (20 min)',
+          description: '1. Ve a https://desktop.github.com y descarga la aplicación oficial para tu sistema operativo.\n2. Inicia sesión con la cuenta de GitHub que creaste en el Paso 1.\n3. Haz clic en "Clone a repository from the Internet", selecciona "mi-primer-proyecto" y descárgalo a tu computadora para sincronizarlo localmente.',
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
+    } else if (t.includes('guitar') || t.includes('piano') || t.includes('músic') || t.includes('instrumento') || d.includes('cantar') || d.includes('acordes')) {
       stages = [
         { stage: 1, title: 'Etapa 1: Postura, afinación y primeros acordes', status: 'En progreso', description: 'Familiarizarse con el instrumento y memorizar las posiciones básicas.' },
         { stage: 2, title: 'Etapa 2: Transiciones fluidas y ritmo constante', status: 'Próxima', description: 'Practicar cambios de acordes con metrónomo y rasgueos.' },
@@ -1203,7 +1287,7 @@ Responde en formato JSON con la siguiente estructura:
       ];
     } else if (t.includes('inglés') || t.includes('idioma') || t.includes('francés') || t.includes('alemán') || t.includes('vocabulario') || d.includes('hablar') || d.includes('viajar')) {
       stages = [
-        { stage: 1, title: 'Etapa 1: Vocabulario esencial y oído activo', status: 'En progreso', description: 'Aprender las 100 palabras más frecuentes y entrenar la comprensión.' },
+        { stage: 1, title: 'Etapa 1: Vocabulario esencial y oído activo', status: 'En progreso', description: 'Aprender las 100 palabras más frecuentes y entrenar la comprensión auditiva.' },
         { stage: 2, title: 'Etapa 2: Frases cotidianas y pronunciación', status: 'Próxima', description: 'Construir preguntas y respuestas de la vida diaria.' },
         { stage: 3, title: 'Etapa 3: Fluidez conversacional', status: 'Futura', description: 'Mantener intercambios orales de más de 10 minutos con seguridad.' }
       ];
@@ -1217,7 +1301,7 @@ Responde en formato JSON con la siguiente estructura:
         },
         {
           title: 'Paso 2: Escucha activa con subtítulos (15 min)',
-          description: '1. Busca un podcast o video de 3 a 5 minutos en el idioma objetivo con subtítulos.\n2. Escúchalo una primera vez prestando atención a la idea general.\n3. Escúchalo una segunda vez pausando para anotar 3 palabras nuevas que no conocías.',
+          description: '1. Busca un podcast o video de 3 a 5 minutos en el idioma objetivo con subtítulos (ej: BBC Learning English o TED-Ed).\n2. Escúchalo una primera vez prestando atención a la idea general.\n3. Escúchalo una segunda vez pausando para anotar 3 palabras nuevas que no conocías.',
           durationMinutes: 15,
           difficulty: 'Normal',
           category: cat
@@ -1230,6 +1314,35 @@ Responde en formato JSON con la siguiente estructura:
           category: cat
         }
       ];
+    } else if (t.includes('finanz') || t.includes('ahorr') || t.includes('dinero') || t.includes('invers') || t.includes('presupuesto') || cat === 'Finanzas') {
+      stages = [
+        { stage: 1, title: 'Etapa 1: Diagnóstico y Registro de Flujo', status: 'En progreso', description: 'Mapear ingresos, gastos fijos y fugas de dinero (gastos hormiga).' },
+        { stage: 2, title: 'Etapa 2: Presupuesto y Fondo de Emergencia', status: 'Próxima', description: 'Aplicar la regla 50/30/20 y consolidar tu primer colchón de seguridad.' },
+        { stage: 3, title: 'Etapa 3: Optimización e Inversión Pasiva', status: 'Futura', description: 'Hacer crecer tu patrimonio de forma automatizada y diversificada.' }
+      ];
+      missions = [
+        {
+          title: 'Paso 1: Auditoría de gastos de los últimos 30 días (20 min)',
+          description: '1. Abre tu extracto bancario o app bancaria del último mes.\n2. Clasifica tus gastos en 3 columnas: Necesidades básicas, Deseos/Ocio y Ahorro.\n3. Identifica al menos 2 suscripciones o gastos innecesarios que puedas recortar de inmediato.',
+          durationMinutes: 20,
+          difficulty: 'Fácil',
+          category: cat
+        },
+        {
+          title: 'Paso 2: Crear tu plantilla de Presupuesto 50/30/20 (15 min)',
+          description: '1. Abre Google Sheets, Excel o Notion.\n2. Distribuye tus ingresos netos: 50% gastos indispensables, 30% estilo de vida, 20% ahorro/inversión.\n3. Define el monto exacto en números que destinarás a ahorro este mes.',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso 3: Configurar transferencia automática de ahorro (15 min)',
+          description: '1. Entra a tu banca en línea.\n2. Programa una transferencia automática el día que recibes tus ingresos hacia tu cuenta de ahorro o fondo.\n3. Comprueba que la automatización esté activa para ahorrar antes de gastar.',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        }
+      ];
     } else if (t.includes('leer') || t.includes('libro') || t.includes('lectura') || t.includes('estudi') || d.includes('aprender') || d.includes('conocimiento')) {
       stages = [
         { stage: 1, title: 'Etapa 1: Hábito de lectura diaria sin fricción', status: 'En progreso', description: 'Bloquear 15 minutos al día en un horario sagrado.' },
@@ -1238,8 +1351,8 @@ Responde en formato JSON con la siguiente estructura:
       ];
       missions = [
         {
-          title: 'Paso 1: Preparar tu espacio y leer 10 páginas (15 min)',
-          description: '1. Deja el teléfono en otra habitación o en modo silencio.\n2. Siéntate con buena iluminación y tu libro o material seleccionado.\n3. Lee 10 páginas completas a ritmo relajado y subraya 1 idea que resuene contigo.',
+          title: 'Paso 1: Preparar tu libro y leer 10 páginas (15 min)',
+          description: '1. Toma el libro seleccionado para tu objetivo.\n2. Lee 10 páginas completas a ritmo relajado y subraya 1 idea que resuene contigo.\n3. Escribe en el margen una palabra clave que resuma la idea principal.',
           durationMinutes: 15,
           difficulty: 'Fácil',
           category: cat
@@ -1268,21 +1381,21 @@ Responde en formato JSON con la siguiente estructura:
       missions = [
         {
           title: 'Paso 1: Activación física y movilidad articular (15 min)',
-          description: '1. Viste ropa cómoda y ten a mano una botella de agua fresca.\n2. Realiza 5 minutos de movilidad: rotación de hombros, cadera, tobillos y cuello.\n3. Completa 3 series de 10 sentadillas suaves y 10 elevaciones de talones para activar las piernas.',
+          description: '1. Viste ropa deportiva cómoda y ten a mano tu botella de agua.\n2. Realiza 5 minutos de movilidad articular: rotación de hombros, cadera, rodillas y tobillos.\n3. Completa 3 series de 10 sentadillas suaves y 10 elevaciones de talones para activar las piernas.',
           durationMinutes: 15,
           difficulty: 'Fácil',
           category: cat
         },
         {
           title: 'Paso 2: Circuito de fuerza funcional básica (20 min)',
-          description: '1. Realiza 3 rondas del siguiente circuito: 10 flexiones (en suelo o pared), 15 sentadillas y 20 segundos de plancha isométrica.\n2. Descansa 45 segundos entre cada ronda manteniendo respiración profunda.\n3. Finaliza con 3 minutos de estiramientos suaves.',
+          description: '1. Realiza 3 rondas del siguiente circuito: 10 flexiones (en suelo o pared), 15 sentadillas y 20 segundos de plancha abdominal.\n2. Descansa 45 segundos entre cada ronda manteniendo respiración profunda por la nariz.\n3. Finaliza con 3 minutos de estiramientos suaves.',
           durationMinutes: 20,
           difficulty: 'Normal',
           category: cat
         },
         {
           title: 'Paso 3: Caminata a paso ligero o trote suave (20 min)',
-          description: '1. Sal al exterior o usa la caminadora.\n2. Mantén un paso rápido y constante durante 20 minutos con la vista al frente.\n3. Conéctate con la sensación de energía y oxigenación en todo tu cuerpo.',
+          description: '1. Sal al exterior o usa la caminadora.\n2. Mantén un paso rápido y constante durante 20 minutos con la vista al frente y postura erguida.\n3. Conéctate con la sensación de energía y oxigenación en todo tu cuerpo.',
           durationMinutes: 20,
           difficulty: 'Normal',
           category: cat
@@ -1297,15 +1410,15 @@ Responde en formato JSON con la siguiente estructura:
       ];
       missions = [
         {
-          title: `Paso 1: Definir tu espacio y primer bloque de acción (15 min)`,
-          description: `1. Prepara todos los materiales y el espacio necesario para avanzar en "${title}".\n2. Elimina cualquier distracción (notificaciones, pantallas innecesarias).\n3. Ejecuta los primeros 10 minutos de trabajo concentrado en este objetivo específico.`,
+          title: `Paso 1: Investigar los 3 conceptos clave de "${title}" (15 min)`,
+          description: `1. Busca en Google o YouTube los 3 conceptos fundamentales para dominar "${title}".\n2. Anota en una libreta el significado de cada concepto con tus propias palabras.\n3. Elige 1 recurso confiable (tutorial, libro o curso) para seguir tu formación.`,
           durationMinutes: 15,
           difficulty: 'Fácil',
           category: cat
         },
         {
-          title: `Paso 2: Sesión de práctica enfocada en "${title}" (20 min)`,
-          description: `1. Pon un temporizador de 20 minutos y concéntrate exclusivamente en una tarea concreta de tu meta.\n2. Si surgen dudas, anótalas brevemente y continúa ejecutando sin perder el flujo.\n3. Registra tu avance al terminar para ver tu progreso tangible.`,
+          title: `Paso 2: Sesión de práctica aplicada en "${title}" (20 min)`,
+          description: `1. Pon en marcha el primer ejercicio práctico real de tu meta "${title}".\n2. Trabaja durante 20 minutos ejecutando la tarea sin cambiar de pestaña ni postergar.\n3. Guarda o anota el resultado obtenido en esta sesión.`,
           durationMinutes: 20,
           difficulty: 'Normal',
           category: cat
@@ -1336,9 +1449,13 @@ Responde en formato JSON con la siguiente estructura:
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`;
         const prompt = `Eres el Arquitecto de Metas de MISIÓN, una aplicación de desarrollo personal gamificada.
 Convierte la siguiente Meta Vital en:
-1. Una Ruta clara en 3 o 4 etapas secuenciales.
-2. Las primeras 3 o 4 micromisiones diarias concretas, físicas y realizables (10-20 min cada una).
-Cada misión DEBE incluir en "description" instrucciones claras numeradas paso a paso ("1. ...\\n2. ...\\n3. ...") que guíen al usuario sobre qué hacer exactamente.
+1. Una Ruta clara en 3 o 4 etapas secuenciales técnicas y prácticas.
+2. Las primeras 3 o 4 micromisiones diarias de acción real (10-20 min cada una).
+
+REGLAS CRÍTICAS:
+- PROHIBIDO DAR CONSEJOS GENÉRICOS (como "apaga notificaciones", "busca un espacio tranquilo", "sé constante", "dedica tiempo").
+- OBLIGATORIO: Sé ultra específico y técnico sobre la disciplina exacta que el usuario quiere aprender. Menciona sitios web reales (ej: github.com, Duolingo, Codecademy, Figma, etc.), herramientas, comandos, ejercicios prácticos exactos y conceptos fundamentales para que el usuario aprenda haciendo ("learning by doing").
+- Cada misión DEBE incluir en "description" instrucciones claras numeradas paso a paso ("1. ...\\n2. ...\\n3. ...") que guíen al usuario sobre qué hacer exactamente.
 
 DATOS DE LA META:
 - Título: "${goalTitle}"
@@ -1417,6 +1534,8 @@ Responde ÚNICAMENTE en formato JSON con esta estructura exacta:
     // 2. Intelligent Contextual Heuristic Planner fallback
     return generateContextualHeuristicPlan({ title: goalTitle, description: goalDesc, category: cat });
   }
+
+
 
   // Button: Generate next AI mission from inside Goal Detail Modal
   document.getElementById('btn-ai-generate-next-mission')?.addEventListener('click', async () => {
@@ -1653,6 +1772,8 @@ Responde en formato JSON:
 
   // Button Listeners
   document.getElementById('btn-open-goal-creator')?.addEventListener('click', openGoalModal);
+  document.getElementById('btn-perfil-create-goal')?.addEventListener('click', openGoalModal);
+  document.getElementById('btn-perfil-go-to-metas')?.addEventListener('click', () => switchTab('metas'));
   document.getElementById('btn-open-mission-creator')?.addEventListener('click', () => openMissionModal());
   document.getElementById('btn-quick-new-action')?.addEventListener('click', () => openMissionModal());
   document.getElementById('btn-close-goal-modal')?.addEventListener('click', closeGoalModal);
