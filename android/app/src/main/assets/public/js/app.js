@@ -1252,7 +1252,7 @@ Responde en formato JSON:
       });
     });
 
-    // Google Sign-In / Register Handler (Strict OAuth without mock bypass)
+    // Google Sign-In / Register Handler (Strict OAuth for Web & Native Mobile Deep Links)
     btnGoogle?.addEventListener('click', async () => {
       window.soundEngine.playSpark();
       const googleBtnText = document.getElementById('google-btn-text');
@@ -1265,10 +1265,21 @@ Responde en formato JSON:
       }
 
       try {
+        const isNative = window.Capacitor?.isNativePlatform?.() || 
+                         window.Capacitor !== undefined || 
+                         window.location.protocol === 'capacitor:' || 
+                         window.location.protocol === 'ionic:' || 
+                         (window.location.hostname === 'localhost' && (!window.location.port || window.location.port === '80'));
+
+        const redirectUrl = isNative 
+          ? 'app.mision.santuario://login-callback' 
+          : (window.location.origin + window.location.pathname);
+
         const { data, error } = await sbClient.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin + window.location.pathname
+            redirectTo: redirectUrl,
+            skipBrowserRedirect: isNative
           }
         });
 
@@ -1276,6 +1287,15 @@ Responde en formato JSON:
           console.error('Supabase Google OAuth error:', error);
           showToast(`Error al conectar con Google: ${error.message || error}`, 'error');
           if (googleBtnText) googleBtnText.textContent = 'Continuar con Google';
+          return;
+        }
+
+        if (isNative && data?.url) {
+          if (window.Capacitor?.Plugins?.Browser?.open) {
+            await window.Capacitor.Plugins.Browser.open({ url: data.url, windowName: '_system' });
+          } else {
+            window.location.href = data.url;
+          }
         }
       } catch (err) {
         console.error('Google OAuth exception:', err);
@@ -1599,10 +1619,39 @@ Responde en formato JSON:
     });
   }
 
-  // Supabase Session Listener (Real OAuth flow)
+  // Supabase Session Listener (Web & Native Mobile App Deep Links)
   async function checkSupabaseSession() {
     if (!sbClient) return;
     try {
+      // 1. Check if returning from web OAuth redirect with access_token or code in URL
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        const access_token = params.get('access_token');
+        const refresh_token = params.get('refresh_token');
+        if (access_token && refresh_token) {
+          const { data, error } = await sbClient.auth.setSession({ access_token, refresh_token });
+          if (data?.session?.user) {
+            handleSupabaseUser(data.session.user);
+            try { window.history.replaceState(null, null, window.location.pathname); } catch (_) {}
+            return;
+          }
+        }
+      }
+
+      // 2. Listen for native Android deep link appUrlOpen
+      if (window.Capacitor?.Plugins?.App?.addListener) {
+        window.Capacitor.Plugins.App.addListener('appUrlOpen', async (event) => {
+          if (window.Capacitor?.Plugins?.Browser?.close) {
+            try { await window.Capacitor.Plugins.Browser.close(); } catch (_) {}
+          }
+          const url = event?.url;
+          if (url) {
+            handleOAuthCallbackUrl(url);
+          }
+        });
+      }
+
+      // 3. Regular active session check
       const { data: { session }, error } = await sbClient.auth.getSession();
       if (session?.user) {
         handleSupabaseUser(session.user);
@@ -1615,6 +1664,34 @@ Responde en formato JSON:
       });
     } catch (e) {
       console.warn('Supabase session note:', e);
+    }
+  }
+
+  async function handleOAuthCallbackUrl(urlStr) {
+    try {
+      if (urlStr.includes('access_token')) {
+        const hashIdx = urlStr.indexOf('#');
+        if (hashIdx !== -1) {
+          const params = new URLSearchParams(urlStr.substring(hashIdx + 1));
+          const access_token = params.get('access_token');
+          const refresh_token = params.get('refresh_token');
+          if (access_token && refresh_token && sbClient) {
+            const { data } = await sbClient.auth.setSession({ access_token, refresh_token });
+            if (data?.session?.user) {
+              handleSupabaseUser(data.session.user);
+              return;
+            }
+          }
+        }
+      }
+      if (sbClient) {
+        const { data: { session } } = await sbClient.auth.getSession();
+        if (session?.user) {
+          handleSupabaseUser(session.user);
+        }
+      }
+    } catch (err) {
+      console.warn('Deep link handling notice:', err);
     }
   }
 
