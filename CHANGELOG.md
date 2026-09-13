@@ -1,5 +1,31 @@
 # 📋 Resumen de Cambios — Registro de Desarrollo (Hoy)
 
+## [v1.2.0] - 2026-09-13
+
+### 1. Barra de Navegación Inferior Flotante y Fija (Bottom Nav)
+- **Posicionamiento Inmóvil en Scroll**: Se desacopló la barra de navegación del flujo de scroll mediante un contenedor con viewport independiente (`#app-main-content`), asegurando que permanezca completamente fija sin moverse ni vibrar al desplazarse por la pantalla.
+- **Alto Contraste y Visibilidad de Iconos en Modo Oscuro**:
+  - Los iconos inactivos cuentan con un tono gris luminoso (`#94A3B8`) sobre fondo verde oscuro/negro (`#131D17` / `#19271F`).
+  - El icono activo destaca con un botón esmeralda vibrante (`#22C55E`) y tipografía oscura de máximo contraste (`#06110B`).
+
+### 2. Animaciones de Transición y Efectos de Scrolling Suave
+- **Smooth Scrolling**: Implementado `scroll-behavior: smooth` y `-webkit-overflow-scrolling: touch` en todas las pantallas y simulador móvil.
+- **Transición de Pantallas (`screenSlideIn`)**: Deslizamiento suave con curva cúbica estilo iOS (`cubic-bezier(0.16, 1, 0.3, 1)`).
+- **Entrada Escalonada de Tarjetas (*Staggered Card Entrances*)**: Las secciones y tarjetas entran en cascada con micro-retrasos progresivos (40ms) al cambiar de pestaña.
+- **Navegación de Onboarding (`stepEntrance`)**: Deslizamiento horizontal entre pasos 1, 2 y 3.
+
+### 3. Síntesis de Sonido Orgánico (Web Audio API)
+- **Cambio de Pestaña (`playTabSwitch`)**: Sonido orgánico tipo madera/tick de 50ms para retroalimentación táctil al navegar.
+- **Transición de Pasos (`playScreenTransition`)**: Acordes armónicos en frecuencias relajantes de 528 Hz y 792 Hz con caída suave.
+
+### 4. Flujo de Registro y Misiones Detalladas
+- **Registro sin Fricción**: Eliminado el selector obligatorio de foto previo a la creación de cuenta (se configura posteriormente en el Perfil).
+- **Instrucciones Paso a Paso de Misiones**: Incorporadas guías prácticas de acción en cada micromisión y creado el modal de detalle (`#modal-mission-detail`).
+
+### 5. Compilación y Entrega de APK
+- **Capacitor & GitHub Actions CI**: Sincronización continua de activos web hacia Android y compilación automatizada en [`apphbits/mision-app`](https://github.com/apphbits/mision-app).
+- **Binario Disponible**: `apk/mision.apk` actualizado (3.88 MB).
+
 ## [v1.1.0] - 2026-09-12
 
 ### 1. Autenticación & Seguridad OAuth (Google Cloud Console + Supabase)
