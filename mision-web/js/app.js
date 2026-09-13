@@ -1284,47 +1284,6 @@ Responde en formato JSON:
       }
     });
 
-    // Register Avatar Selection with < 500 KB Validation
-    const regAvatarFile = document.getElementById('register-avatar-file');
-    const regAvatarPreview = document.getElementById('register-avatar-preview');
-    const regAvatarWrap = document.getElementById('register-avatar-preview-wrap');
-    const btnTriggerAvatar = document.getElementById('btn-trigger-avatar-select');
-    const regAvatarStatus = document.getElementById('register-avatar-status');
-
-    regAvatarWrap?.addEventListener('click', () => regAvatarFile?.click());
-    btnTriggerAvatar?.addEventListener('click', () => regAvatarFile?.click());
-
-    regAvatarFile?.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      const check = validateAvatarFile(file);
-      if (!check.valid) {
-        window.soundEngine.playClick();
-        showToast(check.error, 'error');
-        regAvatarFile.value = '';
-        if (regAvatarStatus) {
-          regAvatarStatus.textContent = `❌ ${check.error}`;
-          regAvatarStatus.className = 'text-[10px] text-red-600 font-bold mt-0.5';
-        }
-        return;
-      }
-
-      // Valid image < 500 KB
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        selectedRegisterAvatarData = evt.target.result;
-        if (regAvatarPreview) regAvatarPreview.src = selectedRegisterAvatarData;
-        if (regAvatarStatus) {
-          regAvatarStatus.textContent = `✓ Foto válida (${check.sizeKb} KB)`;
-          regAvatarStatus.className = 'text-[10px] text-emerald-600 font-bold mt-0.5';
-        }
-        window.soundEngine.playSpark();
-        showToast(`Foto seleccionada (${check.sizeKb} KB)`, 'add_a_photo');
-      };
-      reader.readAsDataURL(file);
-    });
-
     // Supabase Live Client
     const SUPABASE_URL = "https://bxgdaqcnphulhfchfqnf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_IExyjYiifrQe-_pWU5qgpw_HqZnZNhm";

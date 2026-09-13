@@ -233,30 +233,9 @@
                 </div>
               </form>
 
-              <!-- FORM 2: REGISTRO (CON VALIDACIÓN DE FOTO < 500KB) -->
+              <!-- FORM 2: REGISTRO (DIRECTO Y SENCILLO SIN PEDIR FOTO ANTES) -->
               <form id="form-auth-register" class="flex flex-col space-y-3 hidden">
                 
-                <!-- Profile Picture Uploader (< 500KB) -->
-                <div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#FAFAF8] border border-dashed border-[#D7DDD4] text-center">
-                  <div class="relative group cursor-pointer" id="register-avatar-preview-wrap" title="Haz clic para seleccionar imagen">
-                    <img id="register-avatar-preview" class="w-16 h-16 rounded-full object-cover ring-2 ring-primary-200 bg-white" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Vista previa avatar"/>
-                    <div class="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span class="material-symbols-outlined text-white text-[20px]">photo_camera</span>
-                    </div>
-                    <span class="absolute right-0 bottom-0 w-5 h-5 bg-primary-600 rounded-full text-white flex items-center justify-center shadow-sm">
-                      <span class="material-symbols-outlined text-[13px]">edit</span>
-                    </span>
-                  </div>
-                  
-                  <input type="file" id="register-avatar-file" accept="image/png, image/jpeg, image/webp, image/gif" class="hidden"/>
-                  
-                  <button type="button" id="btn-trigger-avatar-select" class="mt-2 text-[11px] font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 cursor-pointer">
-                    <span class="material-symbols-outlined text-[15px]">add_a_photo</span>
-                    <span>Subir Foto de Perfil</span>
-                  </button>
-                  <span id="register-avatar-status" class="text-[10px] text-charcoal-muted mt-0.5">Solo imágenes (PNG, JPG, WEBP) · Máximo 500 KB</span>
-                </div>
-
                 <div>
                   <label class="block text-[11px] font-bold text-charcoal mb-1">Nombre Completo</label>
                   <div class="relative">
