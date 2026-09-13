@@ -236,6 +236,10 @@ body.dark-theme .animate-modal label {
   color: #CBD5E1 !important;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-canvas);
@@ -245,6 +249,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -282,8 +288,8 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
 }
 
 @keyframes modalSlideUp {
-  from { transform: translateY(40px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(40px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 @keyframes toastSlide {
@@ -294,7 +300,7 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
 }
 
 .animate-modal {
-  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modalSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .toast-message {
@@ -334,7 +340,7 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
   color: var(--text-muted);
 }
 
-/* Tab Switching animation */
+/* Tab Switching animation & Smooth Screen Entrance */
 .view-panel {
   display: none !important;
 }
@@ -343,12 +349,67 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
   display: flex !important;
   flex-direction: column;
   opacity: 1;
-  animation: fadeIn 0.2s ease-in-out forwards;
+  animation: screenSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes screenSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Staggered smooth entrance for sections and cards */
+.view-panel.active > div:nth-child(1) {
+  animation: itemSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 0.02s;
+}
+.view-panel.active > div:nth-child(2) {
+  animation: itemSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 0.06s;
+}
+.view-panel.active > div:nth-child(3) {
+  animation: itemSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 0.10s;
+}
+.view-panel.active > div:nth-child(4) {
+  animation: itemSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 0.14s;
+}
+.view-panel.active > div:nth-child(5) {
+  animation: itemSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 0.18s;
+}
+
+@keyframes itemSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Onboarding Step Entrance */
+.onboarding-step-animate {
+  animation: stepEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stepEntrance {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Floating Confetti Canvas */

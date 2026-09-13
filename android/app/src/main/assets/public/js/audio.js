@@ -119,6 +119,53 @@ class MissionAudioEngine {
     osc.start(now);
     osc.stop(now + 0.25);
   }
+
+  playTabSwitch() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(560, now);
+    osc.frequency.exponentialRampToValueAtTime(720, now + 0.04);
+
+    gain.gain.setValueAtTime(0.045, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.05);
+  }
+
+  playScreenTransition() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    [528, 792].forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + i * 0.025);
+
+      gain.gain.setValueAtTime(0.035, now + i * 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.025 + 0.2);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now + i * 0.025);
+      osc.stop(now + i * 0.025 + 0.22);
+    });
+  }
 }
 
 window.soundEngine = new MissionAudioEngine();

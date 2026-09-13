@@ -271,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function goToOnboardingStep(stepNum) {
     onboardingState.step = stepNum;
+    window.soundEngine.playScreenTransition();
     
     // Switch slide visibility cleanly to fit content height without blank space
     for (let s = 1; s <= 3; s++) {
@@ -279,9 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (s === stepNum) {
           slide.classList.remove('hidden');
           slide.style.display = 'flex';
+          slide.classList.remove('onboarding-step-animate');
+          // Trigger reflow to restart CSS animation
+          void slide.offsetWidth;
+          slide.classList.add('onboarding-step-animate');
         } else {
           slide.classList.add('hidden');
           slide.style.display = 'none';
+          slide.classList.remove('onboarding-step-animate');
         }
       }
     }
@@ -294,9 +300,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const screenEl = document.querySelector('.simulator-screen');
     if (screenEl) {
-      screenEl.scrollTop = 0;
+      screenEl.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function populateStep2() {
@@ -1649,6 +1655,9 @@ Responde en formato JSON:
   // Tab Navigation System
   function switchTab(target) {
     if (!target) return;
+    if (activeTab !== target) {
+      window.soundEngine.playTabSwitch();
+    }
     activeTab = target;
 
     // Update bottom navigation bar items
@@ -1665,16 +1674,22 @@ Responde en formato JSON:
       }
     });
 
-    // Hide all view panels and show target panel
+    // Hide all view panels and show target panel with entrance animation
     document.querySelectorAll('.view-panel').forEach(panel => {
       panel.classList.remove('active');
     });
 
     const targetPanel = document.getElementById(`view-${target}`);
     if (targetPanel) {
+      // Trigger reflow to restart entrance animation
+      void targetPanel.offsetWidth;
       targetPanel.classList.add('active');
     }
 
+    const screenEl = document.querySelector('.simulator-screen');
+    if (screenEl) {
+      screenEl.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -1682,7 +1697,6 @@ Responde en formato JSON:
   document.querySelectorAll('[data-tab]').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
-      window.soundEngine.playClick();
       switchTab(el.dataset.tab);
     });
   });
