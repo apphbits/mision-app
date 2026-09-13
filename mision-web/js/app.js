@@ -1661,17 +1661,9 @@ Responde en formato JSON:
     activeTab = target;
 
     // Update bottom navigation bar items
-    document.querySelectorAll('nav .bottom-nav-link').forEach(l => {
+    document.querySelectorAll('#bottom-nav-bar .bottom-nav-link').forEach(l => {
       const isTarget = l.dataset.tab === target;
-      if (isTarget) {
-        l.classList.remove('text-charcoal-muted', 'w-10', 'h-10');
-        l.classList.add('bg-[#27303A]', 'text-leaf-500', 'px-3.5', 'py-2', 'shadow-sm');
-        l.querySelector('.nav-label')?.classList.remove('hidden');
-      } else {
-        l.classList.remove('bg-[#27303A]', 'text-leaf-500', 'px-3.5', 'py-2', 'shadow-sm');
-        l.classList.add('text-charcoal-muted', 'w-10', 'h-10');
-        l.querySelector('.nav-label')?.classList.add('hidden');
-      }
+      l.classList.toggle('active', isTarget);
     });
 
     // Hide all view panels and show target panel with entrance animation
@@ -1686,6 +1678,10 @@ Responde en formato JSON:
       targetPanel.classList.add('active');
     }
 
+    const mainScroll = document.getElementById('app-main-content');
+    if (mainScroll) {
+      mainScroll.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     const screenEl = document.querySelector('.simulator-screen');
     if (screenEl) {
       screenEl.scrollTo({ top: 0, behavior: 'smooth' });

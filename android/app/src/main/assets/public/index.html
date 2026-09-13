@@ -150,7 +150,7 @@
         </header>
 
         <!-- Main Scrollable Feed -->
-        <main class="flex-1 flex flex-col relative w-full pt-2 pb-16 px-3.5 sm:px-4">
+        <main id="app-main-content" class="flex-1 flex flex-col relative w-full pt-2 pb-24 px-3.5 sm:px-4 overflow-y-auto">
           
           <!-- ========================================== -->
           <!-- VIEW AUTH: LOGIN Y REGISTRO (Pantalla Inicial) -->
@@ -991,32 +991,32 @@
 
         </main>
 
-        <!-- Clean Floating Bottom Navigation Inside Screen Container -->
-        <nav id="bottom-nav-bar" class="sticky bottom-3 inset-x-0 z-40 px-4 max-w-sm mx-auto w-full">
-          <div class="h-14 px-3 rounded-full bg-white/95 backdrop-blur-xl float-shadow border border-[#EAECE6] flex items-center justify-between">
+        <!-- Clean Floating Bottom Navigation Fixed Inside Screen Container -->
+        <nav id="bottom-nav-bar" class="bottom-nav-container">
+          <div class="bottom-nav-pill">
             
             <!-- Tab 1: Hoy -->
-            <a href="#" data-tab="hoy" class="bottom-nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#27303A] text-leaf-500 transition-all font-semibold text-xs shadow-sm">
-              <span class="material-symbols-outlined text-[19px]">wb_sunny</span>
-              <span class="nav-label text-white font-medium">Hoy</span>
+            <a href="#" data-tab="hoy" class="bottom-nav-link active">
+              <span class="material-symbols-outlined">wb_sunny</span>
+              <span class="nav-label">Hoy</span>
             </a>
 
             <!-- Tab 2: Metas -->
-            <a href="#" data-tab="metas" class="bottom-nav-link flex items-center justify-center w-10 h-10 rounded-full text-charcoal-muted hover:text-charcoal transition-colors">
-              <span class="material-symbols-outlined text-[21px]">flag</span>
-              <span class="nav-label text-white font-medium hidden">Metas</span>
+            <a href="#" data-tab="metas" class="bottom-nav-link">
+              <span class="material-symbols-outlined">flag</span>
+              <span class="nav-label">Metas</span>
             </a>
 
             <!-- Tab 3: Evolución / Progreso -->
-            <a href="#" data-tab="progreso" class="bottom-nav-link flex items-center justify-center w-10 h-10 rounded-full text-charcoal-muted hover:text-charcoal transition-colors">
-              <span class="material-symbols-outlined text-[21px]">equalizer</span>
-              <span class="nav-label text-white font-medium hidden">Progreso</span>
+            <a href="#" data-tab="progreso" class="bottom-nav-link">
+              <span class="material-symbols-outlined">equalizer</span>
+              <span class="nav-label">Progreso</span>
             </a>
 
             <!-- Tab 4: Perfil -->
-            <a href="#" data-tab="perfil" class="bottom-nav-link flex items-center justify-center w-10 h-10 rounded-full text-charcoal-muted hover:text-charcoal transition-colors">
-              <span class="material-symbols-outlined text-[21px]">person</span>
-              <span class="nav-label text-white font-medium hidden">Perfil</span>
+            <a href="#" data-tab="perfil" class="bottom-nav-link">
+              <span class="material-symbols-outlined">person</span>
+              <span class="nav-label">Perfil</span>
             </a>
 
           </div>
