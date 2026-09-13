@@ -39,7 +39,11 @@ jobs:
 
       - name: Initialize Capacitor Android Project
         run: |
-          npx cap sync android || (npx cap add android && npx cap sync android)
+          if [ ! -f android/gradlew ]; then
+            rm -rf android
+            npx cap add android
+          fi
+          npx cap sync android
 
       - name: Build Android APK with Gradle
         run: |
