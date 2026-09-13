@@ -44,25 +44,19 @@ jobs:
             npx cap add android
           fi
           npx cap sync android
-          python3 -c "
-manifest_path = 'android/app/src/main/AndroidManifest.xml'
-with open(manifest_path, 'r', encoding='utf-8') as f:
-    content = f.read()
-
-intent_filter = '''
-            <intent-filter>
-                <action android:name=\"android.intent.action.VIEW\" />
-                <category android:name=\"android.intent.category.DEFAULT\" />
-                <category android:name=\"android.intent.category.BROWSABLE\" />
-                <data android:scheme=\"app.mision.santuario\" />
-            </intent-filter>'''
-
-if 'app.mision.santuario' not in content:
-    content = content.replace('</activity>', intent_filter + '\n        </activity>')
-    with open(manifest_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print('Successfully injected custom deep link scheme into AndroidManifest.xml')
-"
+          node -e "
+            const fs = require('fs');
+            const file = 'android/app/src/main/AndroidManifest.xml';
+            if (fs.existsSync(file)) {
+              let content = fs.readFileSync(file, 'utf8');
+              const filter = '            <intent-filter>\n                <action android:name=\"android.intent.action.VIEW\" />\n                <category android:name=\"android.intent.category.DEFAULT\" />\n                <category android:name=\"android.intent.category.BROWSABLE\" />\n                <data android:scheme=\"app.mision.santuario\" />\n            </intent-filter>';
+              if (!content.includes('app.mision.santuario')) {
+                content = content.replace('</activity>', filter + '\n        </activity>');
+                fs.writeFileSync(file, content, 'utf8');
+                console.log('Custom scheme injected!');
+              }
+            }
+          "
 
       - name: Build Android APK with Gradle
         run: |
