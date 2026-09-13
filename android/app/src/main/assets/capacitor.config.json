@@ -1,0 +1,9 @@
+{
+	"appId": "app.mision.santuario",
+	"appName": "MISIÓN",
+	"webDir": "mision-web",
+	"server": {
+		"androidScheme": "https",
+		"cleartext": true
+	}
+}

@@ -6,6 +6,25 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeTab = 'hoy';
   let activeCategoryFilter = 'all';
 
+  // Supabase Global Client Initialization
+  const SUPABASE_URL = "https://bxgdaqcnphulhfchfqnf.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_IExyjYiifrQe-_pWU5qgpw_HqZnZNhm";
+  let sbClient = null;
+  if (window.supabase) {
+    try {
+      sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+      window.sbClient = sbClient;
+    } catch (e) {
+      console.warn('Supabase initialization notice:', e);
+    }
+  }
+
   // Onboarding Workflow State
   const onboardingState = {
     step: 1,
@@ -298,6 +317,10 @@ document.addEventListener('DOMContentLoaded', () => {
       populateStep3();
     }
 
+    const mainContent = document.getElementById('app-main-content');
+    if (mainContent) {
+      mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     const screenEl = document.querySelector('.simulator-screen');
     if (screenEl) {
       screenEl.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1383,12 +1406,11 @@ Responde en formato JSON:
       }
 
       try {
-        const isNative = window.Capacitor?.isNativePlatform?.() || 
-                         window.Capacitor !== undefined || 
+        const isNative = (window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) || 
                          window.location.protocol === 'capacitor:' || 
-                         window.location.protocol === 'ionic:' || 
-                         (window.location.hostname === 'localhost' && (!window.location.port || window.location.port === '80'));
+                         window.location.protocol === 'ionic:';
 
+        // Direct web return to current origin + path (works both locally and in production)
         const redirectUrl = isNative 
           ? 'app.mision.santuario://login-callback' 
           : (window.location.origin + window.location.pathname);
@@ -1421,14 +1443,6 @@ Responde en formato JSON:
         if (googleBtnText) googleBtnText.textContent = 'Continuar con Google';
       }
     });
-
-    // Supabase Live Client
-    const SUPABASE_URL = "https://bxgdaqcnphulhfchfqnf.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_IExyjYiifrQe-_pWU5qgpw_HqZnZNhm";
-    let sbClient = null;
-    if (window.supabase) {
-      sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
 
     // Login Form Submit (Supabase Auth + Fallback)
     formLogin?.addEventListener('submit', async (e) => {
@@ -1745,7 +1759,7 @@ Responde en formato JSON:
   async function checkSupabaseSession() {
     if (!sbClient) return;
     try {
-      // 1. Check if returning from web OAuth redirect with access_token or code in URL
+      // 1. Check if returning from web OAuth redirect with access_token (implicit flow)
       if (window.location.hash && window.location.hash.includes('access_token')) {
         const params = new URLSearchParams(window.location.hash.substring(1));
         const access_token = params.get('access_token');
@@ -1760,7 +1774,21 @@ Responde en formato JSON:
         }
       }
 
-      // 2. Listen for native Android deep link appUrlOpen
+      // 2. Check for PKCE auth code in URL search parameters (?code=...)
+      if (window.location.search && window.location.search.includes('code=')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+          const { data, error } = await sbClient.auth.exchangeCodeForSession(code);
+          if (data?.session?.user) {
+            handleSupabaseUser(data.session.user);
+            try { window.history.replaceState(null, null, window.location.pathname); } catch (_) {}
+            return;
+          }
+        }
+      }
+
+      // 3. Listen for native Android deep link appUrlOpen
       if (window.Capacitor?.Plugins?.App?.addListener) {
         window.Capacitor.Plugins.App.addListener('appUrlOpen', async (event) => {
           if (window.Capacitor?.Plugins?.Browser?.close) {
@@ -1773,19 +1801,20 @@ Responde en formato JSON:
         });
       }
 
-      // 3. Regular active session check
+      // 4. Regular active session check
       const { data: { session }, error } = await sbClient.auth.getSession();
       if (session?.user) {
         handleSupabaseUser(session.user);
       }
 
+      // 5. Active session state changes listener
       sbClient.auth.onAuthStateChange((event, session) => {
-        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') && session?.user) {
           handleSupabaseUser(session.user);
         }
       });
     } catch (e) {
-      console.warn('Supabase session note:', e);
+      console.warn('Supabase session check notice:', e);
     }
   }
 
@@ -1818,23 +1847,28 @@ Responde en formato JSON:
   }
 
   function handleSupabaseUser(user) {
+    if (!user) return;
     const meta = user.user_metadata || {};
     const fullName = meta.full_name || meta.name || user.email?.split('@')[0] || 'Aventurero';
     const email = user.email || 'usuario@mision.app';
     const avatarUrl = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80';
 
-    const state = window.appStore.getState();
-    if (!state.isAuthenticated || state.profile.email !== email) {
-      window.appStore.loginUser({ email, fullName, avatarUrl });
-      showToast(`¡Sesión iniciada como ${fullName}! 🌿`, 'check_circle', true);
-      if (state.isOnboardingCompleted) {
-        switchTab('hoy');
-      } else {
-        onboardingState.step = 1;
-        goToOnboardingStep(1);
-      }
-      renderAll();
+    const nameDisplay = document.getElementById('onboarding-name-display');
+    if (nameDisplay) {
+      nameDisplay.textContent = fullName.split(' ')[0] || fullName;
     }
+
+    const state = window.appStore.getState();
+    window.appStore.loginUser({ email, fullName, avatarUrl });
+    showToast(`¡Sesión iniciada como ${fullName}! 🌿`, 'check_circle', true);
+    
+    if (state.isOnboardingCompleted) {
+      switchTab('hoy');
+    } else {
+      onboardingState.step = 1;
+      goToOnboardingStep(1);
+    }
+    renderAll();
   }
 
   // Init Theme, Auth, Session and Onboarding UI Bindings
