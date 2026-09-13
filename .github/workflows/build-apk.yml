@@ -44,19 +44,7 @@ jobs:
             npx cap add android
           fi
           npx cap sync android
-          node -e "
-            const fs = require('fs');
-            const file = 'android/app/src/main/AndroidManifest.xml';
-            if (fs.existsSync(file)) {
-              let content = fs.readFileSync(file, 'utf8');
-              const filter = '            <intent-filter>\n                <action android:name=\"android.intent.action.VIEW\" />\n                <category android:name=\"android.intent.category.DEFAULT\" />\n                <category android:name=\"android.intent.category.BROWSABLE\" />\n                <data android:scheme=\"app.mision.santuario\" />\n            </intent-filter>';
-              if (!content.includes('app.mision.santuario')) {
-                content = content.replace('</activity>', filter + '\n        </activity>');
-                fs.writeFileSync(file, content, 'utf8');
-                console.log('Custom scheme injected!');
-              }
-            }
-          "
+          node scripts/inject-android-customizations.js
 
       - name: Build Android APK with Gradle
         run: |

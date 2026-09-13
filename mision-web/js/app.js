@@ -2161,6 +2161,37 @@ Responde en formato JSON:
         themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
       }
       localStorage.setItem('mision_theme', theme);
+
+      // 1. Update <meta name="theme-color"> for Browser / WebView System Bars
+      const metaTheme = document.getElementById('meta-theme-color') || document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) {
+        metaTheme.setAttribute('content', isDark ? '#111A15' : '#F8F8F5');
+      }
+
+      // 2. Android Native Navigation Bar & Status Bar Bridge (changes phone bottom button bar color)
+      if (window.AndroidNativeBars && typeof window.AndroidNativeBars.setSystemBarsTheme === 'function') {
+        try {
+          window.AndroidNativeBars.setSystemBarsTheme(isDark);
+        } catch (e) {
+          console.warn('AndroidNativeBars notice:', e);
+        }
+      }
+
+      // 3. Capacitor Native Plugins (if installed)
+      if (window.Capacitor && window.Capacitor.Plugins) {
+        const { StatusBar, NavigationBar } = window.Capacitor.Plugins;
+        if (StatusBar) {
+          try {
+            StatusBar.setBackgroundColor({ color: isDark ? '#111A15' : '#F8F8F5' });
+            StatusBar.setStyle({ style: isDark ? 'DARK' : 'LIGHT' });
+          } catch (_) {}
+        }
+        if (NavigationBar) {
+          try {
+            NavigationBar.setColor({ color: isDark ? '#111A15' : '#F8F8F5', darkButtons: !isDark });
+          } catch (_) {}
+        }
+      }
     }
 
     if (savedTheme) {
