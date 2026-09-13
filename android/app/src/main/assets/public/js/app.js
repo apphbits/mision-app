@@ -850,20 +850,20 @@ Responde en formato JSON con la siguiente estructura:
         return `
           <div class="p-3.5 rounded-2xl border transition-all ${
             isUnlocked 
-              ? 'bg-white border-[#DBEFE6] soft-shadow' 
-              : 'bg-[#F4F4F0]/60 border-[#EAECE6] opacity-60'
+              ? 'bg-white dark:bg-[#131D17] border-[#DBEFE6] dark:border-[#23352B] soft-shadow' 
+              : 'bg-[#F4F4F0]/60 dark:bg-[#101713] border-[#EAECE6] dark:border-[#1E2E25] opacity-75'
           } flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-              isUnlocked ? 'bg-[#F0F7F4] text-[#3A7D63]' : 'bg-[#EAECE6] text-[#8A96A3]'
+              isUnlocked ? 'bg-[#F0F7F4] dark:bg-[#182C22] text-[#3A7D63] dark:text-[#4ADE80]' : 'bg-[#EAECE6] dark:bg-[#19271F] text-[#8A96A3] dark:text-[#64748B]'
             }">
               <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' ${isUnlocked ? 1 : 0};">${ach.icon}</span>
             </div>
             <div class="flex flex-col min-w-0 flex-1">
               <div class="flex items-center justify-between">
-                <h4 class="font-bold text-[13px] text-[#27303A] truncate">${ach.title}</h4>
-                <span class="text-[10px] font-bold text-[#B87547]">+${ach.reward}✨</span>
+                <h4 class="font-bold text-[13px] text-charcoal dark:text-slate-100 truncate">${ach.title}</h4>
+                <span class="text-[10px] font-bold text-[#B87547] dark:text-amber-400">+${ach.reward}✨</span>
               </div>
-              <p class="text-[11px] text-[#596573] line-clamp-2 leading-tight mt-0.5">${ach.description}</p>
+              <p class="text-[11px] text-charcoal-muted dark:text-slate-300 line-clamp-2 leading-tight mt-0.5">${ach.description}</p>
             </div>
           </div>
         `;
@@ -874,17 +874,17 @@ Responde en formato JSON con la siguiente estructura:
     const rewardsContainer = document.getElementById('rewards-bazaar');
     if (rewardsContainer) {
       rewardsContainer.innerHTML = state.rewards.map(rew => `
-        <div class="p-4 rounded-2xl bg-white border border-[#EAECE6] soft-shadow flex items-center justify-between gap-3">
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#131D17] border border-[#EAECE6] dark:border-[#23352B] soft-shadow flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-[#FFF8F3] border border-[#FCD9C2] text-[#F3A871] flex items-center justify-center shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-[#FFF8F3] dark:bg-[#261D12] border border-[#FCD9C2] dark:border-[#3D2D1B] text-[#F3A871] dark:text-amber-400 flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">${rew.icon}</span>
             </div>
             <div>
-              <h4 class="font-bold text-[13.5px] text-[#27303A] leading-tight">${rew.title}</h4>
-              <p class="text-[11.5px] text-[#596573] mt-0.5">${rew.description}</p>
+              <h4 class="font-bold text-[13.5px] text-charcoal dark:text-slate-100 leading-tight">${rew.title}</h4>
+              <p class="text-[11.5px] text-charcoal-muted dark:text-slate-300 mt-0.5">${rew.description}</p>
             </div>
           </div>
-          <button data-id="${rew.id}" class="btn-buy-reward px-3.5 py-2 rounded-xl bg-[#FFF8F3] hover:bg-[#FDEEE3] border border-[#FCD9C2] text-[#B87547] font-bold text-xs shrink-0 active:scale-95 transition-all flex items-center gap-1">
+          <button data-id="${rew.id}" class="btn-buy-reward px-3.5 py-2 rounded-xl bg-[#FFF8F3] dark:bg-[#2D2114] hover:bg-[#FDEEE3] dark:hover:bg-[#3D2D1B] border border-[#FCD9C2] dark:border-[#4D3818] text-[#B87547] dark:text-amber-300 font-bold text-xs shrink-0 active:scale-95 transition-all flex items-center gap-1 cursor-pointer">
             <span>${rew.cost}</span>
             <span class="text-[10px]">✨</span>
           </button>
@@ -1593,7 +1593,7 @@ Responde en formato JSON:
       submitBtn.disabled = false;
     });
 
-    // Perfil View Avatar Change with < 500 KB Validation
+    // Perfil View Avatar Change with < 500 KB Validation & Supabase Sync
     const perfilAvatarWrap = document.getElementById('perfil-avatar-wrap');
     const btnPerfilChangePhoto = document.getElementById('btn-perfil-change-photo');
     const perfilAvatarFile = document.getElementById('perfil-avatar-file');
@@ -1614,15 +1614,94 @@ Responde en formato JSON:
       }
 
       const reader = new FileReader();
-      reader.onload = (evt) => {
+      reader.onload = async (evt) => {
         const dataUrl = evt.target.result;
         window.appStore.updateUserProfile({ avatarUrl: dataUrl });
         window.soundEngine.playSpark();
         launchConfetti();
-        showToast(`¡Foto de perfil actualizada! (${check.sizeKb} KB)`, 'photo_camera', true);
+        showToast(`¡Foto de perfil actualizada y guardada! (${check.sizeKb} KB)`, 'photo_camera', true);
         renderAll();
+
+        // Sync with Supabase DB
+        if (sbClient) {
+          try {
+            const { data: { user } } = await sbClient.auth.getUser();
+            if (user) {
+              const currentName = window.appStore.getState().profile.fullName;
+              await sbClient.from('profiles').upsert({
+                id: user.id,
+                email: user.email,
+                full_name: currentName,
+                avatar_url: dataUrl,
+                updated_at: new Date().toISOString()
+              });
+              await sbClient.auth.updateUser({
+                data: { avatar_url: dataUrl }
+              });
+            }
+          } catch (err) {
+            console.warn('Supabase avatar update notice:', err);
+          }
+        }
       };
       reader.readAsDataURL(file);
+    });
+
+    // Edit Profile Name Modal Handler
+    const modalEditName = document.getElementById('modal-edit-profile-name');
+    const btnEditProfileName = document.getElementById('btn-edit-profile-name');
+    const btnCloseEditNameModal = document.getElementById('btn-close-edit-name-modal');
+    const formEditProfileName = document.getElementById('form-edit-profile-name');
+    const inputEditProfileName = document.getElementById('input-edit-profile-name');
+
+    btnEditProfileName?.addEventListener('click', () => {
+      window.soundEngine.playClick();
+      const currentName = window.appStore.getState().profile.fullName || '';
+      if (inputEditProfileName) inputEditProfileName.value = currentName;
+      modalEditName?.classList.remove('hidden');
+      inputEditProfileName?.focus();
+    });
+
+    btnCloseEditNameModal?.addEventListener('click', () => {
+      modalEditName?.classList.add('hidden');
+    });
+
+    modalEditName?.addEventListener('click', (e) => {
+      if (e.target === modalEditName) modalEditName.classList.add('hidden');
+    });
+
+    formEditProfileName?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newName = inputEditProfileName?.value.trim();
+      if (!newName) return;
+
+      window.soundEngine.playSpark();
+      window.appStore.updateUserProfile({ fullName: newName });
+      modalEditName?.classList.add('hidden');
+      showToast(`¡Nombre actualizado a ${newName}! ✨`, 'badge', true);
+      renderAll();
+
+      // Persist in Supabase DB
+      if (sbClient) {
+        try {
+          const { data: { user } } = await sbClient.auth.getUser();
+          if (user) {
+            const currentAvatar = window.appStore.getState().profile.avatarUrl;
+            await sbClient.from('profiles').upsert({
+              id: user.id,
+              email: user.email,
+              full_name: newName,
+              avatar_url: currentAvatar,
+              updated_at: new Date().toISOString()
+            });
+            await sbClient.auth.updateUser({
+              data: { full_name: newName }
+            });
+          }
+        } catch (err) {
+          console.warn('Supabase name update notice:', err);
+        }
+      }
     });
 
     // Logout Button (Smooth without modal freeze)
@@ -1846,12 +1925,48 @@ Responde en formato JSON:
     }
   }
 
-  function handleSupabaseUser(user) {
+  async function handleSupabaseUser(user) {
     if (!user) return;
     const meta = user.user_metadata || {};
-    const fullName = meta.full_name || meta.name || user.email?.split('@')[0] || 'Aventurero';
+    let fullName = meta.full_name || meta.name || user.email?.split('@')[0] || 'Aventurero';
     const email = user.email || 'usuario@mision.app';
-    const avatarUrl = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80';
+    let avatarUrl = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80';
+
+    // Check Supabase profiles table for customized profile name & avatar
+    if (sbClient) {
+      try {
+        const { data: dbProfile } = await sbClient
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (dbProfile) {
+          if (dbProfile.full_name) fullName = dbProfile.full_name;
+          if (dbProfile.avatar_url) avatarUrl = dbProfile.avatar_url;
+          if (typeof dbProfile.total_impulso === 'number') {
+            window.appStore.updateUserProfile({
+              totalImpulso: dbProfile.total_impulso,
+              chispas: dbProfile.chispas
+            });
+          }
+        } else {
+          // Upsert initial profile in DB
+          await sbClient.from('profiles').upsert({
+            id: user.id,
+            email: user.email,
+            full_name: fullName,
+            avatar_url: avatarUrl,
+            total_impulso: 0,
+            chispas: 10,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.warn('Profile fetch notice:', err);
+      }
+    }
 
     const nameDisplay = document.getElementById('onboarding-name-display');
     if (nameDisplay) {
@@ -1870,6 +1985,15 @@ Responde en formato JSON:
     }
     renderAll();
   }
+
+  // Header Avatar / User Widget Click -> Switch to Perfil tab
+  const openProfileView = (e) => {
+    if (e.target.closest('#btn-toggle-theme')) return;
+    window.soundEngine.playClick();
+    switchTab('perfil');
+  };
+  document.getElementById('header-avatar-btn')?.addEventListener('click', openProfileView);
+  document.getElementById('header-avatar')?.addEventListener('click', openProfileView);
 
   // Init Theme, Auth, Session and Onboarding UI Bindings
   initThemeSystem();

@@ -214,6 +214,159 @@ body.dark-theme .category-chip.bg-primary-600 {
   font-weight: 800 !important;
 }
 
+/* Progress / Evolution Screen Dark Mode */
+body.dark-theme #view-progreso section:first-child,
+body.dark-theme #view-progreso .bg-gradient-to-br {
+  background: linear-gradient(135deg, #15221B 0%, #0F1713 100%) !important;
+  border-color: #273D30 !important;
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-theme #evo-level-title {
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+}
+body.dark-theme #evo-level-sub {
+  color: #CBD5E1 !important;
+}
+body.dark-theme #view-progreso span.text-primary-600 {
+  color: #4ADE80 !important;
+}
+body.dark-theme #evo-impulso-total {
+  background-color: #1E3327 !important;
+  color: #4ADE80 !important;
+  border-color: #2D4C3A !important;
+}
+body.dark-theme #evo-impulso-prog {
+  color: #E2E8F0 !important;
+}
+body.dark-theme #view-progreso .bg-white.rounded-full,
+body.dark-theme #view-progreso .shadow-inner {
+  background-color: #19271F !important;
+  border-color: #273D30 !important;
+}
+body.dark-theme #view-progreso .grid-cols-2 > div {
+  background-color: #16241D !important;
+  border-color: #273D30 !important;
+}
+body.dark-theme #evo-streak-days,
+body.dark-theme #evo-discipline-rate {
+  color: #FFFFFF !important;
+}
+
+/* Achievements Cards Dark Mode */
+body.dark-theme #achievements-grid > div {
+  background-color: #15221B !important;
+  border-color: #273D30 !important;
+}
+body.dark-theme #achievements-grid > div h4 {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+body.dark-theme #achievements-grid > div p {
+  color: #CBD5E1 !important;
+  font-weight: 500 !important;
+}
+body.dark-theme #achievements-grid > div .bg-\[\#F0F7F4\] {
+  background-color: #1E3327 !important;
+  color: #4ADE80 !important;
+}
+body.dark-theme #achievements-grid > div .bg-\[\#EAECE6\] {
+  background-color: #1E2E25 !important;
+  color: #94A3B8 !important;
+}
+
+/* Rewards Bazaar Cards Dark Mode */
+body.dark-theme #rewards-bazaar > div {
+  background-color: #15221B !important;
+  border-color: #273D30 !important;
+}
+body.dark-theme #rewards-bazaar > div h4 {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+body.dark-theme #rewards-bazaar > div p {
+  color: #CBD5E1 !important;
+  font-weight: 500 !important;
+}
+body.dark-theme #rewards-bazaar > div .bg-\[\#FFF8F3\] {
+  background-color: #2D2114 !important;
+  border-color: #4D3818 !important;
+  color: #FBBF24 !important;
+}
+body.dark-theme .btn-buy-reward {
+  background-color: #2D2114 !important;
+  border-color: #5D431D !important;
+  color: #FDE68A !important;
+}
+body.dark-theme .btn-buy-reward:hover {
+  background-color: #3D2D1B !important;
+}
+
+/* Profile Screen Dark Mode */
+body.dark-theme #view-perfil section {
+  background-color: #15221B !important;
+  border-color: #273D30 !important;
+}
+body.dark-theme #perfil-name {
+  color: #FFFFFF !important;
+}
+body.dark-theme #perfil-email {
+  color: #94A3B8 !important;
+}
+body.dark-theme #perfil-rank {
+  color: #4ADE80 !important;
+  background-color: #1E3327 !important;
+  border-color: #2D4C3A !important;
+}
+body.dark-theme #view-perfil .grid-cols-3 > div {
+  background-color: #15221B !important;
+  border-color: #273D30 !important;
+}
+body.dark-theme #perfil-total-completions,
+body.dark-theme #perfil-total-impulso,
+body.dark-theme #perfil-best-streak {
+  color: #FFFFFF !important;
+}
+body.dark-theme #btn-replay-onboarding {
+  background-color: #182C22 !important;
+  border-color: #273D30 !important;
+  color: #4ADE80 !important;
+}
+body.dark-theme #btn-load-demo {
+  background-color: #1E2E25 !important;
+  border-color: #2D4336 !important;
+  color: #F1F5F9 !important;
+}
+body.dark-theme #btn-logout {
+  background-color: #1E2E25 !important;
+  border-color: #2D4336 !important;
+  color: #F1F5F9 !important;
+}
+body.dark-theme #btn-logout:hover {
+  background-color: #331A1A !important;
+  border-color: #5A2727 !important;
+  color: #FCA5A5 !important;
+}
+body.dark-theme #btn-reset-data {
+  background-color: #2A1616 !important;
+  border-color: #4D2020 !important;
+  color: #F87171 !important;
+}
+
+/* Header User Widget & Badge Dark Mode */
+body.dark-theme .header-level-badge {
+  color: #F8FAFC !important;
+}
+body.dark-theme #header-user-widgets > div {
+  background-color: #131D17 !important;
+  border-color: #23352B !important;
+}
+body.dark-theme #btn-toggle-theme {
+  background-color: #131D17 !important;
+  border-color: #23352B !important;
+  color: #F59E0B !important;
+}
+
 /* Modals & Sheets in Dark Mode */
 body.dark-theme .modal-sheet,
 body.dark-theme .animate-modal {
