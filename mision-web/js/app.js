@@ -744,54 +744,69 @@ Responde ÚNICAMENTE en formato JSON:
     }
 
     goalsList.innerHTML = state.goals.map(goal => `
-      <div data-goal-id="${goal.id}" class="goal-card-clickable w-full bg-white rounded-3xl p-5 soft-shadow border border-[#EAECE6] flex flex-col space-y-3.5 relative overflow-hidden group">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-[#F0F7F4] border border-[#DBEFE6] flex items-center justify-center text-[#3A7D63]">
-              <span class="material-symbols-outlined text-[22px]">${goal.icon || 'flag'}</span>
+      <div data-goal-id="${goal.id}" class="goal-card-clickable w-full bg-white dark:bg-[#131D17] rounded-2xl py-3 px-3.5 soft-shadow border border-[#EAECE6] dark:border-[#23352B] flex flex-col space-y-2 relative overflow-hidden group cursor-pointer hover:border-[#3A7D63] transition-all">
+        <!-- Top Row: Icon + Category + Title + Progress + Quick Delete -->
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <div class="w-8 h-8 rounded-xl bg-[#F0F7F4] dark:bg-[#182C22] border border-[#DBEFE6] dark:border-[#273D30] flex items-center justify-center text-[#3A7D63] dark:text-emerald-400 shrink-0">
+              <span class="material-symbols-outlined text-[18px]">${goal.icon || 'flag'}</span>
             </div>
-            <div>
-              <span class="text-[10px] font-bold text-[#3A7D63] uppercase tracking-wider">${goal.category}</span>
-              <h3 class="font-display font-bold text-[16px] text-[#27303A] leading-tight group-hover:text-[#3A7D63] transition-colors">${goal.title}</h3>
+            <div class="flex flex-col min-w-0 flex-1">
+              <span class="text-[9.5px] font-bold text-[#3A7D63] dark:text-emerald-400 uppercase tracking-wider leading-none">${goal.category}</span>
+              <h3 class="font-display font-bold text-[13.5px] text-[#27303A] dark:text-slate-100 truncate mt-0.5 leading-snug">${goal.title}</h3>
             </div>
           </div>
-          <div class="px-2.5 py-1 rounded-full bg-[#F2F3EE] text-xs font-bold text-[#27303A]">
-            ${goal.progress}%
+          
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="px-2 py-0.5 rounded-lg bg-[#F2F3EE] dark:bg-[#19271F] text-[10.5px] font-extrabold text-[#27303A] dark:text-slate-200">
+              ${goal.progress}%
+            </span>
+            <button data-goal-id="${goal.id}" class="btn-delete-goal-quick w-7 h-7 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-charcoal-muted hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 flex items-center justify-center transition-all cursor-pointer" title="Eliminar Meta">
+              <span class="material-symbols-outlined text-[16px]">delete</span>
+            </button>
           </div>
         </div>
 
-        <p class="text-[13px] text-[#596573] leading-relaxed">${goal.description}</p>
+        ${goal.description ? `<p class="text-[11.5px] text-[#596573] dark:text-slate-400 truncate leading-none">${goal.description}</p>` : ''}
 
-        <!-- Progress Bar -->
-        <div class="flex flex-col space-y-1.5">
-          <div class="flex items-center justify-between text-[11px] font-semibold text-[#8A96A3]">
-            <span>${goal.completedMissionsCount} de ${goal.totalMissionsTarget} misiones realizadas</span>
-            <span>Objetivo: ${goal.targetDate || 'En curso'}</span>
+        <!-- Compact Progress Bar & Quick Action -->
+        <div class="flex items-center justify-between gap-2 pt-0.5">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <div class="flex-1 h-1.5 rounded-full bg-[#F2F3EE] dark:bg-[#1C2C22] overflow-hidden">
+              <div class="h-full rounded-full bg-[#3A7D63] dark:bg-emerald-500 transition-all duration-500" style="width: ${goal.progress}%;"></div>
+            </div>
+            <span class="text-[10px] font-semibold text-[#8A96A3] dark:text-slate-400 shrink-0">
+              ${goal.completedMissionsCount || 0}/${goal.totalMissionsTarget || 20} misiones
+            </span>
           </div>
-          <div class="w-full h-2 rounded-full bg-[#F2F3EE] overflow-hidden">
-            <div class="h-full rounded-full bg-[#3A7D63] transition-all duration-500" style="width: ${goal.progress}%;"></div>
-          </div>
-        </div>
-
-        <div class="pt-2 border-t border-[#EAECE6]/60 flex items-center justify-between">
-          <span class="text-[11px] font-semibold text-[#3A7D63] flex items-center gap-1 group-hover:underline">
-            <span>Ver Ruta & Misiones</span>
-            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+          <span class="text-[10.5px] font-bold text-[#3A7D63] dark:text-emerald-400 flex items-center gap-0.5 shrink-0">
+            <span>Ver Ruta</span>
+            <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
           </span>
-          <button data-goal-id="${goal.id}" class="btn-add-mission-to-goal text-xs font-bold text-[#3A7D63] hover:bg-[#F0F7F4] px-2.5 py-1 rounded-xl border border-[#DBEFE6] flex items-center gap-1 cursor-pointer">
-            <span class="material-symbols-outlined text-[16px]">add</span>
-            <span>Vincular Misión</span>
-          </button>
         </div>
       </div>
     `).join('');
 
     goalsList.querySelectorAll('.goal-card-clickable').forEach(card => {
       card.addEventListener('click', (e) => {
-        // If clicked on the add mission button specifically, ignore card click
-        if (e.target.closest('.btn-add-mission-to-goal')) return;
+        if (e.target.closest('.btn-delete-goal-quick') || e.target.closest('.btn-add-mission-to-goal')) return;
         const gid = card.dataset.goalId;
         if (gid) openGoalDetailModal(gid);
+      });
+    });
+
+    goalsList.querySelectorAll('.btn-delete-goal-quick').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const goalId = btn.dataset.goalId;
+        const goal = state.goals.find(g => g.id === goalId);
+        if (!goal) return;
+        if (confirm(`¿Eliminar la meta "${goal.title}" y sus misiones asociadas?`)) {
+          window.appStore.deleteGoal(goalId);
+          window.soundEngine.playClick();
+          showToast('Meta eliminada', 'delete');
+          renderAll();
+        }
       });
     });
 
@@ -1172,6 +1187,20 @@ Responde ÚNICAMENTE en formato JSON:
     }
   });
 
+  // Delete Mission from Detail Modal
+  document.getElementById('btn-modal-delete-mission')?.addEventListener('click', () => {
+    const toggleBtn = document.getElementById('btn-modal-toggle-mission');
+    const mid = toggleBtn?.dataset.missionId;
+    if (!mid) return;
+    if (confirm('¿Estás seguro de que deseas eliminar esta misión?')) {
+      window.appStore.deleteMission(mid);
+      window.soundEngine.playClick();
+      closeMissionDetailModal();
+      showToast('Misión eliminada', 'delete');
+      renderAll();
+    }
+  });
+
   // Button Listeners for Goal Detail Modal
   document.getElementById('btn-close-goal-detail-modal')?.addEventListener('click', closeGoalDetailModal);
   
@@ -1179,6 +1208,21 @@ Responde ÚNICAMENTE en formato JSON:
     const gid = activeDetailGoalId;
     closeGoalDetailModal();
     openMissionModal(gid);
+  });
+
+  // Delete Goal from Detail Modal
+  document.getElementById('btn-delete-goal-from-detail')?.addEventListener('click', () => {
+    if (!activeDetailGoalId) return;
+    const state = window.appStore.getState();
+    const goal = state.goals.find(g => g.id === activeDetailGoalId);
+    if (!goal) return;
+    if (confirm(`¿Estás seguro de que deseas eliminar la meta "${goal.title}" y todas sus misiones vinculadas?`)) {
+      window.appStore.deleteGoal(activeDetailGoalId);
+      window.soundEngine.playClick();
+      closeGoalDetailModal();
+      showToast('Meta eliminada con éxito', 'delete');
+      renderAll();
+    }
   });
 
   // ====================================================================

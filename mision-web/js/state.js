@@ -556,6 +556,37 @@ class Store {
     return newMission;
   }
 
+  deleteGoal(goalId) {
+    const goalIndex = this.state.goals.findIndex(g => g.id === goalId);
+    if (goalIndex === -1) return { success: false };
+
+    const [deletedGoal] = this.state.goals.splice(goalIndex, 1);
+    // Also delete linked missions
+    this.state.dailyMissions = this.state.dailyMissions.filter(m => m.goalId !== goalId);
+
+    this._save();
+    return { success: true, deletedGoal };
+  }
+
+  deleteMission(missionId) {
+    const missionIndex = this.state.dailyMissions.findIndex(m => m.id === missionId);
+    if (missionIndex === -1) return { success: false };
+
+    const [deletedMission] = this.state.dailyMissions.splice(missionIndex, 1);
+
+    // If mission was linked to a goal and completed, adjust goal counters
+    if (deletedMission.goalId) {
+      const goal = this.state.goals.find(g => g.id === deletedMission.goalId);
+      if (goal && deletedMission.isCompleted) {
+        goal.completedMissionsCount = Math.max(0, (goal.completedMissionsCount || 1) - 1);
+        goal.progress = Math.min(100, Math.round((goal.completedMissionsCount / (goal.totalMissionsTarget || 20)) * 100));
+      }
+    }
+
+    this._save();
+    return { success: true, deletedMission };
+  }
+
   buyReward(rewardId) {
     const reward = this.state.rewards.find(r => r.id === rewardId);
     if (!reward) return { success: false, reason: 'Recompensa no encontrada' };
