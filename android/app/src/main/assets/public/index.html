@@ -1201,12 +1201,22 @@
                     <option value="Creatividad">🎨 Creatividad</option>
                     <option value="Experiencias">🌎 Experiencias</option>
                     <option value="Bienestar">🌱 Bienestar</option>
+                    <option value="Otro">✨ Otro (Personalizado)...</option>
                   </select>
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-charcoal mb-1">Misiones Objetivo</label>
                   <input id="form-goal-count" type="number" min="5" max="200" value="20" class="w-full px-2.5 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-xs outline-none"/>
                 </div>
+              </div>
+
+              <!-- Custom Category Input Container for Goal -->
+              <div id="container-custom-goal-cat" class="hidden">
+                <label class="block text-[11px] font-bold text-charcoal mb-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-primary-600">edit_note</span>
+                  <span>Escribe tu categoría personalizada</span>
+                </label>
+                <input id="form-goal-custom-cat" placeholder="Ej: Espiritualidad, Idiomas, Liderazgo..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
               </div>
 
               <div>
@@ -1276,7 +1286,11 @@
                     <option value="Cuerpo">💪 Cuerpo</option>
                     <option value="Crecimiento" selected>💼 Crecimiento</option>
                     <option value="Finanzas">💰 Finanzas</option>
+                    <option value="Relaciones">❤️ Relaciones</option>
+                    <option value="Creatividad">🎨 Creatividad</option>
+                    <option value="Experiencias">🌎 Experiencias</option>
                     <option value="Bienestar">🌱 Bienestar</option>
+                    <option value="Otro">✨ Otro...</option>
                   </select>
                 </div>
                 <div>
@@ -1292,6 +1306,15 @@
                   <label class="block text-[10px] font-bold text-charcoal mb-1">Minutos</label>
                   <input id="form-mission-duration" type="number" min="5" max="180" value="20" class="w-full px-2 py-2 rounded-xl border border-[#EAECE6] bg-canvas text-[11px] outline-none"/>
                 </div>
+              </div>
+
+              <!-- Custom Category Input Container for Mission -->
+              <div id="container-custom-mission-cat" class="hidden">
+                <label class="block text-[11px] font-bold text-charcoal mb-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-primary-600">edit_note</span>
+                  <span>Escribe tu categoría personalizada</span>
+                </label>
+                <input id="form-mission-custom-cat" placeholder="Ej: Espiritualidad, Idiomas..." class="w-full px-3 py-2 rounded-xl border border-[#EAECE6] bg-canvas focus:bg-white focus:border-primary-600 text-xs outline-none transition-all"/>
               </div>
 
               <div class="pt-1 flex gap-2">

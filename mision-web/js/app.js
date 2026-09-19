@@ -579,7 +579,13 @@ Responde ÚNICAMENTE en formato JSON:
     // Filter Chips
     const chipsContainer = document.getElementById('category-chips');
     if (chipsContainer) {
-      const categories = ['all', 'Mente', 'Cuerpo', 'Crecimiento', 'Finanzas', 'Bienestar', 'Experiencias', 'Relaciones'];
+      const defaultCats = ['Mente', 'Cuerpo', 'Crecimiento', 'Finanzas', 'Bienestar', 'Experiencias', 'Relaciones', 'Creatividad'];
+      const activeCats = new Set([
+        ...state.goals.map(g => g.category),
+        ...state.dailyMissions.map(m => m.category)
+      ].filter(Boolean));
+      const extraCats = Array.from(activeCats).filter(c => !defaultCats.includes(c) && c !== 'all' && c !== 'Otro');
+      const categories = ['all', ...defaultCats, ...extraCats];
       chipsContainer.innerHTML = categories.map(cat => {
         const isActive = activeCategoryFilter === cat;
         const label = cat === 'all' ? 'Todas' : cat;
@@ -1600,6 +1606,12 @@ Responde ÚNICAMENTE en formato JSON:
 
   function openGoalModal() {
     window.soundEngine.playClick();
+    const customContainer = document.getElementById('container-custom-goal-cat');
+    const customInput = document.getElementById('form-goal-custom-cat');
+    const catSelect = document.getElementById('form-goal-cat');
+    if (customContainer) customContainer.classList.add('hidden');
+    if (customInput) customInput.value = '';
+    if (catSelect && catSelect.value === 'Otro') catSelect.value = 'Crecimiento';
     if (modalGoal) modalGoal.classList.remove('hidden');
   }
 
@@ -1609,6 +1621,13 @@ Responde ÚNICAMENTE en formato JSON:
 
   function openMissionModal(preselectedGoalId = null) {
     window.soundEngine.playClick();
+    const customContainer = document.getElementById('container-custom-mission-cat');
+    const customInput = document.getElementById('form-mission-custom-cat');
+    const catSelect = document.getElementById('form-mission-cat');
+    if (customContainer) customContainer.classList.add('hidden');
+    if (customInput) customInput.value = '';
+    if (catSelect && catSelect.value === 'Otro') catSelect.value = 'Crecimiento';
+
     if (modalMission) {
       const select = document.getElementById('form-mission-goal');
       if (select) {
@@ -1624,6 +1643,35 @@ Responde ÚNICAMENTE en formato JSON:
     if (modalMission) modalMission.classList.add('hidden');
   }
 
+  // Toggle Category Custom Inputs
+  const formGoalCat = document.getElementById('form-goal-cat');
+  const containerCustomGoalCat = document.getElementById('container-custom-goal-cat');
+  const formGoalCustomCat = document.getElementById('form-goal-custom-cat');
+  if (formGoalCat && containerCustomGoalCat) {
+    formGoalCat.addEventListener('change', () => {
+      if (formGoalCat.value === 'Otro') {
+        containerCustomGoalCat.classList.remove('hidden');
+        if (formGoalCustomCat) formGoalCustomCat.focus();
+      } else {
+        containerCustomGoalCat.classList.add('hidden');
+      }
+    });
+  }
+
+  const formMissionCat = document.getElementById('form-mission-cat');
+  const containerCustomMissionCat = document.getElementById('container-custom-mission-cat');
+  const formMissionCustomCat = document.getElementById('form-mission-custom-cat');
+  if (formMissionCat && containerCustomMissionCat) {
+    formMissionCat.addEventListener('change', () => {
+      if (formMissionCat.value === 'Otro') {
+        containerCustomMissionCat.classList.remove('hidden');
+        if (formMissionCustomCat) formMissionCustomCat.focus();
+      } else {
+        containerCustomMissionCat.classList.add('hidden');
+      }
+    });
+  }
+
   // Form Submissions: CREATE GOAL WITH AI
   const formGoal = document.getElementById('form-goal');
   if (formGoal) {
@@ -1631,7 +1679,11 @@ Responde ÚNICAMENTE en formato JSON:
       e.preventDefault();
       const title = document.getElementById('form-goal-title').value;
       const desc = document.getElementById('form-goal-desc').value;
-      const cat = document.getElementById('form-goal-cat').value;
+      let cat = document.getElementById('form-goal-cat').value;
+      if (cat === 'Otro') {
+        const customCatVal = (document.getElementById('form-goal-custom-cat')?.value || '').trim();
+        cat = customCatVal || 'Personalizado';
+      }
       const targetDate = document.getElementById('form-goal-date').value;
       const targetCount = document.getElementById('form-goal-count').value;
 
@@ -1694,6 +1746,7 @@ Responde ÚNICAMENTE en formato JSON:
         
         closeGoalModal();
         formGoal.reset();
+        if (containerCustomGoalCat) containerCustomGoalCat.classList.add('hidden');
         renderAll();
 
         // Immediately open Goal Detail Modal so the user can inspect the generated roadmap and missions!
@@ -1721,7 +1774,11 @@ Responde ÚNICAMENTE en formato JSON:
       e.preventDefault();
       const title = document.getElementById('form-mission-title').value;
       const desc = document.getElementById('form-mission-desc').value;
-      const cat = document.getElementById('form-mission-cat').value;
+      let cat = document.getElementById('form-mission-cat').value;
+      if (cat === 'Otro') {
+        const customMissionCatVal = (document.getElementById('form-mission-custom-cat')?.value || '').trim();
+        cat = customMissionCatVal || 'Personalizado';
+      }
       const diff = document.getElementById('form-mission-diff').value;
       const duration = document.getElementById('form-mission-duration').value;
       const goalId = document.getElementById('form-mission-goal').value;
@@ -1741,6 +1798,7 @@ Responde ÚNICAMENTE en formato JSON:
       showToast('¡Nueva misión agregada a tu día!');
       closeMissionModal();
       formMission.reset();
+      if (containerCustomMissionCat) containerCustomMissionCat.classList.add('hidden');
       renderAll();
     });
   }
