@@ -624,38 +624,33 @@ Responde ÚNICAMENTE en formato JSON:
           const isDone = mission.isCompleted;
           const goal = mission.goalId ? state.goals.find(g => g.id === mission.goalId) : null;
           return `
-            <div data-id="${mission.id}" class="mission-card relative overflow-hidden rounded-2xl bg-white p-3.5 soft-shadow border border-[#EAECE6] flex items-center justify-between gap-3 cursor-pointer hover:border-[#3A7D63] transition-all ${isDone ? 'is-completed opacity-80 bg-[#FAFBFA]' : ''}">
-              <div class="flex items-center gap-3 flex-1 min-w-0">
-                <button data-id="${mission.id}" class="btn-check-mission w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+            <div data-id="${mission.id}" class="mission-card relative overflow-hidden rounded-xl bg-white dark:bg-[#131D17] py-2 px-3 soft-shadow border border-[#EAECE6] dark:border-[#23352B] flex items-center justify-between gap-2.5 cursor-pointer hover:border-[#3A7D63] transition-all ${isDone ? 'is-completed opacity-75 bg-[#FAFBFA] dark:bg-[#0E1712]' : ''}">
+              <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                <button data-id="${mission.id}" class="btn-check-mission w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                   isDone 
                     ? 'bg-[#22C55E] border-[#22C55E] text-white shadow-glow-leaf' 
-                    : 'border-[#D7DDD4] bg-[#F8F9F7] text-transparent hover:border-[#3A7D63]'
+                    : 'border-[#D7DDD4] dark:border-[#354A3E] bg-[#F8F9F7] dark:bg-[#19271F] text-transparent hover:border-[#3A7D63]'
                 }">
-                  <span class="material-symbols-outlined text-[18px]">check</span>
+                  <span class="material-symbols-outlined text-[14px]">check</span>
                 </button>
-                <div class="flex flex-col flex-1 min-w-0">
-                  <div class="flex flex-wrap items-center gap-1.5 mb-1">
-                    <span class="px-2 py-0.5 rounded-md bg-[#F2F3EE] text-[9.5px] font-bold text-[#3A7D63] uppercase tracking-wide">
-                      ${mission.category}
-                    </span>
-                    <span class="px-2 py-0.5 rounded-md bg-[#F0F7F4] text-[9.5px] font-semibold text-[#3A7D63]">
-                      ⏱️ ${mission.durationMinutes || mission.duration || 5} min
-                    </span>
-                    ${goal ? `<span class="text-[10.5px] font-medium text-[#8A96A3] truncate max-w-[130px]">· ${goal.title}</span>` : ''}
+                <div class="flex flex-col min-w-0 flex-1 justify-center">
+                  <div class="flex items-center gap-1.5 text-[10px] text-charcoal-muted dark:text-slate-400 leading-none mb-0.5 truncate">
+                    <span class="font-bold text-primary-600 dark:text-emerald-400 uppercase tracking-wider">${mission.category}</span>
+                    <span class="text-[8px] opacity-40">•</span>
+                    <span>⏱️ ${mission.durationMinutes || mission.duration || 5} min</span>
+                    ${goal ? `<span class="text-[8px] opacity-40">•</span><span class="truncate font-medium text-charcoal-soft dark:text-slate-400">${goal.title}</span>` : ''}
                   </div>
-                  <h4 class="font-bold text-[13.5px] text-[#27303A] leading-snug ${isDone ? 'line-through text-[#8A96A3]' : ''}">${mission.title}</h4>
+                  <h4 class="font-bold text-[12.5px] text-[#27303A] dark:text-slate-100 truncate leading-tight ${isDone ? 'line-through text-[#8A96A3] dark:text-slate-500' : ''}">${mission.title}</h4>
                 </div>
               </div>
               
-              <div class="flex items-center gap-1.5 shrink-0">
-                <div class="flex items-center gap-1 text-[11px] font-bold text-[#3A7D63] bg-[#F0F7F4] px-2 py-1 rounded-lg border border-[#DBEFE6]">
-                  <span>+${mission.impulso}</span>
-                  <span class="text-[10px]">⚡</span>
-                </div>
-                <div class="flex items-center gap-0.5 text-[10px] font-semibold text-[#B87547] bg-[#FFF8F3] px-1.5 py-1 rounded-lg border border-[#FCD9C2]">
-                  <span>+${mission.chispas}</span>
-                  <span class="text-[9px]">✨</span>
-                </div>
+              <div class="flex items-center gap-1 shrink-0 pl-2 border-l border-[#F0F2EC] dark:border-[#1F2F26]">
+                <span class="text-[10.5px] font-bold text-primary-600 dark:text-emerald-400 flex items-center gap-0.5">
+                  +${mission.impulso}<span class="text-[9px]">⚡</span>
+                </span>
+                <span class="text-[10px] font-semibold text-peach-600 dark:text-amber-400 flex items-center gap-0.5">
+                  +${mission.chispas}<span class="text-[8px]">✨</span>
+                </span>
               </div>
             </div>
           `;
@@ -1032,22 +1027,23 @@ Responde ÚNICAMENTE en formato JSON:
         `;
       } else {
         missionsContainer.innerHTML = linkedMissions.map(m => `
-          <div data-mission-id="${m.id}" class="goal-linked-mission-item p-3 rounded-2xl bg-white dark:bg-[#18261E] border border-[#EAECE6] dark:border-[#273D30] soft-shadow flex items-center justify-between gap-3 cursor-pointer hover:border-[#3A7D63] transition-all ${m.isCompleted ? 'opacity-70 bg-[#F4F6F2] dark:bg-[#121A15]' : ''}">
-            <div class="flex items-center gap-3 flex-1 min-w-0">
-              <button data-id="${m.id}" class="btn-check-detail-mission w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                m.isCompleted ? 'bg-[#22C55E] border-[#22C55E] text-white' : 'border-[#D7DDD4] bg-[#F8F9F7] text-transparent hover:border-[#3A7D63]'
+          <div data-mission-id="${m.id}" class="goal-linked-mission-item py-2 px-3 rounded-xl bg-white dark:bg-[#18261E] border border-[#EAECE6] dark:border-[#273D30] soft-shadow flex items-center justify-between gap-2.5 cursor-pointer hover:border-[#3A7D63] transition-all ${m.isCompleted ? 'opacity-70 bg-[#F4F6F2] dark:bg-[#121A15]' : ''}">
+            <div class="flex items-center gap-2.5 flex-1 min-w-0">
+              <button data-id="${m.id}" class="btn-check-detail-mission w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                m.isCompleted ? 'bg-[#22C55E] border-[#22C55E] text-white' : 'border-[#D7DDD4] dark:border-[#354A3E] bg-[#F8F9F7] dark:bg-[#19271F] text-transparent hover:border-[#3A7D63]'
               }">
-                <span class="material-symbols-outlined text-[16px]">check</span>
+                <span class="material-symbols-outlined text-[14px]">check</span>
               </button>
-              <div class="flex flex-col min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 mb-0.5">
-                  <span class="text-[9.5px] font-bold text-[#3A7D63] dark:text-emerald-400 uppercase tracking-wide">${m.difficulty || 'Normal'}</span>
-                  <span class="text-[9.5px] text-[#8A96A3]">· ⏱️ ${m.durationMinutes} min</span>
+              <div class="flex flex-col min-w-0 flex-1 justify-center">
+                <div class="flex items-center gap-1.5 text-[10px] text-[#8A96A3] dark:text-slate-400 leading-none mb-0.5">
+                  <span class="font-bold text-[#3A7D63] dark:text-emerald-400 uppercase tracking-wide">${m.difficulty || 'Normal'}</span>
+                  <span class="text-[8px] opacity-40">•</span>
+                  <span>⏱️ ${m.durationMinutes} min</span>
                 </div>
-                <h5 class="font-bold text-xs text-[#27303A] dark:text-slate-100 ${m.isCompleted ? 'line-through text-[#8A96A3]' : ''}">${m.title}</h5>
+                <h5 class="font-bold text-[12.5px] text-[#27303A] dark:text-slate-100 truncate leading-tight ${m.isCompleted ? 'line-through text-[#8A96A3]' : ''}">${m.title}</h5>
               </div>
             </div>
-            <div class="flex items-center gap-1 text-[11px] font-bold text-[#3A7D63] dark:text-emerald-400 shrink-0">
+            <div class="flex items-center gap-1 text-[10.5px] font-bold text-[#3A7D63] dark:text-emerald-400 shrink-0 pl-2 border-l border-[#F0F2EC] dark:border-[#1F2F26]">
               <span>+${m.impulso}⚡</span>
             </div>
           </div>
