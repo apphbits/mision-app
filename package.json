@@ -4,6 +4,8 @@
   "description": "MISIÓN — Santuario Personal de Hábitos",
   "main": "mision-web/index.html",
   "scripts": {
+    "start": "python -m http.server 3000 -d mision-web",
+    "dev": "python -m http.server 3000 -d mision-web",
     "build": "echo 'Assets ready in mision-web'",
     "cap:sync": "cap sync",
     "cap:open": "cap open android"
