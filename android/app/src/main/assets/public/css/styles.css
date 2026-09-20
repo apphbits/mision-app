@@ -1057,6 +1057,24 @@ body.dark-theme #app-main-content::-webkit-scrollbar-thumb:hover {
   display: none;
 }
 
+.roadmap-desc-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: max-height 0.3s ease;
+}
+
+.roadmap-desc-text.is-expanded {
+  -webkit-line-clamp: unset;
+  display: block;
+}
+
+.roadmap-toggle-icon {
+  transition: transform 0.25s ease;
+}
+
 /* ====================================================================
    FIXED FLOATING BOTTOM NAVIGATION BAR
    ==================================================================== */

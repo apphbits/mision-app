@@ -233,7 +233,11 @@ class Store {
     try {
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed.isAuthenticated && (parsed.isOnboardingCompleted || (parsed.goals && parsed.goals.length > 0) || (parsed.dailyMissions && parsed.dailyMissions.length > 0))) {
+          parsed.isOnboardingCompleted = true;
+        }
+        return parsed;
       }
     } catch (e) {
       console.warn('Error reading from localStorage, using initial state', e);
@@ -279,11 +283,53 @@ class Store {
 
   loginUser({ email, fullName, avatarUrl } = {}) {
     this.state.isAuthenticated = true;
+    this.state.isOnboardingCompleted = true;
     if (email) this.state.profile.email = email;
     if (fullName) this.state.profile.fullName = fullName;
     if (avatarUrl) this.state.profile.avatarUrl = avatarUrl;
     this._save();
     return this.state.profile;
+  }
+
+  syncSupabaseUserData({ dbProfile, dbGoals } = {}) {
+    if (dbProfile) {
+      if (dbProfile.full_name) this.state.profile.fullName = dbProfile.full_name;
+      if (dbProfile.avatar_url) this.state.profile.avatarUrl = dbProfile.avatar_url;
+      if (typeof dbProfile.total_impulso === 'number') this.state.profile.totalImpulso = dbProfile.total_impulso;
+      if (typeof dbProfile.chispas === 'number') this.state.profile.chispas = dbProfile.chispas;
+    }
+    if (Array.isArray(dbGoals) && dbGoals.length > 0) {
+      this.state.goals = dbGoals.map(g => ({
+        id: g.id,
+        title: g.title,
+        description: g.description || '',
+        category: g.category || 'Crecimiento',
+        status: g.status || 'active',
+        icon: g.icon || 'flag',
+        color: g.color || '#3A7D63',
+        targetDate: g.target_date || '2026-12-31',
+        totalMissionsTarget: g.total_missions_target || 20,
+        completedMissionsCount: g.completed_missions_count || 0,
+        progress: parseFloat(g.progress) || 0
+      }));
+      if (!this.state.dailyMissions || this.state.dailyMissions.length === 0) {
+        this.state.dailyMissions = this.state.goals.map((g, idx) => ({
+          id: 'm-sync-' + Date.now() + '-' + idx,
+          goalId: g.id,
+          title: `Avanzar en: ${g.title}`,
+          description: g.description || `Acción diaria para tu meta: ${g.title}.`,
+          category: g.category || 'Crecimiento',
+          difficulty: 'Normal',
+          durationMinutes: 15,
+          impulso: 25,
+          chispas: 10,
+          isCompleted: false,
+          completedAt: null
+        }));
+      }
+    }
+    this.state.isOnboardingCompleted = true;
+    this._save();
   }
 
   registerUser({ email, fullName, avatarUrl } = {}) {

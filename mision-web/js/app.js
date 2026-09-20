@@ -25,6 +25,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ====================================================================
+  // LOCAL NOTIFICATIONS SERVICE (Capacitor Native Mobile & Web Push)
+  // ====================================================================
+  async function initNotificationService() {
+    try {
+      if (window.Capacitor?.Plugins?.LocalNotifications) {
+        const check = await window.Capacitor.Plugins.LocalNotifications.checkPermissions();
+        if (check.display !== 'granted') {
+          await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+        }
+      } else if ('Notification' in window && Notification.permission === 'default') {
+        await Notification.requestPermission();
+      }
+    } catch (e) {
+      console.warn('Notice initializing notification permissions:', e);
+    }
+  }
+
+  async function scheduleNextMissionNotification(completedMission) {
+    try {
+      const state = window.appStore.getState();
+      let nextMission = null;
+
+      // 1. Prefer next pending mission for the same goal
+      if (completedMission?.goalId) {
+        nextMission = state.dailyMissions.find(m => m.goalId === completedMission.goalId && !m.isCompleted && m.id !== completedMission.id);
+      }
+      // 2. Fallback to any pending daily mission
+      if (!nextMission) {
+        nextMission = state.dailyMissions.find(m => !m.isCompleted && m.id !== completedMission?.id);
+      }
+
+      if (!nextMission) return;
+
+      const delayMinutes = 5; // Test mode: 5 minutes (configured for testing)
+      const scheduledDate = new Date(Date.now() + delayMinutes * 60 * 1000);
+      const notifTitle = '🌿 ¡Siguiente Misión de MISIÓN lista!';
+      const notifBody = `Es momento de tu siguiente paso: "${nextMission.title}". ¡Dedica ${nextMission.durationMinutes || 15} min a tu meta!`;
+
+      // Native Mobile Push via Capacitor LocalNotifications (fires even if app is closed or phone is locked!)
+      if (window.Capacitor?.Plugins?.LocalNotifications) {
+        const notifId = Math.floor(Math.random() * 1000000) + 1;
+        await window.Capacitor.Plugins.LocalNotifications.schedule({
+          notifications: [
+            {
+              id: notifId,
+              title: notifTitle,
+              body: notifBody,
+              schedule: { at: scheduledDate },
+              sound: 'beep.wav',
+              smallIcon: 'ic_stat_icon_config_sample',
+              actionTypeId: '',
+              extra: { missionId: nextMission.id }
+            }
+          ]
+        });
+        console.log(`[Notification] Scheduled native notification #${notifId} for ${scheduledDate.toLocaleTimeString()}`);
+      }
+
+      // Web Browser Notification fallback
+      if ('Notification' in window && Notification.permission === 'granted') {
+        setTimeout(() => {
+          new Notification(notifTitle, {
+            body: notifBody,
+            icon: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=128&q=80'
+          });
+        }, delayMinutes * 60 * 1000);
+      }
+
+      setTimeout(() => {
+        showToast(`⏰ Notificación para tu siguiente misión programada en ${delayMinutes} min`, 'schedule', true);
+      }, 1200);
+    } catch (err) {
+      console.warn('Error scheduling next mission notification:', err);
+    }
+  }
+
+  // Request notification permissions on startup
+  initNotificationService();
+
   // Onboarding Workflow State
   const onboardingState = {
     step: 1,
@@ -461,7 +541,7 @@ Responde ÚNICAMENTE en formato JSON:
     const descEl = document.getElementById('step3-mission-desc');
     const missionDesc = onboardingState.aiMissionDesc || descEl?.textContent || `Paso inicial de ${onboardingState.dailyMinutes} minutos para construir tu meta: ${onboardingState.dream}.`;
 
-    window.appStore.completeOnboarding({
+    const result = window.appStore.completeOnboarding({
       name,
       dream: onboardingState.aiGoalTitle || onboardingState.dream,
       meaning: onboardingState.meaning,
@@ -472,6 +552,28 @@ Responde ÚNICAMENTE en formato JSON:
       icon: onboardingState.icon,
       color: '#3A7D63'
     });
+
+    if (sbClient) {
+      try {
+        sbClient.auth.getUser().then(({ data }) => {
+          const user = data?.user;
+          if (user && result?.newGoal) {
+            sbClient.from('goals').insert({
+              user_id: user.id,
+              title: result.newGoal.title,
+              description: result.newGoal.description,
+              category: result.newGoal.category,
+              target_date: result.newGoal.targetDate || '2026-12-31',
+              progress: 0,
+              icon: result.newGoal.icon,
+              color: result.newGoal.color
+            }).then(() => console.log('Onboarding goal synced to Supabase')).catch(err => console.warn('Supabase onboarding goal sync notice:', err));
+          }
+        });
+      } catch (e) {
+        console.warn('Supabase onboarding sync notice:', e);
+      }
+    }
 
     window.soundEngine.playLevelUp();
     launchConfetti();
@@ -681,6 +783,7 @@ Responde ÚNICAMENTE en formato JSON:
                 window.soundEngine.playMissionComplete();
                 launchConfetti();
                 showToast(`¡Misión cumplida! +${res.mission.impulso}⚡ +${res.mission.chispas}✨`);
+                scheduleNextMissionNotification(res.mission);
                 if (res.newlyUnlocked.length > 0) {
                   setTimeout(() => {
                     window.soundEngine.playLevelUp();
@@ -1018,16 +1121,19 @@ Responde ÚNICAMENTE en formato JSON:
           ];
 
       roadmapContainer.innerHTML = stages.map((st, i) => `
-        <div class="roadmap-step-line flex items-start gap-3 p-3.5 rounded-2xl ${i === 0 ? 'bg-[#F0F7F4] border border-[#DBEFE6] dark:bg-[#16261D] dark:border-[#23382C]' : 'bg-[#FAFAF8] border border-[#EAECE6] dark:bg-[#151D18] dark:border-[#202E24] opacity-85'}">
-          <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${i === 0 ? 'bg-[#3A7D63] text-white' : 'bg-[#EAECE6] text-[#596573] dark:bg-[#273D30] dark:text-slate-300'}">
+        <div onclick="const desc = this.querySelector('.roadmap-desc-text'); const icon = this.querySelector('.roadmap-toggle-icon'); if(desc){ desc.classList.toggle('is-expanded'); icon?.classList.toggle('rotate-180'); }" class="roadmap-step-line cursor-pointer select-none flex items-start gap-3 p-3 rounded-2xl active:scale-[0.99] transition-all ${i === 0 ? 'bg-[#F0F7F4] border border-[#DBEFE6] dark:bg-[#16261D] dark:border-[#23382C]' : 'bg-[#FAFAF8] border border-[#EAECE6] dark:bg-[#151D18] dark:border-[#202E24] opacity-90'}">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold mt-0.5 ${i === 0 ? 'bg-[#3A7D63] text-white' : 'bg-[#EAECE6] text-[#596573] dark:bg-[#273D30] dark:text-slate-300'}">
             ${st.stage || (i + 1)}
           </div>
           <div class="flex flex-col flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center justify-between gap-1">
               <h5 class="font-bold text-xs text-[#27303A] dark:text-slate-100 truncate">${st.title}</h5>
-              <span class="text-[10px] font-bold shrink-0 ${i === 0 ? 'text-[#3A7D63] dark:text-emerald-400' : 'text-[#8A96A3]'}">${st.status || (i === 0 ? 'En progreso' : 'Próxima')}</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] font-bold ${i === 0 ? 'text-[#3A7D63] dark:text-emerald-400' : 'text-[#8A96A3]'}">${st.status || (i === 0 ? 'En progreso' : 'Próxima')}</span>
+                ${st.description ? `<span class="material-symbols-outlined roadmap-toggle-icon text-[14px] text-slate-400">expand_more</span>` : ''}
+              </div>
             </div>
-            ${st.description ? `<p class="text-[11px] text-[#596573] dark:text-slate-400 mt-0.5 leading-snug">${st.description}</p>` : ''}
+            ${st.description ? `<p class="roadmap-desc-text text-[11px] text-[#596573] dark:text-slate-400 mt-0.5 leading-snug">${st.description}</p>` : ''}
           </div>
         </div>
       `).join('');
@@ -1089,6 +1195,7 @@ Responde ÚNICAMENTE en formato JSON:
                 window.soundEngine.playMissionComplete();
                 launchConfetti();
                 showToast(`¡Misión cumplida! +${res.mission.impulso}⚡`);
+                scheduleNextMissionNotification(res.mission);
               } else {
                 window.soundEngine.playClick();
               }
@@ -1178,6 +1285,7 @@ Responde ÚNICAMENTE en formato JSON:
         window.soundEngine.playMissionComplete();
         launchConfetti();
         showToast(`¡Misión cumplida! +${res.mission.impulso}⚡ +${res.mission.chispas}✨`);
+        scheduleNextMissionNotification(res.mission);
         if (res.newlyUnlocked.length > 0) {
           setTimeout(() => {
             window.soundEngine.playLevelUp();
@@ -1269,10 +1377,11 @@ Responde ÚNICAMENTE en formato JSON:
     return null;
   }
 
-  function generateContextualHeuristicPlan({ title, description, category }) {
+  function generateContextualHeuristicPlan({ title, description, category, totalMissionsTarget }) {
     const t = (title || '').toLowerCase();
     const d = (description || '').toLowerCase();
     const cat = category || 'Crecimiento';
+    const targetCount = Math.min(Math.max(parseInt(totalMissionsTarget) || 5, 1), 10);
 
     let stages = [
       { stage: 1, title: 'Etapa 1: Activación y Fundamentos Prácticos', status: 'En progreso', description: 'Configurar herramientas, plataformas y dar los primeros pasos técnicos sin fricción.' },
@@ -1317,6 +1426,13 @@ Responde ÚNICAMENTE en formato JSON:
           durationMinutes: 20,
           difficulty: 'Normal',
           category: cat
+        },
+        {
+          title: 'Paso #5: Crear una rama (branch) y subir tu primer Pull Request',
+          description: '1. En tu repositorio local o en GitHub.com, crea una nueva rama llamada "feature-mi-perfil".\n2. Realiza una modificación agregando tus objetivos de desarrollo y guarda el commit.\n3. Abre un Pull Request hacia la rama main, revísalo y completa el merge con éxito.',
+          durationMinutes: 20,
+          difficulty: 'Difícil',
+          category: cat
         }
       ];
     } else if (t.includes('finanz') || t.includes('ahorr') || t.includes('dinero') || t.includes('presupuesto') || d.includes('gasto') || d.includes('invert') || d.includes('deuda')) {
@@ -1345,6 +1461,20 @@ Responde ÚNICAMENTE en formato JSON:
           description: '1. Elige una cuenta de ahorro separada de tu cuenta de gastos diarios (preferiblemente sin tarjeta de débito asociada).\n2. Transfiere hoy mismo una primera cantidad simbólica pero real para inaugurar tu fondo.\n3. Programa una transferencia automática mensual para el día siguiente al cobro de tu sueldo.',
           durationMinutes: 15,
           difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso #4: Plan de liquidación o amortización de pasivos',
+          description: '1. Lista todas tus deudas ordenadas de menor a mayor monto (método bola de nieve).\n2. Identifica la tasa de interés más alta y destina un monto extra mensual a la primera.\n3. Automatiza los pagos mínimos de las demás para no generar penalizaciones.',
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso #5: Definir vehículo de inversión a bajo costo (ETFs/Fondos)',
+          description: '1. Investiga opciones reguladas de inversión pasiva (Fondos Indexados o ETFs diversificados).\n2. Define tu horizonte temporal a 3-5 años y tu perfil de riesgo.\n3. Realiza la primera simulación con aportes periódicos automatizados.',
+          durationMinutes: 20,
+          difficulty: 'Difícil',
           category: cat
         }
       ];
@@ -1375,6 +1505,20 @@ Responde ÚNICAMENTE en formato JSON:
           durationMinutes: 15,
           difficulty: 'Normal',
           category: cat
+        },
+        {
+          title: 'Paso #4: Patrón de rasgueo dinámico con metrónomo',
+          description: '1. Aprende el patrón: abajo-abajo-arriba-arriba-abajo-arriba.\n2. Toca solo cuerdas muteadas hasta que la mano derecha se mueva con fluidez natural.\n3. Incorpora el primer acorde al patrón durante 15 minutos continuos.',
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso #5: Tocar estrofa y coro de tu primera canción',
+          description: '1. Busca los acordes de una canción sencilla de 3 acordes que te guste.\n2. Toca siguiendo la pista original a tempo lento.\n3. Grábate durante 1 minuto para evaluar precisión y ritmo.',
+          durationMinutes: 20,
+          difficulty: 'Difícil',
+          category: cat
         }
       ];
     } else if (t.includes('inglés') || t.includes('idioma') || t.includes('francés') || t.includes('alemán') || t.includes('vocabulario') || d.includes('hablar') || d.includes('viajar')) {
@@ -1404,6 +1548,20 @@ Responde ÚNICAMENTE en formato JSON:
           durationMinutes: 15,
           difficulty: 'Normal',
           category: cat
+        },
+        {
+          title: 'Paso #4: Práctica de sombras (Shadowing) de 10 minutos',
+          description: '1. Elige un audio corto o podcast para aprendices.\n2. Habla al mismo tiempo que el locutor imitando su velocidad y entonación sin leer texto.\n3. Anota 3 expresiones que memorizaste naturalmente con el ejercicio.',
+          durationMinutes: 15,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: 'Paso #5: Redactar un diario personal de 5 oraciones en el idioma',
+          description: '1. Describe 3 cosas que hiciste hoy y 2 metas para mañana en el idioma meta.\n2. Usa un corrector como DeepL o ChatGPT para revisar errores gramaticales.\n3. Lee en voz alta tu texto corregido dos veces.',
+          durationMinutes: 20,
+          difficulty: 'Difícil',
+          category: cat
         }
       ];
     } else {
@@ -1430,12 +1588,41 @@ Responde ÚNICAMENTE en formato JSON:
         },
         {
           title: `Paso #3: Evaluación de progreso y ajuste de técnica`,
-          description: `1. Revisa lo avanzado en los dos pasos anteriores y detecta puntos de fricción o dudas.\n2. Dedica 15 minutos a consultar una fuente de referencia o corregir errores técnicos.\n3. Deja preparado el material para la siguiente sesión de práctica.`,
+          description: `1. Revisa lo avanzado en los pasos anteriores y detecta puntos de fricción o dudas.\n2. Dedica 15 minutos a consultar una fuente de referencia o corregir errores técnicos.\n3. Deja preparado el material para la siguiente sesión de práctica.`,
           durationMinutes: 15,
           difficulty: 'Normal',
           category: cat
+        },
+        {
+          title: `Paso #4: Aplicación práctica y profundización en ${title}`,
+          description: `1. Desarrolla un bloque intensivo de 20 minutos poniendo en práctica la técnica adquirida.\n2. Mide la velocidad o precisión de tu ejecución.\n3. Anota dos aprendizajes clave en tu bitácora de progreso.`,
+          durationMinutes: 20,
+          difficulty: 'Normal',
+          category: cat
+        },
+        {
+          title: `Paso #5: Consolidación y evaluación de resultados`,
+          description: `1. Realiza una sesión de autoevaluación comparando tu punto de partida con el nivel actual.\n2. Ajusta tu rutina para sostener el hábito en el tiempo.\n3. Comparte o documenta tu avance para cerrar el ciclo de consolidación.`,
+          durationMinutes: 25,
+          difficulty: 'Difícil',
+          category: cat
         }
       ];
+    }
+
+    // Adjust missions to exact targetCount requested by user
+    if (missions.length < targetCount) {
+      for (let i = missions.length; i < targetCount; i++) {
+        missions.push({
+          title: `Paso #${i + 1}: Práctica avanzada y perfeccionamiento en ${title}`,
+          description: `1. Dedica 15-20 minutos a realizar la sesión #${i + 1} de práctica deliberada enfocada en ${title}.\n2. Aplica las mejoras identificadas en los pasos previos.\n3. Registra el hito completado en tu seguimiento.`,
+          durationMinutes: 20,
+          difficulty: i >= 4 ? 'Difícil' : 'Normal',
+          category: cat
+        });
+      }
+    } else if (missions.length > targetCount) {
+      missions = missions.slice(0, targetCount);
     }
 
     return { roadmap: stages, missions };
@@ -1445,6 +1632,7 @@ Responde ÚNICAMENTE en formato JSON:
     const goalTitle = title.trim();
     const goalDesc = description ? description.trim() : `Objetivo en ${category} para transformar mi vida.`;
     const cat = category || 'Crecimiento';
+    const targetCount = Math.min(Math.max(parseInt(totalMissionsTarget) || 5, 1), 10);
 
     const prompt = `Eres el Arquitecto de Metas y Mentor de Aprendizaje de MISIÓN, una aplicación de desarrollo personal gamificada.
 Convierte la siguiente Meta Vital en un plan de acción real de alto valor:
@@ -1453,17 +1641,19 @@ DATOS DE LA META:
 - Título: "${goalTitle}"
 - Propósito / Descripción: "${goalDesc}"
 - Categoría: "${cat}"
+- Cantidad exacta de misiones a generar: ${targetCount}
 
 Debes generar:
 1. "roadmap": Una Ruta clara de 3 etapas secuenciales prácticas y de aprendizaje progresivo.
-2. "missions": Las 3 primeras micromisiones diarias ("Paso #1", "Paso #2", "Paso #3") de 10-20 min cada una.
+2. "missions": Exactamente ${targetCount} micromisiones diarias ("Paso #1", "Paso #2", ..., "Paso #${targetCount}") de 10-25 min cada una.
 
 REGLAS CRÍTICAS DE CALIDAD (Cero respuestas genéricas):
 - PROHIBIDO TERMINANTEMENTE usar frases vacías o genéricas como 'Dedica 15 minutos...', 'Realiza una acción concreta...', 'Concéntrate sin distracciones', 'Marca la misión como completada'.
 - Cada misión debe ser 100% personalizada y práctica para "${goalTitle}".
 - Incluye herramientas reales, plataformas web (ej: github.com, apps bancarias, Notion, etc.), fórmulas o ejercicios prácticos.
-- En el título de cada misión, usa el formato: "Paso #1: [Acción técnica o práctica concreta]", "Paso #2: [Siguiente acción técnica o práctica]", "Paso #3: [Tercera acción técnica o práctica]".
+- En el título de cada misión, usa el formato: "Paso #1: [Acción técnica o práctica concreta]", ..., "Paso #${targetCount}: [Acción técnica o práctica]".
 - En "description", proporciona 3 o 4 pasos numerados detallados ("1. ...\\n2. ...\\n3. ...") con instrucciones exactas.
+- DEBES GENERAR EXACTAMENTE ${targetCount} MISIONES EN EL ARRAY "missions".
 
 Responde ÚNICAMENTE en formato JSON con esta estructura exacta:
 {
@@ -1473,43 +1663,44 @@ Responde ÚNICAMENTE en formato JSON con esta estructura exacta:
     { "stage": 3, "title": "Etapa 3: ...", "description": "..." }
   ],
   "missions": [
-    {
-      "title": "Paso #1: [Acción clara y concreta]",
+    ${Array.from({ length: targetCount }, (_, i) => `{
+      "title": "Paso #${i + 1}: [Acción específica]",
       "description": "1. [Primer paso detallado]\\n2. [Segundo paso con herramienta/método]\\n3. [Conclusión o comprobación]",
       "duration_minutes": 15,
-      "difficulty": "Fácil"
-    },
-    {
-      "title": "Paso #2: [Segunda acción específica]",
-      "description": "1. [Primer paso]\\n2. [Segundo paso]\\n3. [Conclusión]",
-      "duration_minutes": 15,
-      "difficulty": "Normal"
-    },
-    {
-      "title": "Paso #3: [Tercera acción específica]",
-      "description": "1. [Primer paso]\\n2. [Segundo paso]\\n3. [Conclusión]",
-      "duration_minutes": 20,
-      "difficulty": "Normal"
-    }
+      "difficulty": "${i === 0 ? 'Fácil' : (i === targetCount - 1 ? 'Difícil' : 'Normal')}"
+    }`).join(',\n    ')}
   ]
 }`;
 
     try {
       const parsed = await callGeminiJSON(prompt, 0.35);
       if (parsed && parsed.missions && parsed.missions.length > 0) {
+        let generatedMissions = parsed.missions.map((m, idx) => ({
+          title: m.title || `Paso #${idx + 1}: Avanzar en ${goalTitle}`,
+          description: m.description || `1. Prepara las herramientas para ${goalTitle}.\n2. Realiza 15 minutos de práctica deliberada.\n3. Anota tu avance alcanzado.`,
+          durationMinutes: m.duration_minutes || 15,
+          difficulty: m.difficulty || (idx === 0 ? 'Fácil' : (idx === targetCount - 1 ? 'Difícil' : 'Normal')),
+          category: cat
+        }));
+
+        // If Gemini returned fewer than targetCount, supplement with heuristic steps
+        if (generatedMissions.length < targetCount) {
+          const fallback = generateContextualHeuristicPlan({ title: goalTitle, description: goalDesc, category: cat, totalMissionsTarget: targetCount });
+          generatedMissions = [
+            ...generatedMissions,
+            ...fallback.missions.slice(generatedMissions.length, targetCount)
+          ];
+        } else if (generatedMissions.length > targetCount) {
+          generatedMissions = generatedMissions.slice(0, targetCount);
+        }
+
         return {
           roadmap: (parsed.roadmap && parsed.roadmap.length > 0) ? parsed.roadmap : [
             { stage: 1, title: 'Etapa 1: Activación y ritmo base diario', status: 'En progreso', description: 'Crear el hábito diario.' },
             { stage: 2, title: 'Etapa 2: Consistencia y profundización', status: 'Próxima', description: 'Profundizar en la práctica.' },
             { stage: 3, title: 'Etapa 3: Consolidación y maestría', status: 'Futura', description: 'Integrar la habilidad.' }
           ],
-          missions: parsed.missions.map((m, idx) => ({
-            title: m.title || `Paso #${idx + 1}: Avanzar en ${goalTitle}`,
-            description: m.description || `1. Prepara las herramientas para ${goalTitle}.\n2. Realiza 15 minutos de práctica deliberada.\n3. Anota tu avance alcanzado.`,
-            durationMinutes: m.duration_minutes || 15,
-            difficulty: m.difficulty || (idx === 0 ? 'Fácil' : 'Normal'),
-            category: cat
-          }))
+          missions: generatedMissions
         };
       }
     } catch (err) {
@@ -1517,7 +1708,7 @@ Responde ÚNICAMENTE en formato JSON con esta estructura exacta:
     }
 
     // Heuristic fallback
-    return generateContextualHeuristicPlan({ title: goalTitle, description: goalDesc, category: cat });
+    return generateContextualHeuristicPlan({ title: goalTitle, description: goalDesc, category: cat, totalMissionsTarget: targetCount });
   }
 
   // Button: Generate next AI mission from inside Goal Detail Modal
@@ -1729,10 +1920,12 @@ Responde ÚNICAMENTE en formato JSON:
                 title: newGoal.title,
                 description: newGoal.description,
                 category: newGoal.category,
-                target_date: newGoal.targetDate,
-                total_missions_target: newGoal.totalMissionsTarget,
-                completed_missions_count: 0,
-                progress_percentage: 0
+                target_date: newGoal.targetDate || '2026-12-31',
+                total_missions_target: newGoal.totalMissionsTarget || 20,
+                completed_missions_count: newGoal.completedMissionsCount || 0,
+                progress: newGoal.progress || 0,
+                icon: newGoal.icon || 'flag',
+                color: newGoal.color || '#3A7D63'
               }).then(() => console.log('Goal synced to Supabase')).catch(err => console.warn('Supabase goal sync notice:', err));
             }
           } catch (syncErr) {
@@ -1977,15 +2170,20 @@ Responde ÚNICAMENTE en formato JSON:
               return;
             }
           } else if (data?.user) {
-            // Fetch profile
+            // Fetch profile and goals from Supabase
             const { data: profileData } = await sbClient
               .from('profiles')
               .select('*')
               .eq('id', data.user.id)
-              .single();
+              .maybeSingle();
 
             const fullName = profileData?.full_name || data.user.user_metadata?.full_name || email.split('@')[0];
             const avatarUrl = profileData?.avatar_url || data.user.user_metadata?.avatar_url;
+
+            const { data: dbGoals } = await sbClient
+              .from('goals')
+              .select('*')
+              .eq('user_id', data.user.id);
 
             window.appStore.loginUser({
               email: email,
@@ -1993,14 +2191,13 @@ Responde ÚNICAMENTE en formato JSON:
               avatarUrl: avatarUrl
             });
 
+            window.appStore.syncSupabaseUserData({ dbProfile: profileData, dbGoals });
+
             window.soundEngine.playSpark();
             launchConfetti();
             showToast(`¡Bienvenido de vuelta, ${fullName}!`, 'login', true);
 
-            const state = window.appStore.getState();
-            if (state.isOnboardingCompleted) {
-              switchTab('hoy');
-            }
+            switchTab('hoy');
             renderAll();
             submitBtn.innerHTML = origText;
             submitBtn.disabled = false;
@@ -2021,10 +2218,7 @@ Responde ÚNICAMENTE en formato JSON:
       launchConfetti();
       showToast('¡Bienvenido de vuelta!', 'login', true);
 
-      const state = window.appStore.getState();
-      if (state.isOnboardingCompleted) {
-        switchTab('hoy');
-      }
+      switchTab('hoy');
       renderAll();
       submitBtn.innerHTML = origText;
       submitBtn.disabled = false;
@@ -2463,24 +2657,23 @@ Responde ÚNICAMENTE en formato JSON:
     const email = user.email || 'usuario@mision.app';
     let avatarUrl = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80';
 
+    let dbProfile = null;
+    let dbGoals = null;
+
     // Check Supabase profiles table for customized profile name & avatar
     if (sbClient) {
       try {
-        const { data: dbProfile } = await sbClient
+        const { data: prof } = await sbClient
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .maybeSingle();
 
+        dbProfile = prof;
+
         if (dbProfile) {
           if (dbProfile.full_name) fullName = dbProfile.full_name;
           if (dbProfile.avatar_url) avatarUrl = dbProfile.avatar_url;
-          if (typeof dbProfile.total_impulso === 'number') {
-            window.appStore.updateUserProfile({
-              totalImpulso: dbProfile.total_impulso,
-              chispas: dbProfile.chispas
-            });
-          }
         } else {
           // Upsert initial profile in DB
           await sbClient.from('profiles').upsert({
@@ -2494,6 +2687,13 @@ Responde ÚNICAMENTE en formato JSON:
             updated_at: new Date().toISOString()
           });
         }
+
+        // Also fetch user's goals if any from Supabase
+        const { data: goals } = await sbClient
+          .from('goals')
+          .select('*')
+          .eq('user_id', user.id);
+        dbGoals = goals;
       } catch (err) {
         console.warn('Profile fetch notice:', err);
       }
@@ -2504,16 +2704,13 @@ Responde ÚNICAMENTE en formato JSON:
       nameDisplay.textContent = fullName.split(' ')[0] || fullName;
     }
 
-    const state = window.appStore.getState();
     window.appStore.loginUser({ email, fullName, avatarUrl });
-    showToast(`¡Sesión iniciada como ${fullName}! 🌿`, 'check_circle', true);
-    
-    if (state.isOnboardingCompleted) {
-      switchTab('hoy');
-    } else {
-      onboardingState.step = 1;
-      goToOnboardingStep(1);
+    if (dbProfile || (dbGoals && dbGoals.length > 0)) {
+      window.appStore.syncSupabaseUserData({ dbProfile, dbGoals });
     }
+
+    showToast(`¡Sesión iniciada como ${fullName}! 🌿`, 'check_circle', true);
+    switchTab('hoy');
     renderAll();
   }
 

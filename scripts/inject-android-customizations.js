@@ -10,16 +10,22 @@ const path = require('path');
 
 console.log('--- Injecting Android Customizations ---');
 
-// 1. AndroidManifest.xml: OAuth & App Custom Scheme
+// 1. AndroidManifest.xml: OAuth & App Custom Scheme & Notifications
 const manifestFile = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
 if (fs.existsSync(manifestFile)) {
   let content = fs.readFileSync(manifestFile, 'utf8');
   const filter = '            <intent-filter>\n                <action android:name="android.intent.action.VIEW" />\n                <category android:name="android.intent.category.DEFAULT" />\n                <category android:name="android.intent.category.BROWSABLE" />\n                <data android:scheme="app.mision.santuario" />\n            </intent-filter>';
   if (!content.includes('app.mision.santuario')) {
     content = content.replace('</activity>', filter + '\n        </activity>');
-    fs.writeFileSync(manifestFile, content, 'utf8');
-    console.log('✓ Custom scheme injected into AndroidManifest.xml');
   }
+  
+  const notifPermissions = `    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>\n    <uses-permission android:name="android.permission.VIBRATE"/>`;
+  if (!content.includes('POST_NOTIFICATIONS')) {
+    content = content.replace('<application', notifPermissions + '\n    <application');
+  }
+
+  fs.writeFileSync(manifestFile, content, 'utf8');
+  console.log('✓ Custom scheme & notification permissions injected into AndroidManifest.xml');
 } else {
   console.log('Notice: AndroidManifest.xml not found at', manifestFile);
 }
