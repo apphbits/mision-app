@@ -2,6 +2,13 @@
 	"appId": "app.mision.santuario",
 	"appName": "MISIÓN",
 	"webDir": "mision-web",
+	"plugins": {
+		"LocalNotifications": {
+			"smallIcon": "ic_launcher",
+			"iconColor": "#3A7D63",
+			"sound": "beep.wav"
+		}
+	},
 	"server": {
 		"androidScheme": "https",
 		"cleartext": true

@@ -75,13 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
               body: notifBody,
               schedule: { at: scheduledDate },
               sound: 'beep.wav',
-              smallIcon: 'ic_stat_icon_config_sample',
+              smallIcon: 'ic_launcher',
+              iconColor: '#3A7D63',
               actionTypeId: '',
               extra: { missionId: nextMission.id }
             }
           ]
         });
-        console.log(`[Notification] Scheduled native notification #${notifId} for ${scheduledDate.toLocaleTimeString()}`);
+        console.log(`[Notification] Scheduled native notification #${notifId} with ic_launcher for ${scheduledDate.toLocaleTimeString()}`);
       }
 
       // Web Browser Notification fallback
@@ -99,6 +100,41 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1200);
     } catch (err) {
       console.warn('Error scheduling next mission notification:', err);
+    }
+  }
+
+  // Sync Mission Completion & Goal Progress live to Supabase
+  async function syncMissionCompletionToSupabase(mission) {
+    if (!sbClient) return;
+    try {
+      const { data: { user } } = await sbClient.auth.getUser();
+      if (!user) return;
+
+      const state = window.appStore.getState();
+
+      // 1. Sync User Profile (totalImpulso & chispas)
+      await sbClient.from('profiles').update({
+        total_impulso: state.profile.totalImpulso || 0,
+        chispas: state.profile.chispas || 0,
+        updated_at: new Date().toISOString()
+      }).eq('id', user.id);
+
+      // 2. If mission is linked to a goal, update Goal's completed count, progress & missions JSON in Supabase
+      if (mission?.goalId) {
+        const goal = state.goals.find(g => g.id === mission.goalId);
+        if (goal) {
+          const goalMissions = state.dailyMissions.filter(m => m.goalId === goal.id);
+          await sbClient.from('goals').update({
+            completed_missions_count: goal.completedMissionsCount || 0,
+            progress: goal.progress || 0,
+            missions: goalMissions,
+            updated_at: new Date().toISOString()
+          }).eq('id', goal.id);
+        }
+      }
+      console.log('Mission completion live-synced to Supabase for user:', user.email);
+    } catch (err) {
+      console.warn('Sync mission completion notice:', err);
     }
   }
 
@@ -779,6 +815,7 @@ Responde ÚNICAMENTE en formato JSON:
             const id = btn.dataset.id;
             const res = window.appStore.toggleMission(id);
             if (res.success) {
+              syncMissionCompletionToSupabase(res.mission);
               if (res.wasCompleted) {
                 window.soundEngine.playMissionComplete();
                 launchConfetti();
@@ -1191,6 +1228,7 @@ Responde ÚNICAMENTE en formato JSON:
             const mid = btn.dataset.id;
             const res = window.appStore.toggleMission(mid);
             if (res.success) {
+              syncMissionCompletionToSupabase(res.mission);
               if (res.wasCompleted) {
                 window.soundEngine.playMissionComplete();
                 launchConfetti();
@@ -1281,6 +1319,7 @@ Responde ÚNICAMENTE en formato JSON:
 
     const res = window.appStore.toggleMission(mid);
     if (res.success) {
+      syncMissionCompletionToSupabase(res.mission);
       if (res.wasCompleted) {
         window.soundEngine.playMissionComplete();
         launchConfetti();
