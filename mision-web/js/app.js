@@ -1925,8 +1925,10 @@ Responde ÚNICAMENTE en formato JSON:
                 completed_missions_count: newGoal.completedMissionsCount || 0,
                 progress: newGoal.progress || 0,
                 icon: newGoal.icon || 'flag',
-                color: newGoal.color || '#3A7D63'
-              }).then(() => console.log('Goal synced to Supabase')).catch(err => console.warn('Supabase goal sync notice:', err));
+                color: newGoal.color || '#3A7D63',
+                roadmap: newGoal.roadmap || aiPlan.roadmap || [],
+                missions: createdMissions || aiPlan.missions || []
+              }).then(() => console.log('Goal with roadmap & missions synced to Supabase')).catch(err => console.warn('Supabase goal sync notice:', err));
             }
           } catch (syncErr) {
             console.warn('Background sync error:', syncErr);

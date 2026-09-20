@@ -310,9 +310,35 @@ class Store {
         targetDate: g.target_date || '2026-12-31',
         totalMissionsTarget: g.total_missions_target || 20,
         completedMissionsCount: g.completed_missions_count || 0,
-        progress: parseFloat(g.progress) || 0
+        progress: parseFloat(g.progress) || 0,
+        roadmap: Array.isArray(g.roadmap) ? g.roadmap : [],
+        missions: Array.isArray(g.missions) ? g.missions : []
       }));
-      if (!this.state.dailyMissions || this.state.dailyMissions.length === 0) {
+
+      const allExtractedMissions = [];
+      dbGoals.forEach(g => {
+        if (Array.isArray(g.missions) && g.missions.length > 0) {
+          g.missions.forEach((m, idx) => {
+            allExtractedMissions.push({
+              id: m.id || `m-sync-${g.id}-${idx}`,
+              goalId: g.id,
+              title: m.title || `Paso #${idx + 1}: Avanzar en ${g.title}`,
+              description: m.description || `Acción diaria para tu meta: ${g.title}.`,
+              category: m.category || g.category || 'Crecimiento',
+              difficulty: m.difficulty || 'Normal',
+              durationMinutes: m.durationMinutes || m.duration_minutes || 15,
+              impulso: m.impulso || 25,
+              chispas: m.chispas || 10,
+              isCompleted: m.isCompleted || false,
+              completedAt: m.completedAt || null
+            });
+          });
+        }
+      });
+
+      if (allExtractedMissions.length > 0) {
+        this.state.dailyMissions = allExtractedMissions;
+      } else if (!this.state.dailyMissions || this.state.dailyMissions.length === 0) {
         this.state.dailyMissions = this.state.goals.map((g, idx) => ({
           id: 'm-sync-' + Date.now() + '-' + idx,
           goalId: g.id,
