@@ -122,10 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const state = window.appStore.getState();
 
-      // 1. Sync User Profile (totalImpulso & chispas)
+      // 1. Sync User Profile (totalImpulso, chispas, streaks, discipline)
       await sbClient.from('profiles').update({
         total_impulso: state.profile.totalImpulso || 0,
         chispas: state.profile.chispas || 0,
+        current_streak: state.profile.currentStreak || 0,
+        best_streak: state.profile.bestStreak || 0,
+        discipline_rate: state.profile.disciplineRate || 100,
         updated_at: new Date().toISOString()
       }).eq('id', user.id);
 
@@ -134,12 +137,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const goal = state.goals.find(g => g.id === mission.goalId);
         if (goal) {
           const goalMissions = state.dailyMissions.filter(m => m.goalId === goal.id);
-          await sbClient.from('goals').update({
+          
+          // Try updating by id first
+          let updateRes = await sbClient.from('goals').update({
             completed_missions_count: goal.completedMissionsCount || 0,
             progress: goal.progress || 0,
             missions: goalMissions,
             updated_at: new Date().toISOString()
-          }).eq('id', goal.id);
+          }).eq('id', goal.id).select();
+
+          // Fallback: If 0 rows updated (e.g. goal had a local temporary ID), update by user_id and title
+          if (!updateRes.data || updateRes.data.length === 0) {
+            updateRes = await sbClient.from('goals').update({
+              completed_missions_count: goal.completedMissionsCount || 0,
+              progress: goal.progress || 0,
+              missions: goalMissions,
+              updated_at: new Date().toISOString()
+            }).eq('user_id', user.id).eq('title', goal.title).select();
+
+            if (updateRes.data && updateRes.data.length > 0) {
+              const realId = updateRes.data[0].id;
+              goal.id = realId;
+              goalMissions.forEach(m => m.goalId = realId);
+              window.appStore._save();
+            }
+          }
         }
       }
       console.log('Mission completion live-synced to Supabase for user:', user.email);
@@ -601,10 +623,10 @@ Responde ÚNICAMENTE en formato JSON:
 
     if (sbClient) {
       try {
-        sbClient.auth.getUser().then(({ data }) => {
+        sbClient.auth.getUser().then(async ({ data }) => {
           const user = data?.user;
           if (user && result?.newGoal) {
-            sbClient.from('goals').insert({
+            const { data: insertedGoal } = await sbClient.from('goals').insert({
               user_id: user.id,
               title: result.newGoal.title,
               description: result.newGoal.description,
@@ -612,8 +634,17 @@ Responde ÚNICAMENTE en formato JSON:
               target_date: result.newGoal.targetDate || '2026-12-31',
               progress: 0,
               icon: result.newGoal.icon,
-              color: result.newGoal.color
-            }).then(() => console.log('Onboarding goal synced to Supabase')).catch(err => console.warn('Supabase onboarding goal sync notice:', err));
+              color: result.newGoal.color,
+              total_missions_target: result.newGoal.totalMissionsTarget || 20,
+              completed_missions_count: 0,
+              missions: result.firstMission ? [result.firstMission] : []
+            }).select().single();
+
+            if (insertedGoal && insertedGoal.id) {
+              result.newGoal.id = insertedGoal.id;
+              if (result.firstMission) result.firstMission.goalId = insertedGoal.id;
+              window.appStore._save();
+            }
           }
         });
       } catch (e) {
@@ -2024,7 +2055,7 @@ Responde ÚNICAMENTE en formato JSON:
           try {
             const { data: { user } } = await sbClient.auth.getUser();
             if (user) {
-              sbClient.from('goals').insert({
+              const { data: insertedGoal, error: insertErr } = await sbClient.from('goals').insert({
                 user_id: user.id,
                 title: newGoal.title,
                 description: newGoal.description,
@@ -2037,7 +2068,16 @@ Responde ÚNICAMENTE en formato JSON:
                 color: newGoal.color || '#3A7D63',
                 roadmap: newGoal.roadmap || aiPlan.roadmap || [],
                 missions: createdMissions || aiPlan.missions || []
-              }).then(() => console.log('Goal with roadmap & missions synced to Supabase')).catch(err => console.warn('Supabase goal sync notice:', err));
+              }).select().single();
+
+              if (insertedGoal && insertedGoal.id) {
+                newGoal.id = insertedGoal.id;
+                createdMissions.forEach(m => m.goalId = insertedGoal.id);
+                window.appStore._save();
+                console.log('Goal created and synced with UUID:', insertedGoal.id);
+              } else if (insertErr) {
+                console.warn('Supabase goal insert error:', insertErr);
+              }
             }
           } catch (syncErr) {
             console.warn('Background sync error:', syncErr);

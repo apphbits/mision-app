@@ -297,6 +297,9 @@ class Store {
       if (dbProfile.avatar_url) this.state.profile.avatarUrl = dbProfile.avatar_url;
       if (typeof dbProfile.total_impulso === 'number') this.state.profile.totalImpulso = dbProfile.total_impulso;
       if (typeof dbProfile.chispas === 'number') this.state.profile.chispas = dbProfile.chispas;
+      if (typeof dbProfile.current_streak === 'number') this.state.profile.currentStreak = dbProfile.current_streak;
+      if (typeof dbProfile.best_streak === 'number') this.state.profile.bestStreak = dbProfile.best_streak;
+      if (typeof dbProfile.discipline_rate === 'number') this.state.profile.disciplineRate = dbProfile.discipline_rate;
     }
     if (Array.isArray(dbGoals) && dbGoals.length > 0) {
       this.state.goals = dbGoals.map(g => ({
@@ -319,6 +322,7 @@ class Store {
       dbGoals.forEach(g => {
         if (Array.isArray(g.missions) && g.missions.length > 0) {
           g.missions.forEach((m, idx) => {
+            const isDone = m.isCompleted === true || m.is_completed === true;
             allExtractedMissions.push({
               id: m.id || `m-sync-${g.id}-${idx}`,
               goalId: g.id,
@@ -329,8 +333,8 @@ class Store {
               durationMinutes: m.durationMinutes || m.duration_minutes || 15,
               impulso: m.impulso || 25,
               chispas: m.chispas || 10,
-              isCompleted: m.isCompleted || false,
-              completedAt: m.completedAt || null
+              isCompleted: isDone,
+              completedAt: m.completedAt || m.completed_at || (isDone ? new Date().toISOString() : null)
             });
           });
         }
@@ -352,6 +356,24 @@ class Store {
           isCompleted: false,
           completedAt: null
         }));
+      }
+
+      // Re-verify per-goal progress accurately
+      this.state.goals.forEach(goal => {
+        const linked = this.state.dailyMissions.filter(m => m.goalId === goal.id);
+        if (linked.length > 0) {
+          const done = linked.filter(m => m.isCompleted).length;
+          goal.completedMissionsCount = done;
+          const target = goal.totalMissionsTarget || linked.length;
+          goal.progress = Math.min(100, Math.round((done / target) * 100));
+        }
+      });
+
+      // Recalculate discipline rate
+      const totalDaily = this.state.dailyMissions.length;
+      const completedDaily = this.state.dailyMissions.filter(m => m.isCompleted).length;
+      if (totalDaily > 0) {
+        this.state.profile.disciplineRate = Math.round((completedDaily / totalDaily) * 100);
       }
     }
     this.state.isOnboardingCompleted = true;
