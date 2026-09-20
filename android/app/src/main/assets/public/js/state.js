@@ -456,6 +456,14 @@ class Store {
       this.state.profile.totalImpulso += mission.impulso;
       this.state.profile.chispas += mission.chispas;
 
+      // Update Streak (starts at 1 upon completing first mission)
+      if (!this.state.profile.currentStreak || this.state.profile.currentStreak === 0) {
+        this.state.profile.currentStreak = 1;
+      }
+      if (this.state.profile.currentStreak > (this.state.profile.bestStreak || 0)) {
+        this.state.profile.bestStreak = this.state.profile.currentStreak;
+      }
+
       // Register completion
       this.state.completions.push({
         id: 'comp-' + Date.now(),
@@ -470,16 +478,28 @@ class Store {
       if (mission.goalId) {
         const goal = this.state.goals.find(g => g.id === mission.goalId);
         if (goal) {
-          goal.completedMissionsCount = (goal.completedMissionsCount || 0) + 1;
-          goal.progress = Math.min(100, Math.round((goal.completedMissionsCount / (goal.totalMissionsTarget || 20)) * 100));
+          const linkedMissions = this.state.dailyMissions.filter(m => m.goalId === goal.id);
+          const doneCount = linkedMissions.filter(m => m.isCompleted).length;
+          goal.completedMissionsCount = doneCount;
+          const target = goal.totalMissionsTarget || (linkedMissions.length > 0 ? linkedMissions.length : 20);
+          goal.progress = Math.min(100, Math.round((doneCount / target) * 100));
         }
+      }
+
+      // Recalculate overall discipline rate
+      const totalDaily = this.state.dailyMissions.length;
+      const completedDaily = this.state.dailyMissions.filter(m => m.isCompleted).length;
+      if (totalDaily > 0) {
+        this.state.profile.disciplineRate = Math.round((completedDaily / totalDaily) * 100);
       }
 
       // Check achievements
       const newlyUnlocked = window.GamificationEngine.evaluateAchievements(this.state);
       newlyUnlocked.forEach(ach => {
-        this.state.unlockedAchievements.push(ach.code);
-        this.state.profile.chispas += ach.reward;
+        if (!this.state.unlockedAchievements.includes(ach.code)) {
+          this.state.unlockedAchievements.push(ach.code);
+          this.state.profile.chispas += ach.reward;
+        }
       });
 
       this._save();
@@ -493,10 +513,19 @@ class Store {
 
       if (mission.goalId) {
         const goal = this.state.goals.find(g => g.id === mission.goalId);
-        if (goal && goal.completedMissionsCount > 0) {
-          goal.completedMissionsCount -= 1;
-          goal.progress = Math.min(100, Math.round((goal.completedMissionsCount / (goal.totalMissionsTarget || 20)) * 100));
+        if (goal) {
+          const linkedMissions = this.state.dailyMissions.filter(m => m.goalId === goal.id);
+          const doneCount = linkedMissions.filter(m => m.isCompleted).length;
+          goal.completedMissionsCount = doneCount;
+          const target = goal.totalMissionsTarget || (linkedMissions.length > 0 ? linkedMissions.length : 20);
+          goal.progress = Math.min(100, Math.round((doneCount / target) * 100));
         }
+      }
+
+      const totalDaily = this.state.dailyMissions.length;
+      const completedDaily = this.state.dailyMissions.filter(m => m.isCompleted).length;
+      if (totalDaily > 0) {
+        this.state.profile.disciplineRate = Math.round((completedDaily / totalDaily) * 100);
       }
 
       this._save();
@@ -551,7 +580,7 @@ class Store {
       icon: icon || catIcons[category] || 'flag',
       color: color || catColors[category] || '#3A7D63',
       targetDate: targetDate || '2026-12-31',
-      totalMissionsTarget: parseInt(totalMissionsTarget) || (missions && missions.length ? Math.max(20, missions.length) : 20),
+      totalMissionsTarget: parseInt(totalMissionsTarget) || (missions && missions.length ? missions.length : 20),
       completedMissionsCount: 0,
       progress: 0,
       roadmap: Array.isArray(roadmap) && roadmap.length > 0 ? roadmap : [
@@ -575,7 +604,7 @@ class Store {
         const newMission = {
           id: 'm-' + (Date.now() + idx + 1),
           goalId: goalId,
-          title: m.title || `Acción #${idx + 1} para ${title}`,
+          title: m.title || `Paso #${idx + 1}: Avanzar en ${title}`,
           description: m.description || `Instrucciones paso a paso para avanzar en tu meta: ${title}.`,
           category: m.category || category || 'Crecimiento',
           difficulty: diff,
@@ -585,9 +614,10 @@ class Store {
           isCompleted: false,
           completedAt: null
         };
-        this.state.dailyMissions.unshift(newMission);
         createdMissions.push(newMission);
       });
+      // Prepend all new missions preserving their natural 1->2->3->4->5 order
+      this.state.dailyMissions = [...createdMissions, ...this.state.dailyMissions];
     }
 
     // Check achievement for first goal

@@ -48,16 +48,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const state = window.appStore.getState();
       let nextMission = null;
 
-      // 1. Prefer next pending mission for the same goal
+      // 1. Prefer next pending mission for the same goal in strict sequential order (Paso 1 -> Paso 2 -> Paso 3...)
+      let pendingMissions = [];
       if (completedMission?.goalId) {
-        nextMission = state.dailyMissions.find(m => m.goalId === completedMission.goalId && !m.isCompleted && m.id !== completedMission.id);
+        pendingMissions = state.dailyMissions.filter(m => m.goalId === completedMission.goalId && !m.isCompleted && m.id !== completedMission.id);
       }
-      // 2. Fallback to any pending daily mission
-      if (!nextMission) {
-        nextMission = state.dailyMissions.find(m => !m.isCompleted && m.id !== completedMission?.id);
+      if (pendingMissions.length === 0) {
+        pendingMissions = state.dailyMissions.filter(m => !m.isCompleted && m.id !== completedMission?.id);
       }
 
-      if (!nextMission) return;
+      if (pendingMissions.length === 0) return;
+
+      // Strict sequential sorting by step number (Paso #1 before Paso #2, etc.)
+      pendingMissions.sort((a, b) => {
+        const matchA = a.title.match(/#(\d+)/) || a.title.match(/(\d+)/);
+        const matchB = b.title.match(/#(\d+)/) || b.title.match(/(\d+)/);
+        const numA = matchA ? parseInt(matchA[1]) : 999;
+        const numB = matchB ? parseInt(matchB[1]) : 999;
+        return numA - numB;
+      });
+
+      const nextMission = pendingMissions[0];
 
       const delayMinutes = 5; // Test mode: 5 minutes (configured for testing)
       const scheduledDate = new Date(Date.now() + delayMinutes * 60 * 1000);
@@ -747,7 +758,7 @@ Responde ÚNICAMENTE en formato JSON:
       });
     }
 
-    // Daily Missions List
+    // Daily Missions List (Clean, uncrowded layout with collapsible completed section)
     const missionsList = document.getElementById('daily-missions-list');
     if (missionsList) {
       const filtered = state.dailyMissions.filter(m => {
@@ -755,20 +766,31 @@ Responde ÚNICAMENTE en formato JSON:
         return m.category === activeCategoryFilter;
       });
 
+      const pendingMissions = filtered.filter(m => !m.isCompleted);
+      const completedMissions = filtered.filter(m => m.isCompleted);
+
+      // Sort pending missions sequentially by step number
+      pendingMissions.sort((a, b) => {
+        const matchA = a.title.match(/#(\d+)/) || a.title.match(/(\d+)/);
+        const matchB = b.title.match(/#(\d+)/) || b.title.match(/(\d+)/);
+        const numA = matchA ? parseInt(matchA[1]) : 999;
+        const numB = matchB ? parseInt(matchB[1]) : 999;
+        return numA - numB;
+      });
+
       if (filtered.length === 0) {
         missionsList.innerHTML = `
-          <div class="p-8 text-center bg-white rounded-3xl border border-[#EAECE6] text-[#596573]">
+          <div class="p-8 text-center bg-white dark:bg-[#131D17] rounded-3xl border border-[#EAECE6] dark:border-[#23352B] text-[#596573] dark:text-slate-400">
             <span class="material-symbols-outlined text-4xl text-[#3A7D63]/50 mb-2">task_alt</span>
-            <p class="font-bold text-sm">No hay misiones en esta categoría</p>
+            <p class="font-bold text-sm text-[#27303A] dark:text-slate-100">No hay misiones en esta categoría</p>
             <p class="text-xs text-[#8A96A3] mt-1">Explora otra categoría o agrega una nueva acción.</p>
           </div>
         `;
       } else {
-        missionsList.innerHTML = filtered.map(mission => {
-          const isDone = mission.isCompleted;
+        const renderMissionCard = (mission, isDone) => {
           const goal = mission.goalId ? state.goals.find(g => g.id === mission.goalId) : null;
           return `
-            <div data-id="${mission.id}" class="mission-card relative overflow-hidden rounded-xl bg-white dark:bg-[#131D17] py-2 px-3 soft-shadow border border-[#EAECE6] dark:border-[#23352B] flex items-center justify-between gap-2.5 cursor-pointer hover:border-[#3A7D63] transition-all ${isDone ? 'is-completed opacity-75 bg-[#FAFBFA] dark:bg-[#0E1712]' : ''}">
+            <div data-id="${mission.id}" class="mission-card relative overflow-hidden rounded-xl bg-white dark:bg-[#131D17] py-2 px-3 soft-shadow border border-[#EAECE6] dark:border-[#23352B] flex items-center justify-between gap-2.5 cursor-pointer hover:border-[#3A7D63] transition-all ${isDone ? 'is-completed opacity-70 bg-[#FAFBFA] dark:bg-[#0E1712]' : ''}">
               <div class="flex items-center gap-2.5 flex-1 min-w-0">
                 <button data-id="${mission.id}" class="btn-check-mission w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                   isDone 
@@ -798,7 +820,53 @@ Responde ÚNICAMENTE en formato JSON:
               </div>
             </div>
           `;
-        }).join('');
+        };
+
+        let html = '';
+
+        // All done celebration badge
+        if (pendingMissions.length === 0 && completedMissions.length > 0) {
+          html += `
+            <div class="p-4 rounded-2xl bg-[#F0F7F4] dark:bg-[#16261D] border border-[#DBEFE6] dark:border-[#23382C] text-center mb-2">
+              <span class="material-symbols-outlined text-3xl text-[#3A7D63] dark:text-emerald-400 mb-1">celebration</span>
+              <h4 class="font-bold text-xs text-[#27303A] dark:text-slate-100">¡Todas tus acciones del día están listas!</h4>
+              <p class="text-[11px] text-[#596573] dark:text-slate-400 mt-0.5">Tu racha y progreso están forjados con excelencia 🌿</p>
+            </div>
+          `;
+        }
+
+        // Active Pending Missions
+        html += pendingMissions.map(m => renderMissionCard(m, false)).join('');
+
+        // Collapsible Completed Missions
+        if (completedMissions.length > 0) {
+          html += `
+            <div class="mt-2.5 pt-2 border-t border-[#F0F2EC] dark:border-[#1F2F26]">
+              <button id="btn-toggle-completed-missions" type="button" class="w-full py-2 px-3 rounded-xl bg-[#F4F6F2] dark:bg-[#15201A] hover:bg-[#EAECE6] dark:hover:bg-[#1C2C23] flex items-center justify-between text-xs font-bold text-[#596573] dark:text-slate-300 transition-all cursor-pointer select-none">
+                <span class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm text-[#22C55E]">task_alt</span>
+                  <span>Completadas hoy (${completedMissions.length})</span>
+                </span>
+                <span id="icon-toggle-completed" class="material-symbols-outlined text-sm text-slate-400 transition-transform">expand_more</span>
+              </button>
+              <div id="container-completed-missions" class="hidden space-y-2 mt-2">
+                ${completedMissions.map(m => renderMissionCard(m, true)).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        missionsList.innerHTML = html;
+
+        // Toggle completed section handler
+        const btnToggleCompleted = document.getElementById('btn-toggle-completed-missions');
+        const containerCompleted = document.getElementById('container-completed-missions');
+        const iconToggleCompleted = document.getElementById('icon-toggle-completed');
+        btnToggleCompleted?.addEventListener('click', () => {
+          window.soundEngine.playClick();
+          const isHidden = containerCompleted?.classList.toggle('hidden');
+          iconToggleCompleted?.classList.toggle('rotate-180', !isHidden);
+        });
 
         // Card Click -> Open Detail Modal
         missionsList.querySelectorAll('.mission-card').forEach(card => {
@@ -809,6 +877,7 @@ Responde ÚNICAMENTE en formato JSON:
           });
         });
 
+        // Check Button Listeners
         missionsList.querySelectorAll('.btn-check-mission').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
