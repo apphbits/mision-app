@@ -45,9 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function scheduleNextMissionNotification(completedMission) {
     try {
-      const state = window.appStore.getState();
-      let nextMission = null;
-
       // 1. Prefer next pending mission for the same goal in strict sequential order (Paso 1 -> Paso 2 -> Paso 3...)
       let pendingMissions = [];
       if (completedMission?.goalId) {
@@ -61,8 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Strict sequential sorting by step number (Paso #1 before Paso #2, etc.)
       pendingMissions.sort((a, b) => {
-        const matchA = a.title.match(/#(\d+)/) || a.title.match(/(\d+)/);
-        const matchB = b.title.match(/#(\d+)/) || b.title.match(/(\d+)/);
+        const titleA = (a && a.title) ? String(a.title) : '';
+        const titleB = (b && b.title) ? String(b.title) : '';
+        const matchA = titleA.match(/#(\d+)/) || titleA.match(/(\d+)/);
+        const matchB = titleB.match(/#(\d+)/) || titleB.match(/(\d+)/);
         const numA = matchA ? parseInt(matchA[1]) : 999;
         const numB = matchB ? parseInt(matchB[1]) : 999;
         return numA - numB;
@@ -771,8 +770,10 @@ Responde ÚNICAMENTE en formato JSON:
 
       // Sort pending missions sequentially by step number
       pendingMissions.sort((a, b) => {
-        const matchA = a.title.match(/#(\d+)/) || a.title.match(/(\d+)/);
-        const matchB = b.title.match(/#(\d+)/) || b.title.match(/(\d+)/);
+        const titleA = (a && a.title) ? String(a.title) : '';
+        const titleB = (b && b.title) ? String(b.title) : '';
+        const matchA = titleA.match(/#(\d+)/) || titleA.match(/(\d+)/);
+        const matchB = titleB.match(/#(\d+)/) || titleB.match(/(\d+)/);
         const numA = matchA ? parseInt(matchA[1]) : 999;
         const numB = matchB ? parseInt(matchB[1]) : 999;
         return numA - numB;
